@@ -11,9 +11,10 @@ import android.view.VelocityTracker
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.animation.DecelerateInterpolator
+import me.thanel.swipeactionview.animation.ScalableIconAnimator
+import me.thanel.swipeactionview.animation.SwipeActionViewBackgroundAnimator
 import me.thanel.swipeactionview.utils.clamp
 import me.thanel.swipeactionview.utils.dpToPx
-import me.thanel.swipeactionview.utils.setScale
 
 internal class SwipeGestureDetector(private val swipeActionView: SwipeActionView) {
     /**
@@ -389,21 +390,23 @@ internal class SwipeGestureDetector(private val swipeActionView: SwipeActionView
         animator?.start()
     }
 
-    private fun scaleIcon() {
-        var scale = 0.65f
+    private var leftBackgroundAnimator: SwipeActionViewBackgroundAnimator? = ScalableIconAnimator()
 
+    private fun scaleIcon() {
         val absTranslationX = Math.abs(swipeActionView.container.translationX)
-        if (absTranslationX > minActivationDistance) {
-            val xOverActivation = absTranslationX - minActivationDistance
-            scale += Math.min(xOverActivation / ((maxSwipeDistance - minActivationDistance) * 2), 1f - scale)
+
+        val progress = absTranslationX / maxSwipeDistance
+        val minActivationProgress = minActivationDistance / maxSwipeDistance
+
+        val leftBackground = swipeActionView.leftBackground
+        if (leftBackground != null && leftBackgroundAnimator != null) {
+            leftBackgroundAnimator!!.onUpdateSwipeProgress(leftBackground, progress, minActivationProgress)
         }
 
         if (swipeActionView.container.translationX > 0) {
-            swipeActionView.leftBackground?.setScale(scale)
             swipeActionView.leftBackground?.visibility = View.VISIBLE
             swipeActionView.rightBackground?.visibility = View.GONE
         } else {
-            swipeActionView.rightBackground?.setScale(scale)
             swipeActionView.leftBackground?.visibility = View.GONE
             swipeActionView.rightBackground?.visibility = View.VISIBLE
         }
