@@ -108,8 +108,16 @@ class SwipeActionView(context: Context, attrs: AttributeSet) : FrameLayout(conte
     /**
      * Tells whether swiping in the specified [direction] is enabled.
      */
-    fun hasEnabledDirection(direction: Int) =
-            (enabledDirections and direction) == direction
+    fun hasEnabledDirection(direction: Int): Boolean {
+        val background = when (direction) {
+            DIRECTION_LEFT -> rightBackground
+            DIRECTION_RIGHT -> leftBackground
+
+            else -> throw IllegalArgumentException("Unknown direction: $direction")
+        }
+
+        return background != null && (enabledDirections and direction) == direction
+    }
 
     /**
      * Tells whether edge for the specified [edge] is enabled.

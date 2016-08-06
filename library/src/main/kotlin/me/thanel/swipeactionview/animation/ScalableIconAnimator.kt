@@ -8,7 +8,7 @@ class ScalableIconAnimator : SwipeActionViewBackgroundAnimator {
         var scale = 0.65f
 
         if (progress > minActivationProgress) {
-            val xOverActivation = progress - 0.8f
+            val xOverActivation = progress - minActivationProgress
             scale += Math.min(xOverActivation / 0.4f, 1f - scale)
         }
 
