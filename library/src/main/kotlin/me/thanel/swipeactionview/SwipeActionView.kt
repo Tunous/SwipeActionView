@@ -3,42 +3,27 @@
 package me.thanel.swipeactionview
 
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.view.LayoutInflater
+import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.LinearLayout
 
 /**
  * View that allows users to perform various actions by swiping it to the sides.
  */
 class SwipeActionView(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
     private val swipeGestureDetector: SwipeGestureDetector = SwipeGestureDetector(this)
-    private val iconLeftResource: Int
-    private val iconRightResource: Int
-    private val containerBackground: Drawable?
     private var enabledDirections: Int
     private var disabledEdges: Int
 
-    /**
-     * The container for custom views added to this [SwipeActionView].
-     */
-    internal lateinit var container: LinearLayout
+    internal lateinit var container: View
         private set
 
-    /**
-     * The icon that appears on the left side of the view.
-     */
-    lateinit var iconLeft: ImageView
+    var leftBackground: View? = null
         private set
 
-    /**
-     * The icon that appears on the right side of the view.
-     */
-    lateinit var iconRight: ImageView
+    var rightBackground: View? = null
         private set
 
     /**
@@ -80,24 +65,17 @@ class SwipeActionView(context: Context, attrs: AttributeSet) : FrameLayout(conte
     init {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.SwipeActionView)
 
-        iconLeftResource = typedArray.getResourceId(R.styleable.SwipeActionView_iconLeft, 0)
-        iconRightResource = typedArray.getResourceId(R.styleable.SwipeActionView_iconRight, 0)
-
         enabledDirections = typedArray.getInt(R.styleable.SwipeActionView_swipeDirections, DIRECTION_LEFT or DIRECTION_RIGHT)
         disabledEdges = typedArray.getInt(R.styleable.SwipeActionView_disabledEdges, 0)
-
-        containerBackground = typedArray.getDrawable(R.styleable.SwipeActionView_containerBackground)
 
         typedArray.recycle()
     }
 
-    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-        return swipeGestureDetector.onInterceptTouchEvent(ev)
-    }
+    override fun onInterceptTouchEvent(ev: MotionEvent) =
+            swipeGestureDetector.onInterceptTouchEvent(ev)
 
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        return swipeGestureDetector.onTouchEvent(event)
-    }
+    override fun onTouchEvent(event: MotionEvent) =
+            swipeGestureDetector.onTouchEvent(event)
 
     /**
      * Enable swiping in the specified [direction].
@@ -130,7 +108,7 @@ class SwipeActionView(context: Context, attrs: AttributeSet) : FrameLayout(conte
     /**
      * Tells whether swiping in the specified [direction] is enabled.
      */
-    fun hasEnabledDirection(direction: Int): Boolean =
+    fun hasEnabledDirection(direction: Int) =
             (enabledDirections and direction) == direction
 
     /**
@@ -139,37 +117,29 @@ class SwipeActionView(context: Context, attrs: AttributeSet) : FrameLayout(conte
     fun hasEnabledEdge(edge: Int): Boolean =
             (disabledEdges and edge) != edge
 
-    override fun onFinishInflate() {
-        val children = detachChildren()
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
 
-        val view = LayoutInflater.from(context).inflate(R.layout.swipe_view, this, true)
-        container = view.findViewById(R.id.container) as LinearLayout
-        iconLeft = view.findViewById(R.id.swipe_icon_left) as ImageView
-        iconRight = view.findViewById(R.id.swipe_icon_right) as ImageView
-
-        iconLeft.setImageResource(iconLeftResource)
-        iconRight.setImageResource(iconRightResource)
-
-        if (containerBackground != null) {
-            container.background = containerBackground
+        if (childCount < 1) {
+            throw IllegalStateException("Specify at least 1 child view to use as foreground content.")
+        }
+        if (childCount > 3) {
+            throw IllegalStateException("Specify only up to 3 views.")
         }
 
-        addChildrenToContainer(children)
+        if (childCount >= 2) {
+            leftBackground = getChildAt(0)
 
-        super.onFinishInflate()
-    }
+            if (childCount == 3) {
+                rightBackground = getChildAt(1)
 
-    private fun addChildrenToContainer(children: Collection<View>) {
-        children.forEach {
-            container.addView(it)
+                val layoutParams = rightBackground?.layoutParams as FrameLayout.LayoutParams
+                layoutParams.gravity = Gravity.END
+                rightBackground?.layoutParams = layoutParams
+            }
         }
-    }
 
-    private fun detachChildren(): Collection<View> {
-        val children = (0..childCount - 1)
-                .map { getChildAt(it) }
-        detachAllViewsFromParent()
-        return children
+        container = getChildAt(childCount - 1)
     }
 
     companion object {

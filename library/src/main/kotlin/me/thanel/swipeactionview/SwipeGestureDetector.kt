@@ -371,8 +371,8 @@ internal class SwipeGestureDetector(private val swipeActionView: SwipeActionView
     private fun snap() {
         animateContainer(0f, 350) {
             canPerformSwipeAction = true
-            swipeActionView.iconLeft.visibility = View.GONE
-            swipeActionView.iconRight.visibility = View.GONE
+            swipeActionView.leftBackground?.visibility = View.GONE
+            swipeActionView.rightBackground?.visibility = View.GONE
         }
     }
 
@@ -399,13 +399,13 @@ internal class SwipeGestureDetector(private val swipeActionView: SwipeActionView
         }
 
         if (swipeActionView.container.translationX > 0) {
-            swipeActionView.iconLeft.setScale(scale)
-            swipeActionView.iconLeft.visibility = View.VISIBLE
-            swipeActionView.iconRight.visibility = View.GONE
+            swipeActionView.leftBackground?.setScale(scale)
+            swipeActionView.leftBackground?.visibility = View.VISIBLE
+            swipeActionView.rightBackground?.visibility = View.GONE
         } else {
-            swipeActionView.iconRight.setScale(scale)
-            swipeActionView.iconLeft.visibility = View.GONE
-            swipeActionView.iconRight.visibility = View.VISIBLE
+            swipeActionView.rightBackground?.setScale(scale)
+            swipeActionView.leftBackground?.visibility = View.GONE
+            swipeActionView.rightBackground?.visibility = View.VISIBLE
         }
     }
 

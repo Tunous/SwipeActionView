@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="SwipeActionView">
-        <!-- The icon on the left side. -->
-        <attr name="iconLeft" format="reference"/>
-
-        <!-- The icon on the right side. -->
-        <attr name="iconRight" format="reference"/>
-
         <!-- Enabled swipe directions. -->
         <attr name="swipeDirections">
             <flag name="left" value="1"/>
@@ -18,7 +12,5 @@
             <flag name="left" value="1"/>
             <flag name="right" value="2"/>
         </attr>
-
-        <attr name="containerBackground" format="reference"/>
     </declare-styleable>
 </resources>
