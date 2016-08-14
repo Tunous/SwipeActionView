@@ -16,8 +16,8 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import me.thanel.swipeactionview.animation.SwipeActionViewAnimator
 import me.thanel.swipeactionview.utils.clamp
-import me.thanel.swipeactionview.utils.dpToPx
 import me.thanel.swipeactionview.utils.isRightAligned
+import me.thanel.swipeactionview.utils.totalWidth
 
 /**
  * View that allows users to perform various actions by swiping it to the left or right sides.
@@ -54,16 +54,6 @@ class SwipeActionView : FrameLayout {
     private val pressedStateDuration = ViewConfiguration.getPressedStateDuration().toLong()
 
     /**
-     * The maximum distance allowed for dragging of the view.
-     */
-    private val maxSwipeDistance = 52f.dpToPx(context)
-
-    /**
-     * The minimum distance required to execute swipe callbacks.
-     */
-    private val minActivationDistance = 0.8f * maxSwipeDistance
-
-    /**
      * The minimum speed required to execute swipe callback if user didn't swipe far enough.
      */
     private val minActivationSpeed = 200f
@@ -77,6 +67,17 @@ class SwipeActionView : FrameLayout {
      * The long press gesture handler.
      */
     private val handler = PressTimeoutHandler(this)
+
+    /**
+     * The percentage of the [maxLeftSwipeDistance] or [maxRightSwipeDistance] after which swipe
+     * callbacks can can be executed.
+     */
+    private val minActivationDistanceRatio = 0.8f
+
+    /**
+     * The interpolator used for swipe animations.
+     */
+    private val animationInterpolator = DecelerateInterpolator()
 
     //endregion
 
@@ -137,6 +138,26 @@ class SwipeActionView : FrameLayout {
      */
     private lateinit var container: View
 
+    /**
+     * The maximum distance allowed for dragging of the view to the left side.
+     */
+    private var maxLeftSwipeDistance = 0f
+
+    /**
+     * The maximum distance allowed for dragging of the view to the right side.
+     */
+    private var maxRightSwipeDistance = 0f
+
+    /**
+     * The minimum distance required to execute swipe callbacks when swiping to the left side.
+     */
+    private var minLeftActivationDistance = 0f
+
+    /**
+     * The minimum distance required to execute swipe callbacks when swiping to the right side.
+     */
+    private var minRightActivationDistance = 0f
+
     //endregion
 
     //region Initialization
@@ -183,6 +204,20 @@ class SwipeActionView : FrameLayout {
 
         // Last view always becomes foreground container
         container = getChildAt(childCount - 1)
+    }
+
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+
+        leftSwipeView?.let {
+            maxLeftSwipeDistance = it.totalWidth.toFloat()
+            minLeftActivationDistance = minActivationDistanceRatio * maxLeftSwipeDistance
+        }
+
+        rightSwipeView?.let {
+            maxRightSwipeDistance = it.totalWidth.toFloat()
+            minRightActivationDistance = minActivationDistanceRatio * maxRightSwipeDistance
+        }
     }
 
     private fun requireOppositeGravity(view: View?) {
@@ -523,6 +558,19 @@ class SwipeActionView : FrameLayout {
     }
 
     /**
+     * Tell whether the user has swiped view far enough to perform swipe callback
+     *
+     * @param swipeDistance The performed swipe distance.
+     *
+     * @return Whether the user has swiped far enough
+     */
+    private fun hasSwipedFarEnough(swipeDistance: Float) = when {
+        swipeDistance < 0 -> swipeDistance < -minLeftActivationDistance
+        swipeDistance > 0 -> swipeDistance > minRightActivationDistance
+        else -> false
+    }
+
+    /**
      * Perform the drag by horizontally moving the view by movement delta.
      *
      * @param e The move motion even that triggered the current movement.
@@ -546,8 +594,8 @@ class SwipeActionView : FrameLayout {
      * Limits the value between the maximal and minimal swipe distance values.
      */
     private fun limitInDistance(value: Float): Float {
-        val min = if (hasEnabledDirection(SwipeDirection.Left)) -maxSwipeDistance else 0f
-        val max = if (hasEnabledDirection(SwipeDirection.Right)) maxSwipeDistance else 0f
+        val min = if (hasEnabledDirection(SwipeDirection.Left)) -maxLeftSwipeDistance else 0f
+        val max = if (hasEnabledDirection(SwipeDirection.Right)) maxRightSwipeDistance else 0f
 
         return clamp(value, min, max)
     }
@@ -567,9 +615,7 @@ class SwipeActionView : FrameLayout {
             return
         }
 
-        val swipedFarEnough = Math.abs(container.translationX) > minActivationDistance
-
-        if (swipedFarEnough || swipedFastEnough) {
+        if (hasSwipedFarEnough(container.translationX) || swipedFastEnough) {
             activate(container.translationX > 0)
         } else {
             moveToOriginalPosition()
@@ -590,7 +636,7 @@ class SwipeActionView : FrameLayout {
         }
         canPerformSwipeAction = false
 
-        animateContainer(if (swipedRight) maxSwipeDistance else -maxSwipeDistance, 250) {
+        animateContainer(if (swipedRight) maxRightSwipeDistance else -maxLeftSwipeDistance, 250) {
             val shouldFinish = if (swipedRight) {
                 swipeGestureListener?.onSwipedRight(this)
             } else {
@@ -621,8 +667,6 @@ class SwipeActionView : FrameLayout {
         inLongPress = false
     }
 
-    private val decelerateInterpolator = DecelerateInterpolator()
-
     /**
      * Animate the swipe position of the container.
      *
@@ -638,7 +682,7 @@ class SwipeActionView : FrameLayout {
         animator = ObjectAnimator.ofFloat(container, View.TRANSLATION_X, targetTranslationX).apply {
             setStartDelay(startDelay)
             setDuration(duration)
-            interpolator = decelerateInterpolator
+            interpolator = animationInterpolator
             addUpdateListener { performViewAnimations() }
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
@@ -653,27 +697,53 @@ class SwipeActionView : FrameLayout {
      * Perform animations on the views located in background.
      */
     private fun performViewAnimations() {
-        val absTranslationX = Math.abs(container.translationX)
-
-        val progress = absTranslationX / maxSwipeDistance
-        val minActivationProgress = minActivationDistance / maxSwipeDistance
-
         val swipeView: View?
         val animator: SwipeActionViewAnimator?
+        val swipeDistance = container.translationX
 
-        if (container.translationX < 0) {
+        if (swipeDistance < 0) {
             swipeView = leftSwipeView
             animator = leftSwipeAnimator
-        } else if (container.translationX > 0) {
+        } else if (swipeDistance > 0) {
             swipeView = rightSwipeView
             animator = rightSwipeAnimator
         } else {
             return
         }
 
-        if (swipeView != null && animator != null) {
-            animator.onUpdateSwipeProgress(swipeView, progress, minActivationProgress)
-        }
+        if (swipeView == null || animator == null) return
+
+        val absTranslationX = Math.abs(swipeDistance)
+        val maxSwipeDistance = getMaxSwipeDistance(swipeDistance)
+
+        val progress = absTranslationX / maxSwipeDistance
+        val minActivationProgress = getMinActivationDistance(swipeDistance) / maxSwipeDistance
+
+        animator.onUpdateSwipeProgress(swipeView, progress, minActivationProgress)
+    }
+
+    /**
+     * Get max swipe distance for the specified delta.
+     *
+     * @param delta The swipe delta.
+     *
+     * @return Max swipe distance.
+     */
+    private fun getMaxSwipeDistance(delta: Float) = when {
+        delta < 0 -> maxLeftSwipeDistance
+        else -> maxRightSwipeDistance
+    }
+
+    /**
+     * Get min activation distance for the specified delta.
+     *
+     * @param delta The swipe delta.
+     *
+     * @return Min activation distance.
+     */
+    private fun getMinActivationDistance(delta: Float) = when {
+        delta < 0 -> minLeftActivationDistance
+        else -> minRightActivationDistance
     }
 
     //endregion

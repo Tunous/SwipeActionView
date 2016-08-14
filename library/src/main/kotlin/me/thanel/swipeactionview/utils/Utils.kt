@@ -2,10 +2,12 @@ package me.thanel.swipeactionview.utils
 
 import android.content.Context
 import android.support.v4.view.GravityCompat
+import android.support.v4.view.MarginLayoutParamsCompat
 import android.support.v4.view.ViewCompat
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 
 /**
@@ -62,3 +64,15 @@ internal fun isRightAlignedGravity(gravity: Int): Boolean {
     return gravity and Gravity.END == Gravity.END ||
             gravity and Gravity.RIGHT == Gravity.RIGHT
 }
+
+/**
+ * The total width of the view including both start and end margins.
+ */
+internal val View.totalWidth: Int
+    get() {
+        val layoutParams = (layoutParams as ViewGroup.MarginLayoutParams)
+        val marginEnd = MarginLayoutParamsCompat.getMarginEnd(layoutParams)
+        val marginStart = MarginLayoutParamsCompat.getMarginStart(layoutParams)
+
+        return marginStart + width + marginEnd
+    }
