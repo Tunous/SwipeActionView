@@ -17,6 +17,7 @@ import android.widget.FrameLayout
 import me.thanel.swipeactionview.animation.SwipeActionViewAnimator
 import me.thanel.swipeactionview.utils.clamp
 import me.thanel.swipeactionview.utils.dpToPx
+import me.thanel.swipeactionview.utils.isRightAligned
 
 /**
  * View that allows users to perform various actions by swiping it to the left or right sides.
@@ -122,14 +123,6 @@ class SwipeActionView : FrameLayout {
     private var isTouchValid = false
 
     /**
-     * Tells whether the first child of this view should be swipe-able in left direction.
-     *
-     * When set to `true`, then the first child view will be swiped to the left and second to the
-     * right. Opposite when set to `false`.
-     */
-    private var swipeFirstViewLeft = true
-
-    /**
      * The view which appears when swiping content to the left side.
      */
     private var leftSwipeView: View? = null
@@ -167,25 +160,9 @@ class SwipeActionView : FrameLayout {
 
     //region Initialization
 
-    constructor(context: Context) : super(context) {
-        init(context, null)
-    }
-
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-        init(context, attrs)
-    }
-
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        init(context, attrs)
-    }
-
-    private fun init(context: Context, attrs: AttributeSet?) {
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.SwipeActionView)
-
-        swipeFirstViewLeft = typedArray.getBoolean(R.styleable.SwipeActionView_swipeFirstViewLeft, swipeFirstViewLeft)
-
-        typedArray.recycle()
-    }
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
@@ -197,28 +174,42 @@ class SwipeActionView : FrameLayout {
             throw IllegalStateException("Specify only up to 3 views.")
         }
 
-        // [swipeFirstViewLeft] boolean specifies which view should be displayed when swiping to the
-        // left or right.
-        // TODO: Use layout_gravity instead
+        // The swipe direction of child views is determined by their `layout_gravity` attribute.
+        // When they have set the `end` or `right` flags then they will be swipe-able to the left
+        // side and otherwise to the right side.
 
         if (childCount >= 2) {
-            if (swipeFirstViewLeft) {
-                leftSwipeView = getChildAt(0)
+            val firstChild = getChildAt(0)
+
+            if (firstChild.isRightAligned()) {
+                leftSwipeView = firstChild
             } else {
-                rightSwipeView = getChildAt(0)
+                rightSwipeView = firstChild
             }
 
             if (childCount == 3) {
-                if (swipeFirstViewLeft) {
-                    rightSwipeView = getChildAt(1)
+                val secondChild = getChildAt(1)
+
+                if (secondChild.isRightAligned()) {
+                    requireOppositeGravity(leftSwipeView)
+                    leftSwipeView = secondChild
                 } else {
-                    leftSwipeView = getChildAt(1)
+                    requireOppositeGravity(rightSwipeView)
+                    rightSwipeView = secondChild
                 }
             }
         }
 
         // Last view always becomes foreground container
         container = getChildAt(childCount - 1)
+    }
+
+    private fun requireOppositeGravity(view: View?) {
+        if (view != null) {
+            throw IllegalStateException(
+                    "Background views must have opposite horizontal gravity." +
+                            " One aligned to start and one to end.")
+        }
     }
 
     //endregion
@@ -291,11 +282,18 @@ class SwipeActionView : FrameLayout {
 
     /**
      * Move the view to its original position.
+     */
+    fun moveToOriginalPosition() {
+        moveToOriginalPosition(0)
+    }
+
+    /**
+     * Move the view to its original position.
      *
      * @param startDelay
      * The amount of delay, in milliseconds, to wait before starting the movement animation.
      */
-    fun moveToOriginalPosition(startDelay: Long = 0) {
+    fun moveToOriginalPosition(startDelay: Long) {
         animateContainer(0f, 350, startDelay) {
             canPerformSwipeAction = true
         }

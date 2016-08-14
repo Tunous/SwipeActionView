@@ -19,6 +19,7 @@
             android:src="@mipmap/ic_launcher"/>
 
         <ImageView
+            android:layout_gravity="end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@mipmap/ic_launcher"/>
@@ -51,11 +52,6 @@
                 android:layout_height="wrap_content"
                 android:src="@mipmap/ic_launcher"
                 android:visibility="gone"/>
-
-            <ProgressBar
-                android:id="@+id/progress_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
         </FrameLayout>
 
         <TextView

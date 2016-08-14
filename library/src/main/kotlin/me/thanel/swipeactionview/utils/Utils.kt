@@ -1,8 +1,12 @@
 package me.thanel.swipeactionview.utils
 
 import android.content.Context
+import android.support.v4.view.GravityCompat
+import android.support.v4.view.ViewCompat
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.View
+import android.widget.FrameLayout
 
 /**
  * Convert dp unit to equivalent pixels, depending on device density.
@@ -20,14 +24,30 @@ internal fun Float.dpToPx(context: Context) =
  * @param min The minimum float value.
  * @param max The maximum float value.
  */
-internal fun clamp(value: Float, min: Float, max: Float): Float = Math.max(min, Math.min(value, max))
+internal fun clamp(value: Float, min: Float, max: Float) = Math.max(min, Math.min(value, max))
 
 /**
- * Set both vertical and horizontal scale of the view the the specified [scale].
+ * Set both vertical and horizontal scale of the view to the specified value.
  *
  * @param scale The target scale.
  */
 internal fun View.setScale(scale: Float) {
     this.scaleX = scale
     this.scaleY = scale
+}
+
+/**
+ * Get whether the view has `end` or `right` flags set for `layout_gravity`.
+ *
+ * @return Whether the view is right aligned.
+ */
+internal fun View.isRightAligned(): Boolean {
+    val gravity = (layoutParams as FrameLayout.LayoutParams).gravity
+    val layoutDirection = ViewCompat.getLayoutDirection(this)
+
+    val absGravity = GravityCompat.getAbsoluteGravity(gravity, layoutDirection)
+    if (absGravity <= 0) return false
+
+    return absGravity and Gravity.END == Gravity.END ||
+            absGravity and Gravity.RIGHT == Gravity.RIGHT
 }

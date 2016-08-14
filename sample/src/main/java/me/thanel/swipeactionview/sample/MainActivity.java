@@ -3,7 +3,6 @@ package me.thanel.swipeactionview.sample;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ProgressBar;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -18,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        //final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         final View icon = findViewById(R.id.icon);
 
         SwipeActionView swipeActionView = (SwipeActionView) findViewById(R.id.swipe_action_view);
@@ -32,14 +31,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onSwipedRight(@NotNull final SwipeActionView swipeActionView) {
                 icon.setVisibility(View.GONE);
-                progressBar.setVisibility(View.VISIBLE);
+                //progressBar.setVisibility(View.VISIBLE);
 
                 swipeActionView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         icon.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.GONE);
-                        swipeActionView.reset();
+                        //progressBar.setVisibility(View.GONE);
+                        swipeActionView.moveToOriginalPosition();
                     }
                 }, 2000);
                 return false;
