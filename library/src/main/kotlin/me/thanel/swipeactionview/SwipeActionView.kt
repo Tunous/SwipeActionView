@@ -19,147 +19,16 @@ import me.thanel.swipeactionview.utils.clamp
 import me.thanel.swipeactionview.utils.dpToPx
 
 /**
- * View that allows users to perform various actions by swiping it to the sides.
+ * View that allows users to perform various actions by swiping it to the left or right sides.
  */
-@Suppress("unused")
 class SwipeActionView : FrameLayout {
-    private var disabledEdges: Int = 0
-    private var swipeFirstViewLeft = true
-
-    internal lateinit var container: View
-        private set
-
-    var leftSwipeAnimator: SwipeActionViewAnimator? = null
-    var rightSwipeAnimator: SwipeActionViewAnimator? = null
-
-    var leftSwipeView: View? = null
-        private set
-
-    var rightSwipeView: View? = null
-        private set
-
-    internal var onClickListener: OnClickListener? = null
-
-    internal var onLongClickListener: OnLongClickListener? = null
-
-    constructor(context: Context) : super(context) {
-        init(context, null)
-    }
-
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-        init(context, attrs)
-    }
-
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        init(context, attrs)
-    }
-
-    private fun init(context: Context, attrs: AttributeSet?) {
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.SwipeActionView)
-
-        swipeFirstViewLeft = typedArray.getBoolean(R.styleable.SwipeActionView_swipeFirstViewLeft, swipeFirstViewLeft)
-        disabledEdges = typedArray.getInt(R.styleable.SwipeActionView_disabledEdges, 0)
-
-        typedArray.recycle()
-    }
-
-    override fun setOnClickListener(listener: OnClickListener?) {
-        isClickable = listener != null
-        onClickListener = listener
-    }
-
-    override fun setOnLongClickListener(listener: OnLongClickListener?) {
-        isLongClickable = listener != null
-        onLongClickListener = listener
-    }
-
-    override fun performClick(): Boolean {
-        super.setOnClickListener(onClickListener)
-        val result = super.performClick()
-        super.setOnClickListener(null)
-        return result
-    }
-
-    override fun performLongClick(): Boolean {
-        super.setOnLongClickListener(onLongClickListener)
-        val result = super.performLongClick()
-        super.setOnLongClickListener(null)
-        return result
-    }
+    //region Private constants
 
     /**
-     * Enable edge for the specified [edge].
-     */
-    fun enableEdge(edge: Int) {
-        disabledEdges = disabledEdges or edge
-    }
-
-    /**
-     * Disable edge for the specified [edge].
-     */
-    fun disableEdge(edge: Int) {
-        disabledEdges = disabledEdges and edge.inv()
-    }
-
-    /**
-     * Tells whether swiping in the specified [direction] is enabled.
-     */
-    fun hasEnabledDirection(direction: Int): Boolean {
-        return when (direction) {
-            DIRECTION_LEFT -> leftSwipeView?.visibility == View.VISIBLE
-            DIRECTION_RIGHT -> rightSwipeView?.visibility == View.VISIBLE
-
-            else -> throw IllegalArgumentException("Unknown direction: $direction")
-        }
-    }
-
-    /**
-     * Tells whether edge for the specified [edge] is enabled.
-     */
-    fun hasEnabledEdge(edge: Int): Boolean =
-            (disabledEdges and edge) != edge
-
-    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        super.onLayout(changed, left, top, right, bottom)
-
-        if (childCount < 1) {
-            throw IllegalStateException("Specify at least 1 child view to use as foreground content.")
-        }
-        if (childCount > 3) {
-            throw IllegalStateException("Specify only up to 3 views.")
-        }
-
-        if (childCount >= 2) {
-            if (swipeFirstViewLeft) {
-                leftSwipeView = getChildAt(0)
-            } else {
-                rightSwipeView = getChildAt(0)
-            }
-
-            if (childCount == 3) {
-                if (swipeFirstViewLeft) {
-                    rightSwipeView = getChildAt(1)
-                } else {
-                    leftSwipeView = getChildAt(1)
-                }
-            }
-        }
-
-        // Last view becomes foreground container
-        container = getChildAt(childCount - 1)
-    }
-
-    /**
-     * The swipe gesture listener.
-     */
-    internal var swipeGestureListener: SwipeGestureListener? = null
-
-    /**
-     * Distance from edges in pixels that prevents starting of the drag.
+     * Distance from edges in pixels that prevents starting of drag movement.
      *
-     * NOTE: Using custom calculations to fix issues with drawer. Scaled edge
-     * slop from view configuration is different by the one used by drawer
-     * layout which was giving issues.
+     * NOTE: Using custom calculations to fix issues with drawer. Scaled edge slop from view
+     * configuration is different by the one used by drawer layout which was giving issues.
      */
     private val edgeSlop = (20 * context.resources.displayMetrics.density + 0.5f).toInt()
 
@@ -189,13 +58,12 @@ class SwipeActionView : FrameLayout {
     private val maxSwipeDistance = 52f.dpToPx(context)
 
     /**
-     * The minimal distance required to execute swipe callback.
+     * The minimum distance required to execute swipe callbacks.
      */
     private val minActivationDistance = 0.8f * maxSwipeDistance
 
     /**
-     * The minimal speed required to execute swipe callback if user didn't
-     * swipe far enough.
+     * The minimum speed required to execute swipe callback if user didn't swipe far enough.
      */
     private val minActivationSpeed = 200f
 
@@ -208,6 +76,10 @@ class SwipeActionView : FrameLayout {
      * The long press gesture handler.
      */
     private val handler = PressTimeoutHandler(this)
+
+    //endregion
+
+    //region Private properties
 
     /**
      * The currently running view animator.
@@ -250,30 +122,188 @@ class SwipeActionView : FrameLayout {
     private var isTouchValid = false
 
     /**
-     * Limits the value between the maximal and minimal swipe distance values.
+     * Tells whether the first child of this view should be swipe-able in left direction.
+     *
+     * When set to `true`, then the first child view will be swiped to the left and second to the
+     * right. Opposite when set to `false`.
      */
-    private fun limitInDistance(value: Float) = clamp(value,
-            if (hasEnabledDirection(SwipeActionView.DIRECTION_LEFT)) -maxSwipeDistance else 0f,
-            if (hasEnabledDirection(SwipeActionView.DIRECTION_RIGHT)) maxSwipeDistance else 0f)
+    private var swipeFirstViewLeft = true
 
     /**
-     * Tells whether the drag can start.
+     * The view which appears when swiping content to the left side.
      */
-    private fun canDrag(e: MotionEvent) =
-            isEnabledDirection(e.rawX - lastX) && Math.abs(e.rawX - initialX) > touchSlop && isTouchValid
+    private var leftSwipeView: View? = null
 
     /**
-     * Tell whether swiping in the direction for the specified [delta] is enabled.
-     *
-     * @param delta The swiping motion delta. Negative means left and positive right direction.
-     *
-     * @return Whether the direction for the specified [delta] is enabled.
+     * The view which appears when swiping content to the right side.
      */
-    private fun isEnabledDirection(delta: Float) = when {
-        delta < 0 -> hasEnabledDirection(SwipeActionView.DIRECTION_LEFT)
-        delta > 0 -> hasEnabledDirection(SwipeActionView.DIRECTION_RIGHT)
-        else -> false
+    private var rightSwipeView: View? = null
+
+    /**
+     * The container view which is displayed above [leftSwipeView] and [rightSwipeView].
+     */
+    private lateinit var container: View
+
+    //endregion
+
+    //region Public properties
+
+    /**
+     * Listener for the swipe left and right gestures.
+     */
+    var swipeGestureListener: SwipeGestureListener? = null
+
+    /**
+     * Animator for the view visible when swiping to the left.
+     */
+    var leftSwipeAnimator: SwipeActionViewAnimator? = null
+
+    /**
+     * Animator for the view visible when swiping to the right.
+     */
+    var rightSwipeAnimator: SwipeActionViewAnimator? = null
+
+    //endregion
+
+    //region Initialization
+
+    constructor(context: Context) : super(context) {
+        init(context, null)
     }
+
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context, attrs)
+    }
+
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+        init(context, attrs)
+    }
+
+    private fun init(context: Context, attrs: AttributeSet?) {
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.SwipeActionView)
+
+        swipeFirstViewLeft = typedArray.getBoolean(R.styleable.SwipeActionView_swipeFirstViewLeft, swipeFirstViewLeft)
+
+        typedArray.recycle()
+    }
+
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+
+        if (childCount < 1) {
+            throw IllegalStateException("Specify at least 1 child view to use as foreground content.")
+        }
+        if (childCount > 3) {
+            throw IllegalStateException("Specify only up to 3 views.")
+        }
+
+        // [swipeFirstViewLeft] boolean specifies which view should be displayed when swiping to the
+        // left or right.
+        // TODO: Use layout_gravity instead
+
+        if (childCount >= 2) {
+            if (swipeFirstViewLeft) {
+                leftSwipeView = getChildAt(0)
+            } else {
+                rightSwipeView = getChildAt(0)
+            }
+
+            if (childCount == 3) {
+                if (swipeFirstViewLeft) {
+                    rightSwipeView = getChildAt(1)
+                } else {
+                    leftSwipeView = getChildAt(1)
+                }
+            }
+        }
+
+        // Last view always becomes foreground container
+        container = getChildAt(childCount - 1)
+    }
+
+    //endregion
+
+    //region Click and long click
+
+    /**
+     * The callback to be invoked when this view is clicked.
+     */
+    private var onClickListener: OnClickListener? = null
+
+    /**
+     * The callback to be invoked when this view is clicked and held.
+     */
+    private var onLongClickListener: OnLongClickListener? = null
+
+    // The [setOnClickListener] and [setOnLongClickListener] together with their corresponding
+    // performClick methods are overridden to make sure that the default view behavior won't execute
+    // click callbacks by itself.
+    // This works by hiding the existence of these listeners from the view and only switching them
+    // to the real ones when performing click actions.
+
+    override fun setOnClickListener(listener: OnClickListener?) {
+        isClickable = listener != null
+        onClickListener = listener
+    }
+
+    override fun setOnLongClickListener(listener: OnLongClickListener?) {
+        isLongClickable = listener != null
+        onLongClickListener = listener
+    }
+
+    override fun performClick(): Boolean {
+        if (onClickListener == null) return super.performClick()
+
+        super.setOnClickListener(onClickListener)
+        val result = super.performClick()
+        super.setOnClickListener(null)
+        return result
+    }
+
+    override fun performLongClick(): Boolean {
+        if (onLongClickListener == null) return super.performLongClick()
+
+        super.setOnLongClickListener(onLongClickListener)
+        val result = super.performLongClick()
+        super.setOnLongClickListener(null)
+        return result
+    }
+
+    //endregion
+
+    //region Public functions
+
+    /**
+     * Tells whether swiping in the specified direction is enabled.
+     *
+     * @param direction The direction to check.
+     *
+     * @return Whether swiping in the specified direction is enabled.
+     */
+    fun hasEnabledDirection(direction: Int): Boolean {
+        return when (direction) {
+            DIRECTION_LEFT -> leftSwipeView?.visibility == View.VISIBLE
+            DIRECTION_RIGHT -> rightSwipeView?.visibility == View.VISIBLE
+
+            else -> throw IllegalArgumentException("Unknown direction: $direction")
+        }
+    }
+
+    /**
+     * Move the view to its original position.
+     *
+     * @param startDelay
+     * The amount of delay, in milliseconds, to wait before starting the movement animation.
+     */
+    fun moveToOriginalPosition(startDelay: Long = 0) {
+        animateContainer(0f, 350, startDelay) {
+            canPerformSwipeAction = true
+        }
+    }
+
+    //endregion
+
+    //region Event handling
 
     override fun onInterceptTouchEvent(e: MotionEvent): Boolean {
         when (e.action) {
@@ -281,15 +311,14 @@ class SwipeActionView : FrameLayout {
                 prepareDrag(e)
             }
 
-            MotionEvent.ACTION_UP,
-            MotionEvent.ACTION_CANCEL -> {
-                setPressed(false, e.x, e.y)
-                cancel()
-                snap()
-            }
-
             MotionEvent.ACTION_MOVE -> {
                 return handleMoveEvent(e)
+            }
+
+            MotionEvent.ACTION_UP,
+            MotionEvent.ACTION_CANCEL -> {
+                cancelDrag()
+                moveToOriginalPosition()
             }
         }
 
@@ -311,15 +340,15 @@ class SwipeActionView : FrameLayout {
             }
 
             MotionEvent.ACTION_UP -> {
-                if (isClickable && !dragging && !inLongPress && Math.abs(e.rawY - initialY) < touchSlop && isTouchValid) {
-                    setPressed(true, e.x, e.y)
+                if (isClickable && isTouchValid && !dragging && !inLongPress && !hasMovedVertically(e)) {
+                    startPress(e.x, e.y)
                     performClick()
                 }
 
                 if (isPressed) {
                     // Unhighlight view after delay
-                    if (!postDelayed({ setPressed(false, e.x, e.y) }, pressedStateDuration)) {
-                        setPressed(false, e.x, e.y)
+                    if (!postDelayed({ stopPress() }, pressedStateDuration)) {
+                        stopPress()
                     }
                 }
 
@@ -327,64 +356,17 @@ class SwipeActionView : FrameLayout {
             }
 
             MotionEvent.ACTION_CANCEL -> {
-                setPressed(false, e.x, e.y)
-                cancel()
-                snap()
+                cancelDrag()
+                moveToOriginalPosition()
             }
         }
 
         return dragging
     }
 
-    private fun handleMoveEvent(e: MotionEvent): Boolean {
-        if (inLongPress) return false
+    //endregion
 
-        if (!dragging) {
-            // Disallow drag if moved vertically.
-            if (Math.abs(e.rawY - initialY) >= touchSlop) {
-                handler.removeAllMessages()
-                return false
-            }
-
-            dragging = canDrag(e)
-        }
-
-        if (dragging) {
-            setPressed(false, e.x, e.y)
-            handler.removeAllMessages()
-            parent.requestDisallowInterceptTouchEvent(true)
-            velocityTracker.addMovement(e)
-            performDrag(e)
-        }
-
-        lastX = e.rawX
-        return dragging
-    }
-
-    /**
-     * Check whether the touch is valid. Its validity is based on the distance from edges and whether
-     * these edges are enabled.
-     *
-     * If we start drag close to disabled edge then it means that we shouldn't handle this touch
-     * event. This behavior is used mostly because views like navigation drawer disturb with swiping
-     * when we start it from the edge at which they appear.
-     *
-     * @param e The motion even for which to check validity.
-     */
-    private fun checkTouchIsValid(e: MotionEvent) {
-        val isLeftEdgeValid = hasEnabledEdge(SwipeActionView.EDGE_LEFT) || e.x > edgeSlop
-        val isRightEdgeValid = hasEnabledEdge(SwipeActionView.EDGE_RIGHT) || e.x < width - edgeSlop
-
-        isTouchValid = isLeftEdgeValid && isRightEdgeValid
-    }
-
-    private fun setPressed(pressed: Boolean, x: Float = 0f, y: Float = 0f) {
-        isPressed = pressed
-
-        if (pressed && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            drawableHotspotChanged(x, y)
-        }
-    }
+    //region Actual SwipeActionView behavior code
 
     /**
      * Prepare all settings to start a new drag.
@@ -401,21 +383,138 @@ class SwipeActionView : FrameLayout {
         initialX = e.rawX
         initialY = e.rawY
 
-        // Stop the animator to allow "catching" of view
+        // Stop the animator to allow "catching" of view.
+        // By "catching" I mean the possibility for user to click on the view and continue swiping
+        // from the position at which it was when starting new swipe.
         animator?.cancel()
         animator = null
 
-        handler.removeAllMessages()
+        handler.removeOurMessages()
     }
 
-    private fun prepareMessages(e: MotionEvent) {
-        if (isClickable || isLongClickable) {
-            handler.sendEmptyMessageAtTime(TAP, e.downTime + tapTimeout)
+    /**
+     * Check whether the touch is valid. Its validity is based on the distance from edges and
+     * whether these edges are enabled.
+     *
+     * If we start drag close to edge then it means that we shouldn't handle this touch event. This
+     * behavior is used because views like navigation drawer disturb with swiping when we start it
+     * from the edge at which they appear and that's the only solution I found.
+     *
+     * @param e The motion even for which to check validity.
+     */
+    private fun checkTouchIsValid(e: MotionEvent) {
+        val isLeftEdgeValid = e.x > edgeSlop
+        val isRightEdgeValid = e.x < width - edgeSlop
 
-            if (isLongClickable) {
-                handler.sendEmptyMessageAtTime(LONG_PRESS, e.downTime + longPressTimeout)
-            }
+        isTouchValid = isLeftEdgeValid && isRightEdgeValid
+    }
+
+    /**
+     * Prepare the tap and long press actions by setting the times at which they should be executed.
+     *
+     * @param e The motion event for which to prepare the messages.
+     */
+    private fun prepareMessages(e: MotionEvent) {
+        if (!isClickable && !isLongClickable) return
+
+        handler.sendEmptyMessageAtTime(TAP, e.downTime + tapTimeout)
+
+        if (isLongClickable) {
+            handler.sendEmptyMessageAtTime(LONG_PRESS, e.downTime + longPressTimeout)
         }
+    }
+
+    /**
+     * Handle the movement even and try to preform the view drag action.
+     *
+     * @param e The motion event to handle.
+     *
+     * @return Whether the view is being dragged.
+     */
+    private fun handleMoveEvent(e: MotionEvent): Boolean {
+        if (inLongPress) return false
+
+        if (!dragging) {
+            if (hasMovedVertically(e)) {
+                handler.removeOurMessages()
+                return false
+            }
+
+            dragging = canStartDrag(e)
+        }
+
+        if (dragging) {
+            parent.requestDisallowInterceptTouchEvent(true)
+            velocityTracker.addMovement(e)
+            resetClickAndLongClick()
+            performDrag(e)
+        }
+
+        lastX = e.rawX
+        return dragging
+    }
+
+    /**
+     * Tells whether the user has moved their finger vertically.
+     *
+     * @param e The latest motion event.
+     *
+     * @return Whether the user has moved their finger vertically.
+     */
+    private fun hasMovedVertically(e: MotionEvent) = Math.abs(e.rawY - initialY) >= touchSlop
+
+    /**
+     * Tells whether the drag can be started.
+     */
+    private fun canStartDrag(e: MotionEvent): Boolean {
+        val movedFarEnough = Math.abs(e.rawX - initialX) > touchSlop
+        return isValidDelta(e.rawX - lastX) && movedFarEnough && isTouchValid
+    }
+
+    /**
+     * Reset the callbacks and states used to execute click and long click actions.
+     */
+    private fun resetClickAndLongClick() {
+        if (isPressed) {
+            stopPress()
+        }
+        if (handler.hasOurMessages()) {
+            handler.removeOurMessages()
+        }
+    }
+
+    /**
+     * Disable the pressed state of this view.
+     */
+    private fun stopPress() {
+        isPressed = false
+    }
+
+    /**
+     * Enable the pressed state of this view.
+     *
+     * @param x The x coordinate of click position.
+     * @param y The y coordinate of click position.
+     */
+    private fun startPress(x: Float, y: Float) {
+        isPressed = true
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            drawableHotspotChanged(x, y)
+        }
+    }
+
+    /**
+     * Tell whether swiping in the direction for the specified [delta] is valid.
+     *
+     * @param delta The swiping motion delta. Negative means left and positive right direction.
+     *
+     * @return Whether the direction for the specified [delta] is enabled.
+     */
+    private fun isValidDelta(delta: Float) = when {
+        delta < 0 -> hasEnabledDirection(SwipeActionView.DIRECTION_LEFT)
+        delta > 0 -> hasEnabledDirection(SwipeActionView.DIRECTION_RIGHT)
+        else -> false
     }
 
     /**
@@ -426,8 +525,8 @@ class SwipeActionView : FrameLayout {
     private fun performDrag(e: MotionEvent) {
         var delta = e.rawX - lastX
 
-        // If we are swiping view away from view's default position make
-        // the swiping feel much harder
+        // If we are swiping view away from view's default position make the swiping feel much
+        // harder to drag.
         if (delta > 0 == container.translationX > 0 || container.translationX == 0f) {
             delta /= 3
         }
@@ -435,21 +534,31 @@ class SwipeActionView : FrameLayout {
         container.translationX += delta
         container.translationX = limitInDistance(container.translationX)
 
-        performAnimations()
+        performViewAnimations()
     }
 
     /**
-     * Finish the drag by animating the view to its default position and
-     * executing an action if the swipe was fast/far enough.
+     * Limits the value between the maximal and minimal swipe distance values.
+     */
+    private fun limitInDistance(value: Float): Float {
+        val min = if (hasEnabledDirection(SwipeActionView.DIRECTION_LEFT)) -maxSwipeDistance else 0f
+        val max = if (hasEnabledDirection(SwipeActionView.DIRECTION_RIGHT)) maxSwipeDistance else 0f
+
+        return clamp(value, min, max)
+    }
+
+    /**
+     * Finish the drag by animating the view to its default position and executing an action if the
+     * swipe was fast/far enough.
      */
     private fun finishDrag() {
-        cancel()
-
+        cancelDrag(false)
         velocityTracker.computeCurrentVelocity(100)
+
         val swipedFastEnough = Math.abs(velocityTracker.xVelocity) > minActivationSpeed
 
-        if (swipedFastEnough && !isEnabledDirection(velocityTracker.xVelocity)) {
-            snap()
+        if (swipedFastEnough && !isValidDelta(velocityTracker.xVelocity)) {
+            moveToOriginalPosition()
             return
         }
 
@@ -458,27 +567,20 @@ class SwipeActionView : FrameLayout {
         if (swipedFarEnough || swipedFastEnough) {
             activate(container.translationX > 0)
         } else {
-            snap()
+            moveToOriginalPosition()
         }
-    }
-
-    private fun cancel() {
-        if (dragging) {
-            parent.requestDisallowInterceptTouchEvent(false)
-            dragging = false
-        }
-        handler.removeAllMessages()
-        inLongPress = false
     }
 
     /**
-     * Move the view to fully swiped view and execute correct swipe callback.
+     * Move the view to fully swiped position and execute correct swipe callback.
+     *
+     * @param swipedRight Tells whether the view was swiped to the right side.
      */
     private fun activate(swipedRight: Boolean) {
-        // If activation animation didn't finish move the view to original
-        // position without executing of activate callback.
+        // If activation animation didn't finish, move the view to original position without
+        // executing activate callback.
         if (!canPerformSwipeAction) {
-            snap()
+            moveToOriginalPosition()
             return
         }
         canPerformSwipeAction = false
@@ -491,35 +593,61 @@ class SwipeActionView : FrameLayout {
             }
 
             if (shouldFinish ?: true) {
-                snap(200)
+                moveToOriginalPosition(200)
             }
         }
     }
 
     /**
-     * Move the view to its original position.
+     * Cancel the drag and click callbacks.
+     *
+     * @param stopPress Whether the pressed state should also be disabled.
      */
-    internal fun snap(startDelay: Long = 0) {
-        animateContainer(0f, 350, startDelay) {
-            canPerformSwipeAction = true
+    private fun cancelDrag(stopPress: Boolean = true) {
+        if (stopPress) {
+            stopPress()
         }
+
+        if (dragging) {
+            parent.requestDisallowInterceptTouchEvent(false)
+            dragging = false
+        }
+        handler.removeOurMessages()
+        inLongPress = false
     }
 
-    private fun animateContainer(targetTranslationX: Float, duration: Long, startDelay: Long = 0, onEnd: () -> Unit) {
-        animator = ObjectAnimator.ofFloat(container, View.TRANSLATION_X, targetTranslationX)
-        animator?.startDelay = startDelay
-        animator?.duration = duration
-        animator?.interpolator = DecelerateInterpolator()
-        animator?.addUpdateListener { performAnimations() }
-        animator?.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
-                onEnd()
-            }
-        })
-        animator?.start()
+    private val decelerateInterpolator = DecelerateInterpolator()
+
+    /**
+     * Animate the swipe position of the container.
+     *
+     * @param targetTranslationX The target horizontal translation.
+     * @param duration The duration of the animation.
+     * @param startDelay The amount of delay, in milliseconds, to wait before starting animation,
+     * @param onEnd The callback to be executed once animation finishes.
+     */
+    private fun animateContainer(targetTranslationX: Float,
+                                 duration: Long,
+                                 startDelay: Long = 0,
+                                 onEnd: () -> Unit) {
+        animator = ObjectAnimator.ofFloat(container, View.TRANSLATION_X, targetTranslationX).apply {
+            setStartDelay(startDelay)
+            setDuration(duration)
+            interpolator = decelerateInterpolator
+            addUpdateListener { performViewAnimations() }
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator?) {
+                    onEnd()
+                }
+            })
+        }
+        animator!!.start()
     }
 
-    private fun performAnimations() {
+    /**
+     * Perform animations on the views located in background.
+     */
+    private fun performViewAnimations() {
         val absTranslationX = Math.abs(container.translationX)
 
         val progress = absTranslationX / maxSwipeDistance
@@ -543,7 +671,19 @@ class SwipeActionView : FrameLayout {
         }
     }
 
+    //endregion
+
     companion object {
+        /**
+         * Describes direction of swiping of the view to the left side.
+         */
+        const val DIRECTION_LEFT = 1
+
+        /**
+         * Describes direction for swiping of the view to the right side.
+         */
+        const val DIRECTION_RIGHT = 2
+
         /**
          * Long press handler message id.
          */
@@ -562,35 +702,17 @@ class SwipeActionView : FrameLayout {
                         swipeActionView.performLongClick()
                     }
                     TAP -> {
-                        swipeActionView.setPressed(true, swipeActionView.initialX, swipeActionView.initialY)
+                        swipeActionView.startPress(swipeActionView.initialX, swipeActionView.initialY)
                     }
                 }
             }
 
-            fun removeAllMessages() {
+            fun hasOurMessages() = hasMessages(LONG_PRESS) || hasMessages(TAP)
+
+            fun removeOurMessages() {
                 removeMessages(LONG_PRESS)
                 removeMessages(TAP)
             }
         }
-
-        /**
-         * Describes direction of swiping of the view to the left side.
-         */
-        const val DIRECTION_LEFT = 1
-
-        /**
-         * Describes direction for swiping of the view to the right side.
-         */
-        const val DIRECTION_RIGHT = 2
-
-        /**
-         * The left edge.
-         */
-        const val EDGE_LEFT = 1
-
-        /**
-         * The right edge.
-         */
-        const val EDGE_RIGHT = 2
     }
 }

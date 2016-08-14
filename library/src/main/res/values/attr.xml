@@ -2,11 +2,5 @@
 <resources>
     <declare-styleable name="SwipeActionView">
         <attr name="swipeFirstViewLeft" format="boolean"/>
-
-        <!-- Disabled edges. -->
-        <attr name="disabledEdges">
-            <flag name="left" value="1"/>
-            <flag name="right" value="2"/>
-        </attr>
     </declare-styleable>
 </resources>
