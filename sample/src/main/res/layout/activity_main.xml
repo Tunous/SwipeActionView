@@ -46,4 +46,19 @@
             style="@style/ItemTextView"
             android:text="@string/can_swipe_in_both_directions"/>
     </me.thanel.swipeactionview.SwipeActionView>
+
+    <me.thanel.swipeactionview.SwipeActionView
+        android:id="@+id/swipe_to_toggle"
+        style="@style/SwipeItem">
+
+        <ImageView style="@style/Icon"/>
+
+        <ImageView
+            style="@style/Icon"
+            android:layout_gravity="end|center_vertical"/>
+
+        <TextView
+            style="@style/ItemTextView"
+            android:text="@string/swipe_right_to_toggle"/>
+    </me.thanel.swipeactionview.SwipeActionView>
 </LinearLayout>
