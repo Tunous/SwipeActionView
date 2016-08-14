@@ -278,7 +278,9 @@ class SwipeActionView : FrameLayout {
      * @param enabled Whether swiping in the specified direction should be enabled.
      */
     fun setDirectionEnabled(direction: Int, enabled: Boolean) {
-        getViewForDirection(direction)?.visibility = if (enabled) View.VISIBLE else View.GONE
+        val view = getViewForDirection(direction) ?:
+                throw IllegalArgumentException("View for the specified direction doesn't exist.")
+        view.visibility = if (enabled) View.VISIBLE else View.GONE
     }
 
     /**
