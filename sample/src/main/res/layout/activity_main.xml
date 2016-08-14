@@ -9,7 +9,6 @@
     tools:context=".MainActivity">
 
     <me.thanel.swipeactionview.SwipeActionView
-        android:id="@+id/both_directions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark">
@@ -36,6 +35,7 @@
     </me.thanel.swipeactionview.SwipeActionView>
 
     <me.thanel.swipeactionview.SwipeActionView
+        android:id="@+id/swipe_action_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
@@ -46,12 +46,14 @@
             android:layout_height="wrap_content">
 
             <ImageView
+                android:id="@+id/icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@mipmap/ic_launcher"
                 android:visibility="gone"/>
 
             <ProgressBar
+                android:id="@+id/progress_bar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         </FrameLayout>

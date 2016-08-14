@@ -30,6 +30,10 @@ class SwipeActionView : FrameLayout {
     var rightSwipeView: View? = null
         private set
 
+    fun reset() {
+        swipeGestureDetector.snap()
+    }
+
     /**
      * The swipe gesture listener.
      */

@@ -352,28 +352,31 @@ internal class SwipeGestureDetector(private val swipeActionView: SwipeActionView
         }
         canPerformSwipeAction = false
 
-        animateContainer(if (swipedRight) maxSwipeDistance else -maxSwipeDistance, 200) {
-            if (swipedRight) {
+        animateContainer(if (swipedRight) maxSwipeDistance else -maxSwipeDistance, 250) {
+            val shouldFinish = if (swipedRight) {
                 swipeGestureListener?.onSwipedRight(swipeActionView)
             } else {
                 swipeGestureListener?.onSwipedLeft(swipeActionView)
             }
 
-            snap()
+            if (shouldFinish ?: true) {
+                snap(200)
+            }
         }
     }
 
     /**
      * Move the view to its original position.
      */
-    private fun snap() {
-        animateContainer(0f, 350) {
+    internal fun snap(startDelay: Long = 0) {
+        animateContainer(0f, 350, startDelay) {
             canPerformSwipeAction = true
         }
     }
 
-    private fun animateContainer(targetTranslationX: Float, duration: Long, onEnd: () -> Unit) {
+    private fun animateContainer(targetTranslationX: Float, duration: Long, startDelay: Long = 0, onEnd: () -> Unit) {
         animator = ObjectAnimator.ofFloat(swipeActionView.container, View.TRANSLATION_X, targetTranslationX)
+        animator?.startDelay = startDelay
         animator?.duration = duration
         animator?.interpolator = DecelerateInterpolator()
         animator?.addUpdateListener { performAnimations() }

@@ -12,16 +12,20 @@ interface SwipeGestureListener {
      * left.
      *
      * @param swipeActionView The [SwipeActionView] from which this method was invoked.
+     * @return Whether the container should return to default position. When `false`, then you
+     * should manually call `reset` method to return to default position.
      * @see SwipeActionView
      */
-    fun onSwipedLeft(swipeActionView: SwipeActionView)
+    fun onSwipedLeft(swipeActionView: SwipeActionView): Boolean
 
     /**
      * Callback method to be invoked when user swipes the [SwipeActionView] to the
      * right.
      *
      * @param swipeActionView The [SwipeActionView] from which this method was invoked.
+     * @return Whether the container should return to default position. When `false`, then you
+     * should manually call `reset` method to return to default position.
      * @see SwipeActionView
      */
-    fun onSwipedRight(swipeActionView: SwipeActionView)
+    fun onSwipedRight(swipeActionView: SwipeActionView): Boolean
 }
