@@ -1,5 +1,6 @@
 package me.thanel.swipeactionview.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.MarginLayoutParamsCompat
@@ -60,6 +61,7 @@ internal fun View.isRightAligned(): Boolean {
  *
  * @return Whether the gravity is right aligned.
  */
+@SuppressLint("RtlHardcoded")
 internal fun isRightAlignedGravity(gravity: Int): Boolean {
     return gravity and Gravity.END == Gravity.END ||
             gravity and Gravity.RIGHT == Gravity.RIGHT
