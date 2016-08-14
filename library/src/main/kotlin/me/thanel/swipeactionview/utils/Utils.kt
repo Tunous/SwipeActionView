@@ -37,7 +37,7 @@ internal fun View.setScale(scale: Float) {
 }
 
 /**
- * Get whether the view has `end` or `right` flags set for `layout_gravity`.
+ * Get whether the view is right aligned.
  *
  * @return Whether the view is right aligned.
  */
@@ -48,6 +48,17 @@ internal fun View.isRightAligned(): Boolean {
     val absGravity = GravityCompat.getAbsoluteGravity(gravity, layoutDirection)
     if (absGravity <= 0) return false
 
-    return absGravity and Gravity.END == Gravity.END ||
-            absGravity and Gravity.RIGHT == Gravity.RIGHT
+    return isRightAlignedGravity(gravity)
+}
+
+/**
+ * Returns whether the specified gravity has `end` or `rights` flag set.
+ *
+ * @param gravity The gravity to check.
+ *
+ * @return Whether the gravity is right aligned.
+ */
+internal fun isRightAlignedGravity(gravity: Int): Boolean {
+    return gravity and Gravity.END == Gravity.END ||
+            gravity and Gravity.RIGHT == Gravity.RIGHT
 }

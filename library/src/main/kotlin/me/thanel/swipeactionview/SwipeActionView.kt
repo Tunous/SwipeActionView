@@ -18,6 +18,7 @@ import me.thanel.swipeactionview.animation.SwipeActionViewAnimator
 import me.thanel.swipeactionview.utils.clamp
 import me.thanel.swipeactionview.utils.dpToPx
 import me.thanel.swipeactionview.utils.isRightAligned
+import me.thanel.swipeactionview.utils.isRightAlignedGravity
 
 /**
  * View that allows users to perform various actions by swiping it to the left or right sides.
@@ -139,25 +140,6 @@ class SwipeActionView : FrameLayout {
 
     //endregion
 
-    //region Public properties
-
-    /**
-     * Listener for the swipe left and right gestures.
-     */
-    var swipeGestureListener: SwipeGestureListener? = null
-
-    /**
-     * Animator for the view visible when swiping to the left.
-     */
-    var leftSwipeAnimator: SwipeActionViewAnimator? = null
-
-    /**
-     * Animator for the view visible when swiping to the right.
-     */
-    var rightSwipeAnimator: SwipeActionViewAnimator? = null
-
-    //endregion
-
     //region Initialization
 
     constructor(context: Context) : super(context)
@@ -262,7 +244,22 @@ class SwipeActionView : FrameLayout {
 
     //endregion
 
-    //region Public functions
+    //region Public API
+
+    /**
+     * Listener for the swipe left and right gestures.
+     */
+    var swipeGestureListener: SwipeGestureListener? = null
+
+    /**
+     * Animator for the view visible when swiping to the left.
+     */
+    var leftSwipeAnimator: SwipeActionViewAnimator? = null
+
+    /**
+     * Animator for the view visible when swiping to the right.
+     */
+    var rightSwipeAnimator: SwipeActionViewAnimator? = null
 
     /**
      * Tells whether swiping in the specified direction is enabled.
@@ -271,13 +268,17 @@ class SwipeActionView : FrameLayout {
      *
      * @return Whether swiping in the specified direction is enabled.
      */
-    fun hasEnabledDirection(direction: Int): Boolean {
-        return when (direction) {
-            DIRECTION_LEFT -> leftSwipeView?.visibility == View.VISIBLE
-            DIRECTION_RIGHT -> rightSwipeView?.visibility == View.VISIBLE
+    fun hasEnabledDirection(direction: Int) =
+            getViewForDirection(direction)?.visibility == View.VISIBLE
 
-            else -> throw IllegalArgumentException("Unknown direction: $direction")
-        }
+    /**
+     * Set swiping in the specified direction as enabled or disabled.
+     *
+     * @param direction The swipe direction.
+     * @param enabled Whether swiping in the specified direction should be enabled.
+     */
+    fun setDirectionEnabled(direction: Int, enabled: Boolean) {
+        getViewForDirection(direction)?.visibility = if (enabled) View.VISIBLE else View.GONE
     }
 
     /**
@@ -297,6 +298,11 @@ class SwipeActionView : FrameLayout {
         animateContainer(0f, 350, startDelay) {
             canPerformSwipeAction = true
         }
+    }
+
+    private fun getViewForDirection(direction: Int) = when {
+        isRightAlignedGravity(direction) -> leftSwipeView
+        else -> rightSwipeView
     }
 
     //endregion
