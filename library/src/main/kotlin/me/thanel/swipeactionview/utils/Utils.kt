@@ -48,7 +48,7 @@ internal fun View.isRightAligned(): Boolean {
     val absGravity = GravityCompat.getAbsoluteGravity(gravity, layoutDirection)
     if (absGravity <= 0) return false
 
-    return isRightAlignedGravity(gravity)
+    return isRightAlignedGravity(absGravity)
 }
 
 /**

@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">SwipeActionView</string>
+    <string name="can_swipe_right">Can swipe right</string>
+    <string name="can_swipe_left">Can swipe left</string>
+    <string name="can_swipe_in_both_directions">Can swipe in both directions</string>
+    <string name="swiped_left">Swiped left</string>
+    <string name="swiped_right">Swiped right</string>
 </resources>

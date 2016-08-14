@@ -8,10 +8,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Message
 import android.util.AttributeSet
-import android.view.MotionEvent
-import android.view.VelocityTracker
-import android.view.View
-import android.view.ViewConfiguration
+import android.view.*
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import me.thanel.swipeactionview.animation.SwipeActionViewAnimator
@@ -146,8 +143,8 @@ class SwipeActionView : FrameLayout {
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        super.onLayout(changed, left, top, right, bottom)
+    override fun onFinishInflate() {
+        super.onFinishInflate()
 
         if (childCount < 1) {
             throw IllegalStateException("Specify at least 1 child view to use as foreground content.")
@@ -518,8 +515,8 @@ class SwipeActionView : FrameLayout {
      * @return Whether the direction for the specified [delta] is enabled.
      */
     private fun isValidDelta(delta: Float) = when {
-        delta < 0 -> hasEnabledDirection(SwipeActionView.DIRECTION_LEFT)
-        delta > 0 -> hasEnabledDirection(SwipeActionView.DIRECTION_RIGHT)
+        delta < 0 -> hasEnabledDirection(Gravity.END)
+        delta > 0 -> hasEnabledDirection(Gravity.START)
         else -> false
     }
 
@@ -547,8 +544,8 @@ class SwipeActionView : FrameLayout {
      * Limits the value between the maximal and minimal swipe distance values.
      */
     private fun limitInDistance(value: Float): Float {
-        val min = if (hasEnabledDirection(SwipeActionView.DIRECTION_LEFT)) -maxSwipeDistance else 0f
-        val max = if (hasEnabledDirection(SwipeActionView.DIRECTION_RIGHT)) maxSwipeDistance else 0f
+        val min = if (hasEnabledDirection(Gravity.END)) -maxSwipeDistance else 0f
+        val max = if (hasEnabledDirection(Gravity.START)) maxSwipeDistance else 0f
 
         return clamp(value, min, max)
     }
@@ -680,16 +677,6 @@ class SwipeActionView : FrameLayout {
     //endregion
 
     companion object {
-        /**
-         * Describes direction of swiping of the view to the left side.
-         */
-        const val DIRECTION_LEFT = 1
-
-        /**
-         * Describes direction for swiping of the view to the right side.
-         */
-        const val DIRECTION_RIGHT = 2
-
         /**
          * Long press handler message id.
          */
