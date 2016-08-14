@@ -8,14 +8,16 @@ import android.os.Build
 import android.os.Handler
 import android.os.Message
 import android.util.AttributeSet
-import android.view.*
+import android.view.MotionEvent
+import android.view.VelocityTracker
+import android.view.View
+import android.view.ViewConfiguration
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import me.thanel.swipeactionview.animation.SwipeActionViewAnimator
 import me.thanel.swipeactionview.utils.clamp
 import me.thanel.swipeactionview.utils.dpToPx
 import me.thanel.swipeactionview.utils.isRightAligned
-import me.thanel.swipeactionview.utils.isRightAlignedGravity
 
 /**
  * View that allows users to perform various actions by swiping it to the left or right sides.
@@ -265,7 +267,7 @@ class SwipeActionView : FrameLayout {
      *
      * @return Whether swiping in the specified direction is enabled.
      */
-    fun hasEnabledDirection(direction: Int) =
+    fun hasEnabledDirection(direction: SwipeDirection) =
             getViewForDirection(direction)?.visibility == View.VISIBLE
 
     /**
@@ -274,7 +276,7 @@ class SwipeActionView : FrameLayout {
      * @param direction The swipe direction.
      * @param enabled Whether swiping in the specified direction should be enabled.
      */
-    fun setDirectionEnabled(direction: Int, enabled: Boolean) {
+    fun setDirectionEnabled(direction: SwipeDirection, enabled: Boolean) {
         val view = getViewForDirection(direction) ?:
                 throw IllegalArgumentException("View for the specified direction doesn't exist.")
         view.visibility = if (enabled) View.VISIBLE else View.GONE
@@ -299,8 +301,8 @@ class SwipeActionView : FrameLayout {
         }
     }
 
-    private fun getViewForDirection(direction: Int) = when {
-        isRightAlignedGravity(direction) -> leftSwipeView
+    private fun getViewForDirection(direction: SwipeDirection) = when (direction) {
+        SwipeDirection.Left -> leftSwipeView
         else -> rightSwipeView
     }
 
@@ -515,8 +517,8 @@ class SwipeActionView : FrameLayout {
      * @return Whether the direction for the specified [delta] is enabled.
      */
     private fun isValidDelta(delta: Float) = when {
-        delta < 0 -> hasEnabledDirection(Gravity.END)
-        delta > 0 -> hasEnabledDirection(Gravity.START)
+        delta < 0 -> hasEnabledDirection(SwipeDirection.Left)
+        delta > 0 -> hasEnabledDirection(SwipeDirection.Right)
         else -> false
     }
 
@@ -544,8 +546,8 @@ class SwipeActionView : FrameLayout {
      * Limits the value between the maximal and minimal swipe distance values.
      */
     private fun limitInDistance(value: Float): Float {
-        val min = if (hasEnabledDirection(Gravity.END)) -maxSwipeDistance else 0f
-        val max = if (hasEnabledDirection(Gravity.START)) maxSwipeDistance else 0f
+        val min = if (hasEnabledDirection(SwipeDirection.Left)) -maxSwipeDistance else 0f
+        val max = if (hasEnabledDirection(SwipeDirection.Right)) maxSwipeDistance else 0f
 
         return clamp(value, min, max)
     }
