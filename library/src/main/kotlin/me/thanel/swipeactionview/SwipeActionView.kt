@@ -3,27 +3,31 @@
 package me.thanel.swipeactionview
 
 import android.content.Context
+import android.support.v4.view.GravityCompat
 import android.util.AttributeSet
-import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
+import me.thanel.swipeactionview.animation.SwipeActionViewAnimator
 
 /**
  * View that allows users to perform various actions by swiping it to the sides.
  */
-class SwipeActionView(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
+class SwipeActionView : FrameLayout {
     private val swipeGestureDetector: SwipeGestureDetector = SwipeGestureDetector(this)
-    private var enabledDirections: Int
-    private var disabledEdges: Int
+    private var disabledEdges: Int = 0
+    private var swipeFirstViewLeft = true
 
     internal lateinit var container: View
         private set
 
-    var leftBackground: View? = null
+    var leftSwipeAnimator: SwipeActionViewAnimator? = null
+    var rightSwipeAnimator: SwipeActionViewAnimator? = null
+
+    var leftSwipeView: View? = null
         private set
 
-    var rightBackground: View? = null
+    var rightSwipeView: View? = null
         private set
 
     /**
@@ -36,7 +40,29 @@ class SwipeActionView(context: Context, attrs: AttributeSet) : FrameLayout(conte
         }
 
     internal var onClickListener: OnClickListener? = null
+
     internal var onLongClickListener: OnLongClickListener? = null
+
+    constructor(context: Context) : super(context) {
+        init(context, null)
+    }
+
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context, attrs)
+    }
+
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+        init(context, attrs)
+    }
+
+    private fun init(context: Context, attrs: AttributeSet?) {
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.SwipeActionView)
+
+        swipeFirstViewLeft = typedArray.getBoolean(R.styleable.SwipeActionView_swipeFirstViewLeft, swipeFirstViewLeft)
+        disabledEdges = typedArray.getInt(R.styleable.SwipeActionView_disabledEdges, 0)
+
+        typedArray.recycle()
+    }
 
     override fun setOnClickListener(listener: OnClickListener?) {
         isClickable = listener != null
@@ -62,34 +88,11 @@ class SwipeActionView(context: Context, attrs: AttributeSet) : FrameLayout(conte
         return result
     }
 
-    init {
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.SwipeActionView)
-
-        enabledDirections = typedArray.getInt(R.styleable.SwipeActionView_swipeDirections, DIRECTION_LEFT or DIRECTION_RIGHT)
-        disabledEdges = typedArray.getInt(R.styleable.SwipeActionView_disabledEdges, 0)
-
-        typedArray.recycle()
-    }
-
     override fun onInterceptTouchEvent(ev: MotionEvent) =
             swipeGestureDetector.onInterceptTouchEvent(ev)
 
     override fun onTouchEvent(event: MotionEvent) =
             swipeGestureDetector.onTouchEvent(event)
-
-    /**
-     * Enable swiping in the specified [direction].
-     */
-    fun enableSwipeDirection(direction: Int) {
-        enabledDirections = enabledDirections or direction
-    }
-
-    /**
-     * Disable swiping in the specified [direction].
-     */
-    fun disableSwipeDirection(direction: Int) {
-        enabledDirections = enabledDirections and direction.inv()
-    }
 
     /**
      * Enable edge for the specified [edge].
@@ -109,14 +112,12 @@ class SwipeActionView(context: Context, attrs: AttributeSet) : FrameLayout(conte
      * Tells whether swiping in the specified [direction] is enabled.
      */
     fun hasEnabledDirection(direction: Int): Boolean {
-        val background = when (direction) {
-            DIRECTION_LEFT -> rightBackground
-            DIRECTION_RIGHT -> leftBackground
+        return when (direction) {
+            DIRECTION_LEFT -> leftSwipeView?.visibility == View.VISIBLE
+            DIRECTION_RIGHT -> rightSwipeView?.visibility == View.VISIBLE
 
             else -> throw IllegalArgumentException("Unknown direction: $direction")
         }
-
-        return background != null && (enabledDirections and direction) == direction
     }
 
     /**
@@ -136,18 +137,31 @@ class SwipeActionView(context: Context, attrs: AttributeSet) : FrameLayout(conte
         }
 
         if (childCount >= 2) {
-            leftBackground = getChildAt(0)
+            if (swipeFirstViewLeft) {
+                leftSwipeView = getChildAt(0)
+                leftSwipeView?.setGravity(GravityCompat.END)
+            } else {
+                rightSwipeView = getChildAt(0)
+            }
 
             if (childCount == 3) {
-                rightBackground = getChildAt(1)
-
-                val layoutParams = rightBackground?.layoutParams as FrameLayout.LayoutParams
-                layoutParams.gravity = Gravity.END
-                rightBackground?.layoutParams = layoutParams
+                if (swipeFirstViewLeft) {
+                    rightSwipeView = getChildAt(1)
+                } else {
+                    leftSwipeView = getChildAt(1)
+                    leftSwipeView?.setGravity(GravityCompat.END)
+                }
             }
         }
 
+        // Last view becomes foreground container
         container = getChildAt(childCount - 1)
+    }
+
+    private fun View.setGravity(gravity: Int) {
+        val params = layoutParams as FrameLayout.LayoutParams
+        params.gravity = gravity
+        layoutParams = params
     }
 
     companion object {

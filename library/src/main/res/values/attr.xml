@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="SwipeActionView">
-        <!-- Enabled swipe directions. -->
-        <attr name="swipeDirections">
-            <flag name="left" value="1"/>
-            <flag name="right" value="2"/>
-        </attr>
+        <attr name="swipeFirstViewLeft" format="boolean"/>
 
         <!-- Disabled edges. -->
         <attr name="disabledEdges">

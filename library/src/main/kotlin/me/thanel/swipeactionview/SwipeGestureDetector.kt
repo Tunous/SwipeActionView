@@ -11,8 +11,7 @@ import android.view.VelocityTracker
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.animation.DecelerateInterpolator
-import me.thanel.swipeactionview.animation.ScalableIconAnimator
-import me.thanel.swipeactionview.animation.SwipeActionViewBackgroundAnimator
+import me.thanel.swipeactionview.animation.SwipeActionViewAnimator
 import me.thanel.swipeactionview.utils.clamp
 import me.thanel.swipeactionview.utils.dpToPx
 
@@ -54,28 +53,28 @@ internal class SwipeGestureDetector(private val swipeActionView: SwipeActionView
     /**
      * The maximum distance allowed for dragging of the view.
      */
-    private val maxSwipeDistance: Float = 52f.dpToPx(swipeActionView.context)
+    private val maxSwipeDistance = 52f.dpToPx(swipeActionView.context)
 
     /**
      * The minimal distance required to execute swipe callback.
      */
-    private val minActivationDistance: Float = 0.8f * maxSwipeDistance
+    private val minActivationDistance = 0.8f * maxSwipeDistance
 
     /**
      * The minimal speed required to execute swipe callback if user didn't
      * swipe far enough.
      */
-    private val minActivationSpeed: Float = 200f
+    private val minActivationSpeed = 200f
 
     /**
      * The velocity tracker.
      */
-    private val velocityTracker: VelocityTracker = VelocityTracker.obtain()
+    private val velocityTracker = VelocityTracker.obtain()
 
     /**
      * The long press gesture handler.
      */
-    private val handler: PressTimeoutHandler = PressTimeoutHandler(this)
+    private val handler = PressTimeoutHandler(this)
 
     /**
      * The currently running view animator.
@@ -85,49 +84,49 @@ internal class SwipeGestureDetector(private val swipeActionView: SwipeActionView
     /**
      * Tells whether new swipe action can be executed.
      */
-    private var canPerformSwipeAction: Boolean = true
+    private var canPerformSwipeAction = true
 
     /**
      * The x coordinate of the initial motion event.
      */
-    private var initialX: Float = 0f
+    private var initialX = 0f
 
     /**
      * The y coordinate of the initial motion event.
      */
-    private var initialY: Float = 0f
+    private var initialY = 0f
 
     /**
      * The x coordinate of the last received move motion event.
      */
-    private var lastX: Float = 0f
+    private var lastX = 0f
 
     /**
      * Tells whether the drag is currently being performed.
      */
-    private var dragging: Boolean = false
+    private var dragging = false
 
     /**
      * Tells whether current action is a long press.
      */
-    private var inLongPress: Boolean = false
+    private var inLongPress = false
 
     /**
      * Tells whether currently performed touch action is valid.
      */
-    private var isTouchValid: Boolean = false
+    private var isTouchValid = false
 
     /**
      * Limits the value between the maximal and minimal swipe distance values.
      */
-    private fun limitInDistance(value: Float): Float = clamp(value,
+    private fun limitInDistance(value: Float) = clamp(value,
             if (swipeActionView.hasEnabledDirection(SwipeActionView.DIRECTION_LEFT)) -maxSwipeDistance else 0f,
             if (swipeActionView.hasEnabledDirection(SwipeActionView.DIRECTION_RIGHT)) maxSwipeDistance else 0f)
 
     /**
      * Tells whether the drag can start.
      */
-    private fun canDrag(e: MotionEvent): Boolean =
+    private fun canDrag(e: MotionEvent) =
             isEnabledDirection(e.rawX - lastX) && Math.abs(e.rawX - initialX) > touchSlop && isTouchValid
 
     /**
@@ -137,12 +136,10 @@ internal class SwipeGestureDetector(private val swipeActionView: SwipeActionView
      *
      * @return Whether the direction for the specified [delta] is enabled.
      */
-    private fun isEnabledDirection(delta: Float): Boolean {
-        return when {
-            delta < 0 -> swipeActionView.hasEnabledDirection(SwipeActionView.DIRECTION_LEFT)
-            delta > 0 -> swipeActionView.hasEnabledDirection(SwipeActionView.DIRECTION_RIGHT)
-            else -> false
-        }
+    private fun isEnabledDirection(delta: Float) = when {
+        delta < 0 -> swipeActionView.hasEnabledDirection(SwipeActionView.DIRECTION_LEFT)
+        delta > 0 -> swipeActionView.hasEnabledDirection(SwipeActionView.DIRECTION_RIGHT)
+        else -> false
     }
 
     internal fun onInterceptTouchEvent(e: MotionEvent): Boolean {
@@ -307,7 +304,7 @@ internal class SwipeGestureDetector(private val swipeActionView: SwipeActionView
         swipeActionView.container.translationX += delta
         swipeActionView.container.translationX = limitInDistance(swipeActionView.container.translationX)
 
-        scaleIcon()
+        performAnimations()
     }
 
     /**
@@ -372,8 +369,6 @@ internal class SwipeGestureDetector(private val swipeActionView: SwipeActionView
     private fun snap() {
         animateContainer(0f, 350) {
             canPerformSwipeAction = true
-            swipeActionView.leftBackground?.visibility = View.GONE
-            swipeActionView.rightBackground?.visibility = View.GONE
         }
     }
 
@@ -381,7 +376,7 @@ internal class SwipeGestureDetector(private val swipeActionView: SwipeActionView
         animator = ObjectAnimator.ofFloat(swipeActionView.container, View.TRANSLATION_X, targetTranslationX)
         animator?.duration = duration
         animator?.interpolator = DecelerateInterpolator()
-        animator?.addUpdateListener { scaleIcon() }
+        animator?.addUpdateListener { performAnimations() }
         animator?.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
                 onEnd()
@@ -390,25 +385,27 @@ internal class SwipeGestureDetector(private val swipeActionView: SwipeActionView
         animator?.start()
     }
 
-    private var leftBackgroundAnimator: SwipeActionViewBackgroundAnimator? = ScalableIconAnimator()
-
-    private fun scaleIcon() {
+    private fun performAnimations() {
         val absTranslationX = Math.abs(swipeActionView.container.translationX)
 
         val progress = absTranslationX / maxSwipeDistance
         val minActivationProgress = minActivationDistance / maxSwipeDistance
 
-        val leftBackground = swipeActionView.leftBackground
-        if (leftBackground != null && leftBackgroundAnimator != null) {
-            leftBackgroundAnimator!!.onUpdateSwipeProgress(leftBackground, progress, minActivationProgress)
+        val swipeView: View?
+        val animator: SwipeActionViewAnimator?
+
+        if (swipeActionView.container.translationX < 0) {
+            swipeView = swipeActionView.leftSwipeView
+            animator = swipeActionView.leftSwipeAnimator
+        } else if (swipeActionView.container.translationX > 0) {
+            swipeView = swipeActionView.rightSwipeView
+            animator = swipeActionView.rightSwipeAnimator
+        } else {
+            return
         }
 
-        if (swipeActionView.container.translationX > 0) {
-            swipeActionView.leftBackground?.visibility = View.VISIBLE
-            swipeActionView.rightBackground?.visibility = View.GONE
-        } else {
-            swipeActionView.leftBackground?.visibility = View.GONE
-            swipeActionView.rightBackground?.visibility = View.VISIBLE
+        if (swipeView != null && animator != null) {
+            animator.onUpdateSwipeProgress(swipeView, progress, minActivationProgress)
         }
     }
 

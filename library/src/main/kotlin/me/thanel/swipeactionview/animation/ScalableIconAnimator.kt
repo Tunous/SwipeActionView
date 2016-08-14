@@ -3,7 +3,7 @@ package me.thanel.swipeactionview.animation
 import android.view.View
 import me.thanel.swipeactionview.utils.setScale
 
-class ScalableIconAnimator : SwipeActionViewBackgroundAnimator {
+class ScalableIconAnimator : SwipeActionViewAnimator {
     override fun onUpdateSwipeProgress(view: View, progress: Float, minActivationProgress: Float) {
         var scale = 0.65f
 
