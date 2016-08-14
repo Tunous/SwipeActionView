@@ -3,7 +3,6 @@
 package me.thanel.swipeactionview
 
 import android.content.Context
-import android.support.v4.view.GravityCompat
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -143,7 +142,6 @@ class SwipeActionView : FrameLayout {
         if (childCount >= 2) {
             if (swipeFirstViewLeft) {
                 leftSwipeView = getChildAt(0)
-                leftSwipeView?.setGravity(GravityCompat.END)
             } else {
                 rightSwipeView = getChildAt(0)
             }
@@ -153,19 +151,12 @@ class SwipeActionView : FrameLayout {
                     rightSwipeView = getChildAt(1)
                 } else {
                     leftSwipeView = getChildAt(1)
-                    leftSwipeView?.setGravity(GravityCompat.END)
                 }
             }
         }
 
         // Last view becomes foreground container
         container = getChildAt(childCount - 1)
-    }
-
-    private fun View.setGravity(gravity: Int) {
-        val params = layoutParams as FrameLayout.LayoutParams
-        params.gravity = gravity
-        layoutParams = params
     }
 
     companion object {
