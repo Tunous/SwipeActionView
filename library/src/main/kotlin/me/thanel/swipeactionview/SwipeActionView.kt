@@ -305,8 +305,10 @@ class SwipeActionView : FrameLayout {
      *
      * @return Whether swiping in the specified direction is enabled.
      */
-    fun hasEnabledDirection(direction: SwipeDirection) =
-            getViewForDirection(direction)?.visibility != View.GONE
+    fun hasEnabledDirection(direction: SwipeDirection): Boolean {
+        val swipeView = getViewForDirection(direction) ?: return false
+        return swipeView.visibility != View.GONE
+    }
 
     /**
      * Set swiping in the specified direction as enabled or disabled.
