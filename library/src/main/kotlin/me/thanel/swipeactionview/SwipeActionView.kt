@@ -4,6 +4,9 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Rect
+import android.graphics.Region
 import android.os.Build
 import android.os.Handler
 import android.os.Message
@@ -303,7 +306,7 @@ class SwipeActionView : FrameLayout {
      * @return Whether swiping in the specified direction is enabled.
      */
     fun hasEnabledDirection(direction: SwipeDirection) =
-            getViewForDirection(direction)?.visibility == View.VISIBLE
+            getViewForDirection(direction)?.visibility != View.GONE
 
     /**
      * Set swiping in the specified direction as enabled or disabled.
@@ -402,6 +405,61 @@ class SwipeActionView : FrameLayout {
         }
 
         return dragging
+    }
+
+    //endregion
+
+    //region Drawing
+
+    private var originalBounds: Rect? = null
+
+    override fun draw(canvas: Canvas) {
+        originalBounds = canvas.clipBounds
+
+        drawClipped(canvas) { super.draw(canvas) }
+    }
+
+    override fun dispatchDraw(canvas: Canvas) {
+        canvas.clipRect(originalBounds, Region.Op.REPLACE)
+
+        val drawingTime = drawingTime
+
+        drawClipped(canvas) {
+            if (it < 0) {
+                leftSwipeView?.let { drawChild(canvas, it, drawingTime) }
+            } else if (it > 0) {
+                rightSwipeView?.let { drawChild(canvas, it, drawingTime) }
+            }
+        }
+
+        drawChild(canvas, container, drawingTime)
+    }
+
+    /**
+     * Draw only the part of view which becomes visible as a result of swiping gesture.
+     *
+     * @param canvas the [Canvas] to which the [View] is rendered.
+     * @param drawAction the draw action to perform.
+     */
+    private fun drawClipped(canvas: Canvas, drawAction: (Int) -> Unit) {
+        val translation = container.translationX.toInt()
+        val originalBounds = canvas.clipBounds
+        val bounds = canvas.clipBounds
+
+        if (translation < 0) {
+            bounds.set(bounds.right + translation, bounds.top, bounds.right, bounds.bottom)
+            canvas.clipRect(bounds, Region.Op.REPLACE)
+        } else if (translation > 0) {
+            bounds.set(bounds.left, bounds.top, bounds.left + translation, bounds.bottom)
+            canvas.clipRect(bounds, Region.Op.REPLACE)
+        } else {
+            bounds.set(0, 0, 0, 0)
+            canvas.clipRect(bounds, Region.Op.REPLACE)
+        }
+
+        drawAction(translation)
+
+        canvas.clipRect(originalBounds, Region.Op.REPLACE)
     }
 
     //endregion
@@ -697,6 +755,8 @@ class SwipeActionView : FrameLayout {
      * Perform animations on the views located in background.
      */
     private fun performViewAnimations() {
+        invalidate()
+
         val swipeView: View?
         val animator: SwipeActionViewAnimator?
         val swipeDistance = container.translationX
