@@ -477,7 +477,9 @@ class SwipeActionView : FrameLayout {
     override fun draw(canvas: Canvas) {
         originalBounds = canvas.clipBounds
 
-        drawClipped(canvas) { super.draw(canvas) }
+        canvas.drawInBoundsOf(container, Region.Op.DIFFERENCE) {
+            super.draw(canvas)
+        }
     }
 
     override fun dispatchDraw(canvas: Canvas) {
@@ -485,58 +487,26 @@ class SwipeActionView : FrameLayout {
 
         val drawingTime = drawingTime
 
-        drawClipped(canvas) {
-            if (it < 0) {
+        canvas.drawInBoundsOf(container, Region.Op.DIFFERENCE) {
+            val translation = container.translationX
+
+            if (translation < 0) {
                 leftSwipeView?.let { drawChild(canvas, it, drawingTime) }
-            } else if (it > 0) {
+            } else if (translation > 0) {
                 rightSwipeView?.let { drawChild(canvas, it, drawingTime) }
             }
         }
 
-        val saveCount = canvas.save()
-        val bounds = canvas.clipBounds
-        bounds.set(container.left + container.translationX.toInt(),
-                container.top,
-                container.right + container.translationX.toInt(),
-                container.bottom)
-        canvas.clipRect(bounds, Region.Op.REPLACE)
-
-        if (leftSwipeRipple.isRunning) {
-            leftSwipeRipple.draw(canvas)
+        canvas.drawInBoundsOf(container, Region.Op.REPLACE) {
+            if (leftSwipeRipple.isRunning) {
+                leftSwipeRipple.draw(canvas)
+            }
+            if (rightSwipeRipple.isRunning) {
+                rightSwipeRipple.draw(canvas)
+            }
         }
-        if (rightSwipeRipple.isRunning) {
-            rightSwipeRipple.draw(canvas)
-        }
-
-        canvas.restoreToCount(saveCount)
 
         drawChild(canvas, container, drawingTime)
-    }
-
-    /**
-     * Draw only the part of view which becomes visible as a result of swiping gesture.
-     *
-     * @param canvas the [Canvas] to which the [View] is rendered.
-     * @param drawAction the draw action to perform.
-     */
-    private fun drawClipped(canvas: Canvas, drawAction: (Int) -> Unit) {
-        val translation = container.translationX.toInt()
-        val originalBounds = canvas.clipBounds
-        val bounds = canvas.clipBounds
-
-        if (translation < 0) {
-            bounds.set(bounds.right + translation, bounds.top, bounds.right, bounds.bottom)
-        } else if (translation > 0) {
-            bounds.set(bounds.left, bounds.top, bounds.left + translation, bounds.bottom)
-        } else {
-            bounds.set(0, 0, 0, 0)
-        }
-
-        canvas.clipRect(bounds, Region.Op.REPLACE)
-
-        drawAction(translation)
-
-        canvas.clipRect(originalBounds, Region.Op.REPLACE)
     }
 
     //endregion

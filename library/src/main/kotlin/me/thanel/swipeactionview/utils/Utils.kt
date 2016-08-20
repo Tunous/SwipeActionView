@@ -2,7 +2,9 @@ package me.thanel.swipeactionview.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Canvas
 import android.graphics.Rect
+import android.graphics.Region
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.MarginLayoutParamsCompat
 import android.support.v4.view.ViewCompat
@@ -95,3 +97,24 @@ internal fun Rect.setPaddingBoundsFrom(view: View) {
 }
 
 internal fun radius(x: Double, y: Double) = Math.sqrt(Math.pow(x, 2.0) + Math.pow(y, 2.0))
+
+/**
+ * Perform draw actions in bounds of the specified [View] with selected [Region.Op] modification
+ * applied.
+ *
+ * @param view View from which to get bounds.
+ * @param op How the bounds are modified.
+ * @param drawAction The draw actions to perform.
+ */
+internal fun Canvas.drawInBoundsOf(view: View, op: Region.Op, drawAction: () -> Unit) {
+    val saveCount = save()
+
+    val translationX = view.translationX.toInt()
+    val bounds = clipBounds
+    bounds.set(view.left + translationX, view.top, view.right + translationX, view.bottom)
+    clipRect(bounds, op)
+
+    drawAction()
+
+    restoreToCount(saveCount)
+}
