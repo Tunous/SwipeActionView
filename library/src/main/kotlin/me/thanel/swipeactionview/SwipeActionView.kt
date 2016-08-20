@@ -7,6 +7,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.Region
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
 import android.os.Message
@@ -18,9 +19,7 @@ import android.view.ViewConfiguration
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import me.thanel.swipeactionview.animation.SwipeActionViewAnimator
-import me.thanel.swipeactionview.utils.clamp
-import me.thanel.swipeactionview.utils.isRightAligned
-import me.thanel.swipeactionview.utils.totalWidth
+import me.thanel.swipeactionview.utils.*
 
 /**
  * View that allows users to perform various actions by swiping it to the left or right sides.
@@ -81,6 +80,26 @@ class SwipeActionView : FrameLayout {
      * The interpolator used for swipe animations.
      */
     private val animationInterpolator = DecelerateInterpolator()
+
+    /**
+     * Ripple displayed after performing swipe left gesture.
+     */
+    private val leftSwipeRipple = SwipeRippleDrawable()
+
+    /**
+     * Ripple displayed after peforming swipe right gesture.
+     */
+    private val rightSwipeRipple = SwipeRippleDrawable()
+
+    /**
+     * The duration of ripple animation.
+     */
+    private val rippleAnimationDuration = 400L
+
+    /**
+     * Bounds for the ripple animations.
+     */
+    private val swipeBounds = Rect()
 
     //endregion
 
@@ -165,9 +184,33 @@ class SwipeActionView : FrameLayout {
 
     //region Initialization
 
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    constructor(context: Context) : super(context) {
+        init(context, null)
+    }
+
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context, attrs)
+    }
+
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+        init(context, attrs)
+    }
+
+    private fun init(context: Context, attrs: AttributeSet?) {
+        val typedArray = context.obtainStyledAttributes(intArrayOf(R.attr.colorPrimary))
+        val color = typedArray.getColor(0, 0)
+        typedArray.recycle()
+
+        leftSwipeRipple.color = color
+        rightSwipeRipple.color = color
+        leftSwipeRipple.duration = rippleAnimationDuration
+        rightSwipeRipple.duration = rippleAnimationDuration
+        leftSwipeRipple.callback = this
+        rightSwipeRipple.callback = this
+    }
+
+    override fun verifyDrawable(drawable: Drawable?) =
+            drawable == leftSwipeRipple || drawable == rightSwipeRipple
 
     override fun onFinishInflate() {
         super.onFinishInflate()
@@ -211,6 +254,22 @@ class SwipeActionView : FrameLayout {
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
+
+        swipeBounds.setBoundsFrom(container)
+        // TODO: Option to include padding in bounds
+        //swipeBounds.setPaddingBoundsFrom(container)
+
+        leftSwipeRipple.bounds = swipeBounds
+        rightSwipeRipple.bounds = swipeBounds
+
+        val verticalCenter = ((bottom - top) / 2).toFloat()
+        val width = swipeBounds.right - swipeBounds.left
+        leftSwipeRipple.setCenter(-edgeSlop.toFloat(), verticalCenter)
+        rightSwipeRipple.setCenter((edgeSlop + width).toFloat(), verticalCenter)
+
+        val maxRadius = radius(width.toDouble(), verticalCenter.toDouble()).toFloat()
+        leftSwipeRipple.maxRadius = maxRadius
+        rightSwipeRipple.maxRadius = maxRadius
 
         leftSwipeView?.let {
             maxLeftSwipeDistance = it.totalWidth.toFloat()
@@ -434,6 +493,18 @@ class SwipeActionView : FrameLayout {
             }
         }
 
+        val saveCount = canvas.save()
+        canvas.translate(container.translationX, 0f)
+
+        if (leftSwipeRipple.isRunning) {
+            leftSwipeRipple.draw(canvas)
+        }
+        if (rightSwipeRipple.isRunning) {
+            rightSwipeRipple.draw(canvas)
+        }
+
+        canvas.restoreToCount(saveCount)
+
         drawChild(canvas, container, drawingTime)
     }
 
@@ -450,14 +521,13 @@ class SwipeActionView : FrameLayout {
 
         if (translation < 0) {
             bounds.set(bounds.right + translation, bounds.top, bounds.right, bounds.bottom)
-            canvas.clipRect(bounds, Region.Op.REPLACE)
         } else if (translation > 0) {
             bounds.set(bounds.left, bounds.top, bounds.left + translation, bounds.bottom)
-            canvas.clipRect(bounds, Region.Op.REPLACE)
         } else {
             bounds.set(0, 0, 0, 0)
-            canvas.clipRect(bounds, Region.Op.REPLACE)
         }
+
+        canvas.clipRect(bounds, Region.Op.REPLACE)
 
         drawAction(translation)
 
@@ -695,6 +765,12 @@ class SwipeActionView : FrameLayout {
             return
         }
         canPerformSwipeAction = false
+
+        if (swipedRight) {
+            leftSwipeRipple.restart()
+        } else {
+            rightSwipeRipple.restart()
+        }
 
         animateContainer(if (swipedRight) maxRightSwipeDistance else -maxLeftSwipeDistance, 250) {
             val shouldFinish = if (swipedRight) {

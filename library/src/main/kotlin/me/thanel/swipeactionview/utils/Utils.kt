@@ -2,6 +2,7 @@ package me.thanel.swipeactionview.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Rect
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.MarginLayoutParamsCompat
 import android.support.v4.view.ViewCompat
@@ -78,3 +79,19 @@ internal val View.totalWidth: Int
 
         return marginStart + width + marginEnd
     }
+
+internal fun Rect.setBoundsFrom(view: View) {
+    set(view.left,
+            view.top,
+            view.right,
+            view.bottom)
+}
+
+internal fun Rect.setPaddingBoundsFrom(view: View) {
+    set(view.left + view.paddingLeft,
+            view.top + view.paddingTop,
+            view.right - view.paddingRight,
+            view.bottom - view.paddingBottom)
+}
+
+internal fun radius(x: Double, y: Double) = Math.sqrt(Math.pow(x, 2.0) + Math.pow(y, 2.0))
