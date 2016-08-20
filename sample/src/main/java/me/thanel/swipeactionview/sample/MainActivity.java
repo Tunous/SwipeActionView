@@ -1,5 +1,6 @@
 package me.thanel.swipeactionview.sample;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
@@ -18,9 +19,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         SwipeActionView swipeLeft = (SwipeActionView) findViewById(R.id.swipe_left);
-        SwipeActionView swipeRight = (SwipeActionView) findViewById(R.id.swipe_right);
+        final SwipeActionView swipeRight = (SwipeActionView) findViewById(R.id.swipe_right);
         SwipeActionView swipeBoth = (SwipeActionView) findViewById(R.id.swipe_both);
         SwipeActionView swipeToggle = (SwipeActionView) findViewById(R.id.swipe_to_toggle);
+        final SwipeActionView swipeRipples = (SwipeActionView) findViewById(R.id.swipe_ripples);
 
         SwipeGestureListener swipeGestureListener = new SwipeGestureListener() {
             @Override
@@ -51,6 +53,22 @@ public class MainActivity extends AppCompatActivity {
             public boolean onSwipedRight(@NotNull SwipeActionView swipeActionView) {
                 boolean enabled = !swipeActionView.hasEnabledDirection(SwipeDirection.Left);
                 swipeActionView.setDirectionEnabled(SwipeDirection.Left, enabled);
+                return true;
+            }
+        });
+
+        swipeRipples.setSwipeGestureListener(new SwipeGestureListener() {
+            @Override
+            public boolean onSwipedLeft(@NotNull SwipeActionView swipeActionView) {
+                swipeRipples.setRippleColor(SwipeDirection.Left, -1);
+                swipeRipples.setRippleColor(SwipeDirection.Right, -1);
+                return true;
+            }
+
+            @Override
+            public boolean onSwipedRight(@NotNull SwipeActionView swipeActionView) {
+                swipeRipples.setRippleColor(SwipeDirection.Left, Color.GREEN);
+                swipeRipples.setRippleColor(SwipeDirection.Right, Color.GREEN);
                 return true;
             }
         });

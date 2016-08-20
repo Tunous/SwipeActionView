@@ -35,9 +35,7 @@
 
     <me.thanel.swipeactionview.SwipeActionView
         android:id="@+id/swipe_both"
-        style="@style/SwipeItem"
-        app:sav_swipeLeftRippleColor="@color/colorPrimary"
-        app:sav_swipeRightRippleColor="@color/colorAccent">
+        style="@style/SwipeItem">
 
         <ImageView style="@style/Icon"/>
 
@@ -53,6 +51,23 @@
     <me.thanel.swipeactionview.SwipeActionView
         android:id="@+id/swipe_to_toggle"
         style="@style/SwipeItem">
+
+        <ImageView style="@style/Icon" />
+
+        <ImageView
+            style="@style/Icon"
+            android:layout_gravity="end|center_vertical" />
+
+        <TextView
+            style="@style/ItemTextView"
+            android:text="@string/swipe_right_to_toggle" />
+    </me.thanel.swipeactionview.SwipeActionView>
+
+    <me.thanel.swipeactionview.SwipeActionView
+        android:id="@+id/swipe_ripples"
+        style="@style/SwipeItem"
+        app:sav_swipeLeftRippleColor="@color/colorPrimary"
+        app:sav_swipeRightRippleColor="@color/colorAccent">
 
         <ImageView style="@style/Icon"/>
 

@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.Region
@@ -12,6 +11,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
 import android.os.Message
+import android.support.annotation.ColorInt
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.VelocityTracker
@@ -185,9 +185,6 @@ class SwipeActionView : FrameLayout {
 
     //region Initialization
 
-    private var swipeLeftRippleColor: ColorStateList? = null
-    private var swipeRightRippleColor: ColorStateList? = null
-
     constructor(context: Context) : super(context) {
         init(context, null)
     }
@@ -202,12 +199,12 @@ class SwipeActionView : FrameLayout {
 
     private fun init(context: Context, attrs: AttributeSet?) {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.SwipeActionView)
-        swipeLeftRippleColor = typedArray.getColorStateList(R.styleable.SwipeActionView_sav_swipeLeftRippleColor)
-        swipeRightRippleColor = typedArray.getColorStateList(R.styleable.SwipeActionView_sav_swipeRightRippleColor)
+        val swipeLeftRippleColor = typedArray.getColorStateList(R.styleable.SwipeActionView_sav_swipeLeftRippleColor)
+        val swipeRightRippleColor = typedArray.getColorStateList(R.styleable.SwipeActionView_sav_swipeRightRippleColor)
         typedArray.recycle()
 
-        swipeLeftRippleColor?.let { leftSwipeRipple.color = it.defaultColor }
-        swipeRightRippleColor?.let { rightSwipeRipple.color = it.defaultColor }
+        leftSwipeRipple.color = swipeLeftRippleColor?.defaultColor ?: -1
+        rightSwipeRipple.color = swipeRightRippleColor?.defaultColor ?: -1
         leftSwipeRipple.duration = rippleAnimationDuration
         rightSwipeRipple.duration = rippleAnimationDuration
         leftSwipeRipple.callback = this
@@ -405,6 +402,17 @@ class SwipeActionView : FrameLayout {
         }
     }
 
+    /**
+     * Set ripple color for the specified swipe direction. Use -1 to disable ripple.
+     *
+     * @param direction The swipe direction.
+     * @param color The ripple color.
+     */
+    fun setRippleColor(direction: SwipeDirection, @ColorInt color: Int) = when (direction) {
+        SwipeDirection.Left -> leftSwipeRipple.color = color
+        SwipeDirection.Right -> rightSwipeRipple.color = color
+    }
+
     private fun getViewForDirection(direction: SwipeDirection) = when (direction) {
         SwipeDirection.Left -> leftSwipeView
         else -> rightSwipeView
@@ -504,13 +512,11 @@ class SwipeActionView : FrameLayout {
 
         drawChild(canvas, container, drawingTime)
 
-        if (swipeLeftRippleColor == null && swipeRightRippleColor == null) return
-
         canvas.drawInBoundsOf(container, Region.Op.REPLACE) {
-            if (swipeLeftRippleColor != null && leftSwipeRipple.isRunning) {
+            if (leftSwipeRipple.hasColor && leftSwipeRipple.isRunning) {
                 leftSwipeRipple.draw(canvas)
             }
-            if (swipeRightRippleColor != null && rightSwipeRipple.isRunning) {
+            if (rightSwipeRipple.hasColor && rightSwipeRipple.isRunning) {
                 rightSwipeRipple.draw(canvas)
             }
         }

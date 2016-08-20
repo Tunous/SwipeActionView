@@ -41,6 +41,9 @@ class SwipeRippleDrawable : Drawable(), Animatable {
         invalidateSelf()
     }
 
+    val hasColor: Boolean
+        get() = color != -1
+
     var maxRadius = 0f
         set(value) {
             field = value
