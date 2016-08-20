@@ -215,6 +215,13 @@ class SwipeActionView : FrameLayout {
         rightSwipeRipple.duration = rippleAnimationDuration
         leftSwipeRipple.callback = this
         rightSwipeRipple.callback = this
+
+        if (Build.VERSION.SDK_INT < 18) {
+            // According to https://developer.android.com/guide/topics/graphics/hardware-accel.html#unsupported
+            // clipRect(Region.Op.Difference) used by our draw methods is not supported with
+            // hardware acceleration on versions earlier than 18.
+            setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+        }
     }
 
     override fun verifyDrawable(drawable: Drawable?) =
@@ -489,34 +496,31 @@ class SwipeActionView : FrameLayout {
 
     //region Drawing
 
-    private var originalBounds: Rect? = null
+    private var saveCount = 0
 
     override fun draw(canvas: Canvas) {
-        originalBounds = canvas.clipBounds
-
         canvas.drawInBoundsOf(container, Region.Op.DIFFERENCE) {
+            saveCount = it
             super.draw(canvas)
         }
     }
 
     override fun dispatchDraw(canvas: Canvas) {
-        canvas.clipRect(originalBounds, Region.Op.REPLACE)
-
+        val translation = container.translationX
         val drawingTime = drawingTime
 
-        canvas.drawInBoundsOf(container, Region.Op.DIFFERENCE) {
-            val translation = container.translationX
-
-            if (translation < 0) {
-                leftSwipeView?.let { drawChild(canvas, it, drawingTime) }
-            } else if (translation > 0) {
-                rightSwipeView?.let { drawChild(canvas, it, drawingTime) }
-            }
+        if (translation < 0) {
+            leftSwipeView?.let { drawChild(canvas, it, drawingTime) }
+        } else if (translation > 0) {
+            rightSwipeView?.let { drawChild(canvas, it, drawingTime) }
         }
+
+        // Restore original bounds only after drawing background views
+        canvas.restoreToCount(saveCount)
 
         drawChild(canvas, container, drawingTime)
 
-        canvas.drawInBoundsOf(container, Region.Op.REPLACE, rippleTakesPadding) {
+        canvas.drawInBoundsOf(container, Region.Op.INTERSECT, rippleTakesPadding) {
             if (leftSwipeRipple.hasColor && leftSwipeRipple.isRunning) {
                 leftSwipeRipple.draw(canvas)
             }

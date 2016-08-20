@@ -96,7 +96,7 @@ internal fun radius(x: Double, y: Double) = Math.sqrt(Math.pow(x, 2.0) + Math.po
  * @param op How the bounds are modified.
  * @param drawAction The draw actions to perform.
  */
-internal fun Canvas.drawInBoundsOf(view: View, op: Region.Op, includePadding: Boolean = false, drawAction: () -> Unit) {
+internal fun Canvas.drawInBoundsOf(view: View, op: Region.Op, includePadding: Boolean = false, drawAction: (Int) -> Unit) {
     val saveCount = save()
 
     val translationX = view.translationX.toInt()
@@ -117,7 +117,7 @@ internal fun Canvas.drawInBoundsOf(view: View, op: Region.Op, includePadding: Bo
     bounds.set(left, top, right, bottom)
     clipRect(bounds, op)
 
-    drawAction()
+    drawAction(saveCount)
 
     restoreToCount(saveCount)
 }
