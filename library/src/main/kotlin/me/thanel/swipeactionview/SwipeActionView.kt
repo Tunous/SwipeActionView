@@ -494,7 +494,12 @@ class SwipeActionView : FrameLayout {
         }
 
         val saveCount = canvas.save()
-        canvas.translate(container.translationX, 0f)
+        val bounds = canvas.clipBounds
+        bounds.set(container.left + container.translationX.toInt(),
+                container.top,
+                container.right + container.translationX.toInt(),
+                container.bottom)
+        canvas.clipRect(bounds, Region.Op.REPLACE)
 
         if (leftSwipeRipple.isRunning) {
             leftSwipeRipple.draw(canvas)
