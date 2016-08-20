@@ -78,11 +78,6 @@ class SwipeActionView : FrameLayout {
     private val minActivationDistanceRatio = 0.8f
 
     /**
-     * The interpolator used for swipe animations.
-     */
-    private val animationInterpolator = DecelerateInterpolator()
-
-    /**
      * Ripple displayed after performing swipe left gesture.
      */
     private val leftSwipeRipple = SwipeRippleDrawable()
@@ -102,14 +97,19 @@ class SwipeActionView : FrameLayout {
      */
     private val swipeBounds = Rect()
 
+    /**
+     * The container translation animator.
+     */
+    private val animator by lazy {
+        ObjectAnimator.ofFloat(container, View.TRANSLATION_X, 0f).apply {
+            interpolator = DecelerateInterpolator()
+            addUpdateListener { performViewAnimations() }
+        }
+    }
+
     //endregion
 
     //region Private properties
-
-    /**
-     * The currently running view animator.
-     */
-    private var animator: ObjectAnimator? = null
 
     /**
      * Tells whether new swipe action can be executed.
@@ -548,8 +548,7 @@ class SwipeActionView : FrameLayout {
         // Stop the animator to allow "catching" of view.
         // By "catching" I mean the possibility for user to click on the view and continue swiping
         // from the position at which it was when starting new swipe.
-        animator?.cancel()
-        animator = null
+        animator.cancel()
 
         handler.removeOurMessages()
     }
@@ -807,18 +806,18 @@ class SwipeActionView : FrameLayout {
                                  duration: Long,
                                  startDelay: Long = 0,
                                  onEnd: () -> Unit) {
-        animator = ObjectAnimator.ofFloat(container, View.TRANSLATION_X, targetTranslationX).apply {
+        with(animator) {
             setStartDelay(startDelay)
             setDuration(duration)
-            interpolator = animationInterpolator
-            addUpdateListener { performViewAnimations() }
+            setFloatValues(targetTranslationX)
+            removeAllListeners()
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
                     onEnd()
                 }
             })
+            start()
         }
-        animator!!.start()
     }
 
     /**
