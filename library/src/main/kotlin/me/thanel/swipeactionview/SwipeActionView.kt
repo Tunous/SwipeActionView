@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.Region
@@ -87,7 +88,7 @@ class SwipeActionView : FrameLayout {
     private val leftSwipeRipple = SwipeRippleDrawable()
 
     /**
-     * Ripple displayed after peforming swipe right gesture.
+     * Ripple displayed after performing swipe right gesture.
      */
     private val rightSwipeRipple = SwipeRippleDrawable()
 
@@ -184,6 +185,9 @@ class SwipeActionView : FrameLayout {
 
     //region Initialization
 
+    private var swipeLeftRippleColor: ColorStateList? = null
+    private var swipeRightRippleColor: ColorStateList? = null
+
     constructor(context: Context) : super(context) {
         init(context, null)
     }
@@ -197,12 +201,13 @@ class SwipeActionView : FrameLayout {
     }
 
     private fun init(context: Context, attrs: AttributeSet?) {
-        val typedArray = context.obtainStyledAttributes(intArrayOf(R.attr.colorPrimary))
-        val color = typedArray.getColor(0, 0)
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.SwipeActionView)
+        swipeLeftRippleColor = typedArray.getColorStateList(R.styleable.SwipeActionView_sav_swipeLeftRippleColor)
+        swipeRightRippleColor = typedArray.getColorStateList(R.styleable.SwipeActionView_sav_swipeRightRippleColor)
         typedArray.recycle()
 
-        leftSwipeRipple.color = color
-        rightSwipeRipple.color = color
+        swipeLeftRippleColor?.let { leftSwipeRipple.color = it.defaultColor }
+        swipeRightRippleColor?.let { rightSwipeRipple.color = it.defaultColor }
         leftSwipeRipple.duration = rippleAnimationDuration
         rightSwipeRipple.duration = rippleAnimationDuration
         leftSwipeRipple.callback = this
@@ -264,8 +269,8 @@ class SwipeActionView : FrameLayout {
 
         val verticalCenter = ((bottom - top) / 2).toFloat()
         val width = swipeBounds.right - swipeBounds.left
-        leftSwipeRipple.setCenter(-edgeSlop.toFloat(), verticalCenter)
-        rightSwipeRipple.setCenter((edgeSlop + width).toFloat(), verticalCenter)
+        leftSwipeRipple.setCenter((edgeSlop + width).toFloat(), verticalCenter)
+        rightSwipeRipple.setCenter(-edgeSlop.toFloat(), verticalCenter)
 
         val maxRadius = radius(width.toDouble(), verticalCenter.toDouble()).toFloat()
         leftSwipeRipple.maxRadius = maxRadius
@@ -497,16 +502,18 @@ class SwipeActionView : FrameLayout {
             }
         }
 
+        drawChild(canvas, container, drawingTime)
+
+        if (swipeLeftRippleColor == null && swipeRightRippleColor == null) return
+
         canvas.drawInBoundsOf(container, Region.Op.REPLACE) {
-            if (leftSwipeRipple.isRunning) {
+            if (swipeLeftRippleColor != null && leftSwipeRipple.isRunning) {
                 leftSwipeRipple.draw(canvas)
             }
-            if (rightSwipeRipple.isRunning) {
+            if (swipeRightRippleColor != null && rightSwipeRipple.isRunning) {
                 rightSwipeRipple.draw(canvas)
             }
         }
-
-        drawChild(canvas, container, drawingTime)
     }
 
     //endregion
@@ -742,9 +749,9 @@ class SwipeActionView : FrameLayout {
         canPerformSwipeAction = false
 
         if (swipedRight) {
-            leftSwipeRipple.restart()
-        } else {
             rightSwipeRipple.restart()
+        } else {
+            leftSwipeRipple.restart()
         }
 
         animateContainer(if (swipedRight) maxRightSwipeDistance else -maxLeftSwipeDistance, 250) {

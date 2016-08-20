@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -34,7 +35,9 @@
 
     <me.thanel.swipeactionview.SwipeActionView
         android:id="@+id/swipe_both"
-        style="@style/SwipeItem">
+        style="@style/SwipeItem"
+        app:sav_swipeLeftRippleColor="@color/colorPrimary"
+        app:sav_swipeRightRippleColor="@color/colorAccent">
 
         <ImageView style="@style/Icon"/>
 
