@@ -181,6 +181,11 @@ class SwipeActionView : FrameLayout {
      */
     private var minRightActivationDistance = 0f
 
+    /**
+     * Determines whether ripple drawables should have padding.
+     */
+    private var rippleTakesPadding = false
+
     //endregion
 
     //region Initialization
@@ -201,6 +206,7 @@ class SwipeActionView : FrameLayout {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.SwipeActionView)
         val swipeLeftRippleColor = typedArray.getColorStateList(R.styleable.SwipeActionView_sav_swipeLeftRippleColor)
         val swipeRightRippleColor = typedArray.getColorStateList(R.styleable.SwipeActionView_sav_swipeRightRippleColor)
+        rippleTakesPadding = typedArray.getBoolean(R.styleable.SwipeActionView_sav_rippleTakesPadding, false)
         typedArray.recycle()
 
         leftSwipeRipple.color = swipeLeftRippleColor?.defaultColor ?: -1
@@ -258,8 +264,6 @@ class SwipeActionView : FrameLayout {
         super.onLayout(changed, left, top, right, bottom)
 
         swipeBounds.setBoundsFrom(container)
-        // TODO: Option to include padding in bounds
-        //swipeBounds.setPaddingBoundsFrom(container)
 
         leftSwipeRipple.bounds = swipeBounds
         rightSwipeRipple.bounds = swipeBounds
@@ -512,7 +516,7 @@ class SwipeActionView : FrameLayout {
 
         drawChild(canvas, container, drawingTime)
 
-        canvas.drawInBoundsOf(container, Region.Op.REPLACE) {
+        canvas.drawInBoundsOf(container, Region.Op.REPLACE, rippleTakesPadding) {
             if (leftSwipeRipple.hasColor && leftSwipeRipple.isRunning) {
                 leftSwipeRipple.draw(canvas)
             }

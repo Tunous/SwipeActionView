@@ -1,82 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".MainActivity"
     tools:ignore="ContentDescription">
 
-    <me.thanel.swipeactionview.SwipeActionView
-        android:id="@+id/swipe_left"
-        style="@style/SwipeItem">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <ImageView style="@style/Icon"/>
+        <me.thanel.swipeactionview.SwipeActionView
+            android:id="@+id/swipe_left"
+            style="@style/SwipeItem"
+            app:sav_swipeRightRippleColor="@color/colorPrimary">
 
-        <TextView
-            style="@style/ItemTextView"
-            android:text="@string/can_swipe_right"/>
-    </me.thanel.swipeactionview.SwipeActionView>
+            <ImageView style="@style/Icon"/>
 
-    <me.thanel.swipeactionview.SwipeActionView
-        android:id="@+id/swipe_right"
-        style="@style/SwipeItem">
+            <TextView
+                style="@style/ItemTextView"
+                android:text="@string/can_swipe_right"/>
+        </me.thanel.swipeactionview.SwipeActionView>
 
-        <ImageView
-            style="@style/Icon"
-            android:layout_gravity="end|center_vertical"/>
+        <me.thanel.swipeactionview.SwipeActionView
+            android:id="@+id/swipe_right"
+            style="@style/SwipeItem">
 
-        <TextView
-            style="@style/ItemTextView"
-            android:text="@string/can_swipe_left"/>
-    </me.thanel.swipeactionview.SwipeActionView>
+            <ImageView
+                style="@style/Icon"
+                android:layout_gravity="end|center_vertical"/>
 
-    <me.thanel.swipeactionview.SwipeActionView
-        android:id="@+id/swipe_both"
-        style="@style/SwipeItem">
+            <TextView
+                style="@style/ItemTextView"
+                android:text="@string/can_swipe_left"/>
+        </me.thanel.swipeactionview.SwipeActionView>
 
-        <ImageView style="@style/Icon"/>
+        <me.thanel.swipeactionview.SwipeActionView
+            android:id="@+id/swipe_both"
+            style="@style/SwipeItem">
 
-        <ImageView
-            style="@style/Icon"
-            android:layout_gravity="end|center_vertical"/>
+            <ImageView style="@style/Icon"/>
 
-        <TextView
-            style="@style/ItemTextView"
-            android:text="@string/can_swipe_in_both_directions"/>
-    </me.thanel.swipeactionview.SwipeActionView>
+            <ImageView
+                style="@style/Icon"
+                android:layout_gravity="end|center_vertical"/>
 
-    <me.thanel.swipeactionview.SwipeActionView
-        android:id="@+id/swipe_to_toggle"
-        style="@style/SwipeItem">
+            <TextView
+                style="@style/ItemTextView"
+                android:text="@string/can_swipe_in_both_directions"/>
+        </me.thanel.swipeactionview.SwipeActionView>
 
-        <ImageView style="@style/Icon" />
+        <me.thanel.swipeactionview.SwipeActionView
+            android:id="@+id/swipe_to_toggle"
+            style="@style/SwipeItem">
 
-        <ImageView
-            style="@style/Icon"
-            android:layout_gravity="end|center_vertical" />
+            <ImageView style="@style/Icon"/>
 
-        <TextView
-            style="@style/ItemTextView"
-            android:text="@string/swipe_right_to_toggle" />
-    </me.thanel.swipeactionview.SwipeActionView>
+            <ImageView
+                style="@style/Icon"
+                android:layout_gravity="end|center_vertical"/>
 
-    <me.thanel.swipeactionview.SwipeActionView
-        android:id="@+id/swipe_ripples"
-        style="@style/SwipeItem"
-        app:sav_swipeLeftRippleColor="@color/colorPrimary"
-        app:sav_swipeRightRippleColor="@color/colorAccent">
+            <TextView
+                style="@style/ItemTextView"
+                android:text="@string/swipe_right_to_toggle"/>
+        </me.thanel.swipeactionview.SwipeActionView>
 
-        <ImageView style="@style/Icon"/>
+        <me.thanel.swipeactionview.SwipeActionView
+            android:id="@+id/swipe_ripples"
+            style="@style/SwipeItem"
+            app:sav_swipeLeftRippleColor="@color/colorPrimary"
+            app:sav_swipeRightRippleColor="@color/colorAccent">
 
-        <ImageView
-            style="@style/Icon"
-            android:layout_gravity="end|center_vertical"/>
+            <ImageView style="@style/Icon"/>
 
-        <TextView
-            style="@style/ItemTextView"
-            android:text="@string/swipe_right_to_toggle"/>
-    </me.thanel.swipeactionview.SwipeActionView>
-</LinearLayout>
+            <ImageView
+                style="@style/Icon"
+                android:layout_gravity="end|center_vertical"/>
+
+            <TextView
+                style="@style/ItemTextView"
+                android:text="@string/swipe_right_to_toggle"/>
+        </me.thanel.swipeactionview.SwipeActionView>
+
+        <me.thanel.swipeactionview.SwipeActionView
+            style="@style/SwipeItem"
+            app:sav_rippleTakesPadding="true"
+            app:sav_swipeLeftRippleColor="@color/colorPrimary"
+            app:sav_swipeRightRippleColor="@color/colorAccent">
+
+            <ImageView style="@style/Icon"/>
+
+            <ImageView
+                style="@style/Icon"
+                android:layout_gravity="end|center_vertical"/>
+
+            <TextView
+                style="@style/ItemTextView"
+                android:text="@string/swipe_right_to_toggle"/>
+        </me.thanel.swipeactionview.SwipeActionView>
+    </LinearLayout>
+</ScrollView>

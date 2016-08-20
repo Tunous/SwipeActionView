@@ -3,5 +3,6 @@
     <declare-styleable name="SwipeActionView">
         <attr name="sav_swipeLeftRippleColor" format="color|reference"/>
         <attr name="sav_swipeRightRippleColor" format="color|reference"/>
+        <attr name="sav_rippleTakesPadding" format="boolean"/>
     </declare-styleable>
 </resources>

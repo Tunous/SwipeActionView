@@ -83,17 +83,7 @@ internal val View.totalWidth: Int
     }
 
 internal fun Rect.setBoundsFrom(view: View) {
-    set(view.left,
-            view.top,
-            view.right,
-            view.bottom)
-}
-
-internal fun Rect.setPaddingBoundsFrom(view: View) {
-    set(view.left + view.paddingLeft,
-            view.top + view.paddingTop,
-            view.right - view.paddingRight,
-            view.bottom - view.paddingBottom)
+    set(view.left, view.top, view.right, view.bottom)
 }
 
 internal fun radius(x: Double, y: Double) = Math.sqrt(Math.pow(x, 2.0) + Math.pow(y, 2.0))
@@ -106,12 +96,25 @@ internal fun radius(x: Double, y: Double) = Math.sqrt(Math.pow(x, 2.0) + Math.po
  * @param op How the bounds are modified.
  * @param drawAction The draw actions to perform.
  */
-internal fun Canvas.drawInBoundsOf(view: View, op: Region.Op, drawAction: () -> Unit) {
+internal fun Canvas.drawInBoundsOf(view: View, op: Region.Op, includePadding: Boolean = false, drawAction: () -> Unit) {
     val saveCount = save()
 
     val translationX = view.translationX.toInt()
     val bounds = clipBounds
-    bounds.set(view.left + translationX, view.top, view.right + translationX, view.bottom)
+
+    var left = view.left + translationX
+    var top = view.top
+    var right = view.right + translationX
+    var bottom = view.bottom
+
+    if (includePadding) {
+        left += view.paddingLeft
+        top += view.paddingTop
+        right -= view.paddingRight
+        bottom -= view.paddingBottom
+    }
+
+    bounds.set(left, top, right, bottom)
     clipRect(bounds, op)
 
     drawAction()
