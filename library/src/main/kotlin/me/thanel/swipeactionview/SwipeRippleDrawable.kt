@@ -10,7 +10,7 @@ import android.graphics.drawable.Drawable
 import android.support.annotation.ColorInt
 import android.util.Property
 
-class SwipeRippleDrawable : Drawable(), Animatable {
+internal class SwipeRippleDrawable : Drawable(), Animatable {
     companion object {
         private val PROGRESS = object : Property<SwipeRippleDrawable, Float>(Float::class.java, "progress") {
             override fun get(drawable: SwipeRippleDrawable) = drawable.progress
@@ -26,9 +26,9 @@ class SwipeRippleDrawable : Drawable(), Animatable {
     private val drawBounds = Rect()
     private val paint = Paint()
 
-    private var progress = 0f
     private var centerX = 0f
     private var centerY = 0f
+    internal var progress = 0f
 
     fun restart() {
         stop()

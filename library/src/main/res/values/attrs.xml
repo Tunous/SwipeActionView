@@ -10,5 +10,9 @@
             <enum name="swipeLeft" value="1"/>
             <enum name="swipeRight" value="2"/>
         </attr>
+        <attr name="sav_tools_previewRipple" format="enum">
+            <enum name="swipeLeft" value="1"/>
+            <enum name="swipeRight" value="2"/>
+        </attr>
     </declare-styleable>
 </resources>

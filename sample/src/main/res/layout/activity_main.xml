@@ -107,7 +107,8 @@
             app:sav_alwaysDrawBackground="true"
             app:sav_rippleTakesPadding="true"
             app:sav_swipeLeftRippleColor="@color/colorPrimary"
-            app:sav_swipeRightRippleColor="@color/colorAccent">
+            app:sav_swipeRightRippleColor="@color/colorAccent"
+            app:sav_tools_previewRipple="swipeLeft">
 
             <ImageView style="@style/Icon"/>
 
