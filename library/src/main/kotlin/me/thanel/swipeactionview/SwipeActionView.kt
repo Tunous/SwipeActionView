@@ -418,6 +418,7 @@ class SwipeActionView : FrameLayout {
      *
      * @param direction The swipe direction.
      * @param enabled Whether swiping in the specified direction should be enabled.
+     * @throws IllegalAccessException When view for the specified direction doesn't exist.
      */
     fun setDirectionEnabled(direction: SwipeDirection, enabled: Boolean) {
         val view = getViewForDirection(direction) ?:
@@ -447,7 +448,7 @@ class SwipeActionView : FrameLayout {
     /**
      * Set ripple color for the specified swipe direction. Use -1 to disable ripple.
      *
-     * @param direction The swipe direction.
+     * @param direction The direction of the swipe gesture.
      * @param color The ripple color.
      */
     fun setRippleColor(direction: SwipeDirection, @ColorInt color: Int) = when (direction) {

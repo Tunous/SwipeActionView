@@ -12,6 +12,7 @@ interface SwipeGestureListener {
      * left.
      *
      * @param swipeActionView The [SwipeActionView] from which this method was invoked.
+     *
      * @return Whether the container should return to default position. When `false`, then you
      * should manually call `reset` method to return to default position.
      * @see SwipeActionView
@@ -23,6 +24,7 @@ interface SwipeGestureListener {
      * right.
      *
      * @param swipeActionView The [SwipeActionView] from which this method was invoked.
+     *
      * @return Whether the container should return to default position. When `false`, then you
      * should manually call `reset` method to return to default position.
      * @see SwipeActionView
