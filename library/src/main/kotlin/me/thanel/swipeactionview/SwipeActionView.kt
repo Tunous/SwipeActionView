@@ -203,6 +203,7 @@ class SwipeActionView : FrameLayout {
     }
 
     private var alwaysDrawBackground = false
+    private var previewBackground = 0
 
     private fun init(context: Context, attrs: AttributeSet?) {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.SwipeActionView)
@@ -210,6 +211,11 @@ class SwipeActionView : FrameLayout {
         val swipeRightRippleColor = typedArray.getColorStateList(R.styleable.SwipeActionView_sav_swipeRightRippleColor)
         rippleTakesPadding = typedArray.getBoolean(R.styleable.SwipeActionView_sav_rippleTakesPadding, false)
         alwaysDrawBackground = typedArray.getBoolean(R.styleable.SwipeActionView_sav_alwaysDrawBackground, false)
+
+        if (isInEditMode) {
+            previewBackground = typedArray.getInt(R.styleable.SwipeActionView_sav_tools_previewBackground, 0)
+        }
+
         typedArray.recycle()
 
         leftSwipeRipple.color = swipeLeftRippleColor?.defaultColor ?: -1
@@ -295,6 +301,17 @@ class SwipeActionView : FrameLayout {
         rightSwipeView?.let {
             maxRightSwipeDistance = it.totalWidth.toFloat() - container.marginStart
             minRightActivationDistance = minActivationDistanceRatio * maxRightSwipeDistance
+        }
+
+        if (isInEditMode) {
+            when (previewBackground) {
+                PREVIEW_BACKGROUND_SWIPE_LEFT -> leftSwipeView?.let {
+                    container.translationX = -maxLeftSwipeDistance
+                }
+                PREVIEW_BACKGROUND_SWIPE_RIGHT -> rightSwipeView?.let {
+                    container.translationX = maxRightSwipeDistance
+                }
+            }
         }
     }
 
@@ -892,6 +909,9 @@ class SwipeActionView : FrameLayout {
     //endregion
 
     companion object {
+        private const val PREVIEW_BACKGROUND_SWIPE_LEFT = 1
+        private const val PREVIEW_BACKGROUND_SWIPE_RIGHT = 2
+
         /**
          * Long press handler message id.
          */

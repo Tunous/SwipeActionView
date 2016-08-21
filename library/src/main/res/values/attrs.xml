@@ -5,5 +5,10 @@
         <attr name="sav_swipeRightRippleColor" format="color|reference"/>
         <attr name="sav_rippleTakesPadding" format="boolean"/>
         <attr name="sav_alwaysDrawBackground" format="boolean"/>
+
+        <attr name="sav_tools_previewBackground" format="enum">
+            <enum name="swipeLeft" value="1"/>
+            <enum name="swipeRight" value="2"/>
+        </attr>
     </declare-styleable>
 </resources>
