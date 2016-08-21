@@ -75,11 +75,23 @@ internal fun isRightAlignedGravity(gravity: Int): Boolean {
  */
 internal val View.totalWidth: Int
     get() {
-        val layoutParams = (layoutParams as ViewGroup.MarginLayoutParams)
+        val layoutParams = layoutParams as ViewGroup.MarginLayoutParams
         val marginEnd = MarginLayoutParamsCompat.getMarginEnd(layoutParams)
         val marginStart = MarginLayoutParamsCompat.getMarginStart(layoutParams)
 
         return marginStart + width + marginEnd
+    }
+
+internal val View.marginStart: Int
+    get() {
+        val layoutParams = layoutParams as ViewGroup.MarginLayoutParams
+        return MarginLayoutParamsCompat.getMarginStart(layoutParams)
+    }
+
+internal val View.marginEnd: Int
+    get() {
+        val layoutParams = layoutParams as ViewGroup.MarginLayoutParams
+        return MarginLayoutParamsCompat.getMarginEnd(layoutParams)
     }
 
 internal fun Rect.setBoundsFrom(view: View) {

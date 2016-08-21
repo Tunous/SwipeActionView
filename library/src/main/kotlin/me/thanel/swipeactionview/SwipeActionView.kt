@@ -288,12 +288,12 @@ class SwipeActionView : FrameLayout {
         rightSwipeRipple.maxRadius = maxRadius
 
         leftSwipeView?.let {
-            maxLeftSwipeDistance = it.totalWidth.toFloat()
+            maxLeftSwipeDistance = it.totalWidth.toFloat() - container.marginEnd
             minLeftActivationDistance = minActivationDistanceRatio * maxLeftSwipeDistance
         }
 
         rightSwipeView?.let {
-            maxRightSwipeDistance = it.totalWidth.toFloat()
+            maxRightSwipeDistance = it.totalWidth.toFloat() - container.marginStart
             minRightActivationDistance = minActivationDistanceRatio * maxRightSwipeDistance
         }
     }
