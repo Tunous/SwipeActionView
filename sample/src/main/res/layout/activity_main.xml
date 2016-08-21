@@ -100,5 +100,30 @@
                 style="@style/ItemTextView"
                 android:text="@string/swipe_right_to_toggle"/>
         </me.thanel.swipeactionview.SwipeActionView>
+
+        <me.thanel.swipeactionview.SwipeActionView
+            style="@style/SwipeItem"
+            app:sav_alwaysDrawBackground="true"
+            app:sav_rippleTakesPadding="true"
+            app:sav_swipeLeftRippleColor="@color/colorPrimary"
+            app:sav_swipeRightRippleColor="@color/colorAccent">
+
+            <ImageView style="@style/Icon"/>
+
+            <ImageView
+                style="@style/Icon"
+                android:layout_gravity="end|center_vertical"/>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="16dp"
+                android:padding="16dp">
+
+                <TextView
+                    style="@style/ItemTextView"
+                    android:text="@string/swipe_right_to_toggle"/>
+            </android.support.v7.widget.CardView>
+        </me.thanel.swipeactionview.SwipeActionView>
     </LinearLayout>
 </ScrollView>

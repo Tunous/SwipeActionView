@@ -4,5 +4,6 @@
         <attr name="sav_swipeLeftRippleColor" format="color|reference"/>
         <attr name="sav_swipeRightRippleColor" format="color|reference"/>
         <attr name="sav_rippleTakesPadding" format="boolean"/>
+        <attr name="sav_alwaysDrawBackground" format="boolean"/>
     </declare-styleable>
 </resources>

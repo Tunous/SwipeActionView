@@ -202,11 +202,14 @@ class SwipeActionView : FrameLayout {
         init(context, attrs)
     }
 
+    private var alwaysDrawBackground = false
+
     private fun init(context: Context, attrs: AttributeSet?) {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.SwipeActionView)
         val swipeLeftRippleColor = typedArray.getColorStateList(R.styleable.SwipeActionView_sav_swipeLeftRippleColor)
         val swipeRightRippleColor = typedArray.getColorStateList(R.styleable.SwipeActionView_sav_swipeRightRippleColor)
         rippleTakesPadding = typedArray.getBoolean(R.styleable.SwipeActionView_sav_rippleTakesPadding, false)
+        alwaysDrawBackground = typedArray.getBoolean(R.styleable.SwipeActionView_sav_alwaysDrawBackground, false)
         typedArray.recycle()
 
         leftSwipeRipple.color = swipeLeftRippleColor?.defaultColor ?: -1
@@ -216,7 +219,7 @@ class SwipeActionView : FrameLayout {
         leftSwipeRipple.callback = this
         rightSwipeRipple.callback = this
 
-        if (Build.VERSION.SDK_INT < 18) {
+        if (Build.VERSION.SDK_INT < 18 && !alwaysDrawBackground) {
             // According to https://developer.android.com/guide/topics/graphics/hardware-accel.html#unsupported
             // clipRect(Region.Op.Difference) used by our draw methods is not supported with
             // hardware acceleration on versions earlier than 18.
@@ -499,9 +502,13 @@ class SwipeActionView : FrameLayout {
     private var saveCount = 0
 
     override fun draw(canvas: Canvas) {
-        canvas.drawInBoundsOf(container, Region.Op.DIFFERENCE) {
-            saveCount = it
+        if (alwaysDrawBackground) {
             super.draw(canvas)
+        } else {
+            canvas.drawInBoundsOf(container, Region.Op.DIFFERENCE) {
+                saveCount = it
+                super.draw(canvas)
+            }
         }
     }
 
@@ -509,14 +516,17 @@ class SwipeActionView : FrameLayout {
         val translation = container.translationX
         val drawingTime = drawingTime
 
-        if (translation < 0) {
+        if (alwaysDrawBackground || translation < 0) {
             leftSwipeView?.let { drawChild(canvas, it, drawingTime) }
-        } else if (translation > 0) {
+        }
+        if (alwaysDrawBackground || translation > 0) {
             rightSwipeView?.let { drawChild(canvas, it, drawingTime) }
         }
 
-        // Restore original bounds only after drawing background views
-        canvas.restoreToCount(saveCount)
+        if (!alwaysDrawBackground) {
+            // Restore original bounds only after drawing background views
+            canvas.restoreToCount(saveCount)
+        }
 
         drawChild(canvas, container, drawingTime)
 
