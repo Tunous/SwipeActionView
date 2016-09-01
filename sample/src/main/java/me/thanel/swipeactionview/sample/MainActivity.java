@@ -34,7 +34,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onSwipedRight(@NotNull SwipeActionView swipeActionView) {
                 showToast(true);
-                return true;
+
+                swipeActionView.moveToOriginalPosition(2000);
+
+                return false;
             }
         };
 

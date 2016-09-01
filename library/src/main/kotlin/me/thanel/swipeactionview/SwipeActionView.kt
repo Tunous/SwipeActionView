@@ -186,6 +186,14 @@ class SwipeActionView : FrameLayout {
      */
     private var rippleTakesPadding = false
 
+    /**
+     * Controls whether the users are allowed to swipe the view.
+     *
+     * This is used when SwipeGestureListener returns `false` to prevents users from swiping the
+     * view while it's meant to be locked at full translation.
+     */
+    private var isLocked = false
+
     private var alwaysDrawBackground = false
 
     private var previewBackground = 0
@@ -468,6 +476,8 @@ class SwipeActionView : FrameLayout {
     override fun onInterceptTouchEvent(e: MotionEvent): Boolean {
         when (e.action) {
             MotionEvent.ACTION_DOWN -> {
+                if (isLocked) return false
+
                 prepareDrag(e)
             }
 
@@ -482,14 +492,16 @@ class SwipeActionView : FrameLayout {
             }
         }
 
-        // In most cases we don't want to handle touch events alone. We give child views a chance to
-        // intercept them.
+        // In most cases we don't want to handle touch events completely by us. We give child views
+        // a chance to intercept them.
         return false
     }
 
     override fun onTouchEvent(e: MotionEvent): Boolean {
         when (e.action) {
             MotionEvent.ACTION_DOWN -> {
+                if (isLocked) return false
+
                 prepareDrag(e)
                 prepareMessages(e)
                 return true
@@ -836,6 +848,8 @@ class SwipeActionView : FrameLayout {
 
             if (shouldFinish ?: true) {
                 moveToOriginalPosition(200)
+            } else {
+                isLocked = true
             }
         }
     }
@@ -876,6 +890,11 @@ class SwipeActionView : FrameLayout {
             setFloatValues(targetTranslationX)
             removeAllListeners()
             addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationStart(animation: Animator?) {
+                    // Unlock swiping as soon as we start returning to original position
+                    isLocked = false
+                }
+
                 override fun onAnimationEnd(animation: Animator?) {
                     onEnd()
                 }
