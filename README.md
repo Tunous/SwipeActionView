@@ -227,7 +227,7 @@ By default there is only one animator included which scales the background views
 This library wouldn't be created without help and work of [Brian Robles].
 
 His [KarmaMachine] Reddit application was my direct inspiration when I was creating it for my own application.
-He also originally created `SwipeRipleDrawable` and allowed me to reimplement it for purposes of this library.
+He also originally created `SwipeRippleDrawable` and allowed me to [reimplement][SwipeRippleDrawable] it for purposes of this library.
 **Huge thanks!**
 
 [sample]: https://github.com/Tunous/SwipeActionView/tree/master/sample
@@ -237,3 +237,4 @@ He also originally created `SwipeRipleDrawable` and allowed me to reimplement it
 [AndroidSwipeLayout]: https://github.com/daimajia/AndroidSwipeLayout
 [Brian Robles]: https://github.com/brianrobles204
 [KarmaMachine]: https://play.google.com/store/apps/details?id=com.brianrobles204.karmamachine
+[SwipeRippleDrawable]: https://github.com/Tunous/SwipeActionView/blob/master/library/src/main/kotlin/me/thanel/swipeactionview/SwipeRippleDrawable.kt
