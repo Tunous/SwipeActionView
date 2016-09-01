@@ -690,7 +690,7 @@ class SwipeActionView : FrameLayout {
      */
     private fun canStartDrag(e: MotionEvent): Boolean {
         val movedFarEnough = Math.abs(e.rawX - initialX) > touchSlop
-        return isValidDelta(e.rawX - lastX) && movedFarEnough && isTouchValid
+        return movedFarEnough && isTouchValid
     }
 
     /**
@@ -724,19 +724,6 @@ class SwipeActionView : FrameLayout {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             drawableHotspotChanged(x, y)
         }
-    }
-
-    /**
-     * Tell whether swiping in the direction for the specified [delta] is valid.
-     *
-     * @param delta The swiping motion delta. Negative means left and positive right direction.
-     *
-     * @return Whether the direction for the specified [delta] is enabled.
-     */
-    private fun isValidDelta(delta: Float) = when {
-        delta < 0 -> hasEnabledDirection(SwipeDirection.Left)
-        delta > 0 -> hasEnabledDirection(SwipeDirection.Right)
-        else -> false
     }
 
     /**
@@ -802,6 +789,22 @@ class SwipeActionView : FrameLayout {
         } else {
             moveToOriginalPosition()
         }
+    }
+
+    /**
+     * Tell whether swiping in the direction for the specified [delta] is valid.
+     *
+     * This makes sure that fling gesture in incorrect direction won't execute gesture listener and
+     * start animation of the container.
+     *
+     * @param delta The swiping motion delta. Negative means left and positive right direction.
+     *
+     * @return Whether the direction for the specified [delta] is enabled.
+     */
+    private fun isValidDelta(delta: Float) = when {
+        delta < 0 -> hasEnabledDirection(SwipeDirection.Left)
+        delta > 0 -> hasEnabledDirection(SwipeDirection.Right)
+        else -> false
     }
 
     /**
