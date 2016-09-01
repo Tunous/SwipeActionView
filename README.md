@@ -14,6 +14,7 @@ SwipeActionView is a swipe-able view, which allows users to perform actions by s
 - [Gesture listener](#gesture-listener)
 - [Disabling gestures](#disabling-gestures)
 - [Ripple animations](#ripple-animations)
+- [Click listeners](#click-listeners)
 - [Attributes](#attr)
   - [sav_alwaysDrawBackground](#attr-alwaysDrawBackground)
   - [sav_rippleTakesPadding](#attr-rippleTakesPadding)
@@ -22,7 +23,6 @@ SwipeActionView is a swipe-able view, which allows users to perform actions by s
   - [Tools attributes](#attr-tools)
     - [sav_tools_previewBackground](#attr-tools-previewBackground)
     - [sav_tools_previewRipple](#attr-tools-previewRipple)
-- [Click listeners](#click-listeners)
 - [Animations](#animations)
 - [Credits](#credits)
 
