@@ -313,10 +313,10 @@ class SwipeActionView : FrameLayout {
         //region Edit mode
         if (isInEditMode) {
             when (previewBackground) {
-                SwipeDirection.Left.internalId -> leftSwipeView?.let {
+                SwipeDirection.LEFT -> leftSwipeView?.let {
                     container.translationX = -maxLeftSwipeDistance
                 }
-                SwipeDirection.Right.internalId -> rightSwipeView?.let {
+                SwipeDirection.RIGHT -> rightSwipeView?.let {
                     container.translationX = maxRightSwipeDistance
                 }
             }
@@ -568,12 +568,12 @@ class SwipeActionView : FrameLayout {
             if (isInEditMode) {
                 //region Edit mode
                 when (previewRipple) {
-                    SwipeDirection.Left.internalId -> {
+                    SwipeDirection.LEFT -> {
                         if (leftSwipeRipple.hasColor) {
                             leftSwipeRipple.draw(canvas)
                         }
                     }
-                    SwipeDirection.Right.internalId -> {
+                    SwipeDirection.RIGHT -> {
                         if (rightSwipeRipple.hasColor) {
                             rightSwipeRipple.draw(canvas)
                         }

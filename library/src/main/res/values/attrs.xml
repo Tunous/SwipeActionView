@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <declare-styleable name="SwipeActionView">
         <attr name="sav_swipeLeftRippleColor" format="color|reference"/>
         <attr name="sav_swipeRightRippleColor" format="color|reference"/>
         <attr name="sav_rippleTakesPadding" format="boolean"/>
         <attr name="sav_alwaysDrawBackground" format="boolean"/>
 
-        <attr name="sav_tools_previewBackground" format="enum">
+        <attr name="sav_tools_previewBackground" format="integer">
+            <!-- Preview background for swipe left gesture -->
             <enum name="swipeLeft" value="1"/>
+            <!-- Preview background for swipe right gesture -->
             <enum name="swipeRight" value="2"/>
         </attr>
-        <attr name="sav_tools_previewRipple" format="enum">
+
+        <attr name="sav_tools_previewRipple" format="integer">
+            <!-- Preview ripple for swipe left gesture -->
             <enum name="swipeLeft" value="1"/>
+            <!-- Preview ripple for swipe right gesture -->
             <enum name="swipeRight" value="2"/>
         </attr>
     </declare-styleable>
