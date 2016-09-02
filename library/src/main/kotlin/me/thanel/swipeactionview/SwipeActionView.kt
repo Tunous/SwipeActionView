@@ -603,11 +603,6 @@ class SwipeActionView : FrameLayout {
 
     //region Actual SwipeActionView behavior code
 
-    /**
-     * Prepare all settings to start a new drag.
-     *
-     * @param e The received motion event.
-     */
     private fun prepareDrag(e: MotionEvent) {
         checkTouchIsValid(e)
 
@@ -698,16 +693,13 @@ class SwipeActionView : FrameLayout {
     private fun hasMovedVertically(e: MotionEvent) = Math.abs(e.rawY - initialY) >= touchSlop
 
     /**
-     * Tells whether the drag can be started.
+     * Tells whether the drag can be started by the user based on provided motion event.
      */
     private fun canStartDrag(e: MotionEvent): Boolean {
         val movedFarEnough = Math.abs(e.rawX - initialX) > touchSlop
         return movedFarEnough && isTouchValid
     }
 
-    /**
-     * Reset the callbacks and states used to execute click and long click actions.
-     */
     private fun resetClickAndLongClick() {
         if (isPressed) {
             stopPress()
@@ -717,19 +709,10 @@ class SwipeActionView : FrameLayout {
         }
     }
 
-    /**
-     * Disable the pressed state of this view.
-     */
     private fun stopPress() {
         isPressed = false
     }
 
-    /**
-     * Enable the pressed state of this view.
-     *
-     * @param x The x coordinate of click position.
-     * @param y The y coordinate of click position.
-     */
     private fun startPress(x: Float, y: Float) {
         isPressed = true
 
@@ -772,7 +755,12 @@ class SwipeActionView : FrameLayout {
     }
 
     /**
-     * Limits the value between the maximal and minimal swipe distance values.
+     * Limits the value between the maximal and minimal swipe distance values to make sure that
+     * view won't be swiped too far away.
+     *
+     * @param value The value to limit.
+     *
+     * @return The value clamped between maximum swipe distances.
      */
     private fun limitInDistance(value: Float): Float {
         val min = if (hasEnabledDirection(SwipeDirection.Left)) -maxLeftSwipeDistance else 0f
@@ -822,7 +810,7 @@ class SwipeActionView : FrameLayout {
     /**
      * Move the view to fully swiped position and execute correct swipe callback.
      *
-     * @param swipedRight Tells whether the view was swiped to the right side.
+     * @param swipedRight Tells whether the view was swiped to the right instead of left side.
      */
     private fun activate(swipedRight: Boolean) {
         // If activation animation didn't finish, move the view to original position without
@@ -903,9 +891,6 @@ class SwipeActionView : FrameLayout {
         }
     }
 
-    /**
-     * Perform animations on the views located in background.
-     */
     private fun performViewAnimations() {
         invalidate()
 
@@ -935,7 +920,8 @@ class SwipeActionView : FrameLayout {
     }
 
     /**
-     * Get max swipe distance for the specified delta.
+     * Get max possible swipe distance for the specified delta. Users won't be able to swipe further
+     * than this value.
      *
      * @param delta The swipe delta.
      *
@@ -947,11 +933,12 @@ class SwipeActionView : FrameLayout {
     }
 
     /**
-     * Get min activation distance for the specified delta.
+     * Get min activation distance for the specified delta. Once users swipes view above this
+     * distance swipe callback will be called upon view release.
      *
      * @param delta The swipe delta.
      *
-     * @return Min activation distance.
+     * @return Min distance to swipe to be able to execute swipe callbacks.
      */
     private fun getMinActivationDistance(delta: Float) = when {
         delta < 0 -> minLeftActivationDistance
@@ -961,14 +948,7 @@ class SwipeActionView : FrameLayout {
     //endregion
 
     companion object {
-        /**
-         * Long press handler message id.
-         */
         private const val LONG_PRESS = 1
-
-        /**
-         * Tap handler message id.
-         */
         private const val TAP = 2
 
         private class PressTimeoutHandler(private val swipeActionView: SwipeActionView) : Handler() {
