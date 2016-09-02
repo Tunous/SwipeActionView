@@ -238,13 +238,6 @@ class SwipeActionView : FrameLayout {
         rightSwipeRipple.duration = rippleAnimationDuration
         leftSwipeRipple.callback = this
         rightSwipeRipple.callback = this
-
-        if (Build.VERSION.SDK_INT < 18 && !alwaysDrawBackground) {
-            // According to https://developer.android.com/guide/topics/graphics/hardware-accel.html#unsupported
-            // clipRect(Region.Op.Difference) used by our draw methods is not supported with
-            // hardware acceleration on versions earlier than 18.
-            setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        }
     }
 
     override fun verifyDrawable(drawable: Drawable?) =
