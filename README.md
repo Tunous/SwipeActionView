@@ -85,10 +85,10 @@ You can manually compile the apk using source code or download from the [release
 # <a id="idea">The idea</a>
 The main idea behind this library is a concept of [container] and [background views]. It allows for a complete control over the look of the created views. 
 
-In the [quick example](#quick-example) section you can see that the `SwipeActionView` has 3 child views. The first 2 are called [background views] and last one is the [container]. To create working version of `SwipeActionView` you are only required to specify single background view and container. Second background view can be added when you want to be able to swipe in both directions. 
+In the [quick example](#quick-example) section you can see that the `SwipeActionView` has 3 child views. The first 2 are called [background views] and the last one is the [container]. To create working version of `SwipeActionView` you are only required to specify single background view and container. Second background view can be added when you want to be able to swipe in both directions. 
 
 ### <a id="container">Container</a>
-The container is a view which is drawn above other views. In default state this is the only visible view and it is what gets moved when users perform swipe gestures. It can be either a simple `TextView`, your own view or even some sort of view group like `LinearLayout`. There is no limit for that, which allows you to gain complete control over the look of your views. 
+The container is a view which is drawn above other views. In the default state, this is the only visible view and it is what gets moved when users perform swipe gestures. It can be either a simple `TextView`, your own view or even some sort of view group like `LinearLayout`. There is no limit for that, which allows you to gain complete control over the look of your views. 
 
 ### <a id="bg-views">Background views</a>
 Background views are the mostly invisible part of `SwipeActionView`. They get revealed only when users start performing swipe gestures. 
@@ -118,7 +118,7 @@ This behavior allows you to easily add single background and by specifying its `
         android:src="@mipmap/ic_launcher"/>
 
     <!-- Second background view.
-        This one will be located on the right side and allow user to perform
+        This one will be located on the right side and allow users to perform
         swipe left gesture as its layout_gravity is changed to "end". -->
     <ImageView
         android:layout_width="24dp"
@@ -139,11 +139,11 @@ This behavior allows you to easily add single background and by specifying its `
 # <a id="gesture-listener">Gesture listener</a>
 In order to be able to perform actions when users swipe the `SwipeActionView` you have to setup the listener with the `setSwipeGestureListener(SwipeGestureListener)` method. It takes `SwipeGestureListener` as a parameter.
 
-`SwipeGestureListener` consists of two methods. One for performing action when view is swiped to the left and one when it is swiped to the right side.
+`SwipeGestureListener` consists of two methods. One for performing an action when the view is swiped to the left and one when it is swiped to the right side.
 
-Each of these methods returns. `Boolean` as a result. Most of the time you'll want to return `true` here. Returning `false` is designed for advanced usage. By doing so the view won't be automatically animated to the original position but will stay at the full translation and not allow users to swipe it back. This allows you to manipulate content of the visible background view. One great example of this is displaying progress wheel and manually returning view to the original position once some long action finishes execution.
+Each of these methods returns. `Boolean` as a result. Most of the time you'll want to return `true` here. Returning `false` is designed for advanced usage. By doing so the view won't be automatically animated to the original position but will stay at the full translation and not allow users to swipe it back. This allows you to manipulate the content of the visible background view. One great example of this is displaying progress wheel and manually returning the view to the original position once some long action finishes execution.
 
-To return view to it's original position you can call the `moveToOriginalPosition()` method at any time. Make sure that you don't forget to do it or users won't be able to swipe that view anymore.
+To return the view to its original position you can call the `moveToOriginalPosition()` method at any time. Make sure that you don't forget to do it or users won't be able to swipe that view anymore.
 
 ```java
 swipeView.setSwipeGestureListener(new SwipeGestureListener() {
@@ -182,7 +182,7 @@ swipeView.setDirectionEnabled(SwipeDirection.Left, false);
 ```
 
 # <a id="ripple-animations">Ripple animations</a>
-`SwipeActionView` comes with optional support of displaying ripple animations when gestures are performed. All you have to do to enable them is to give them color from XML or code. To do so from code you can use the `setRippleColor(SwipeDirection, Int)` method. 
+`SwipeActionView` comes with an optional support for displaying ripple animations when gestures are performed. All you have to do to enable them is to give them a color from XML or code. To do so from the code you can use the `setRippleColor(SwipeDirection, Int)` method. 
 
 To disable ripple animations you can enter `-1` as value for color.
 
@@ -193,12 +193,12 @@ swipeView.setRippleColor(SwipeDirection.Right, Color.BLUE);
 # <a id="click-listeners">Click listeners</a>
 `SwipeActionView` makes sure that any click listeners will work correctly. This means that you can use `setClickListener(View.OnClickListener)` as usual and they should work. This includes views located in the container.
 
-Only exception is that you shouldn't add click listeners for background views. This library wasn't designed to add support for this behavior. If it's possible then that's only a positive side effect. You are better of with using libraries such as [AndroidSwipeLayout] instead.
+The only exception is that you shouldn't add click listeners for background views. This library wasn't designed to add support for this behavior. If it's possible then that's only a positive side effect. You are better of with using libraries such as [AndroidSwipeLayout] instead.
 
 # <a id="attr">Attributes</a>
 
 #### <a id="attr-alwaysDrawBackground">`app:sav_alwaysDrawBackground="true|false"`</a>
-In order to reduce overdraw `SwipeActionView` only draws parts of main background and background views which become visible due to swipe gesture. This is not always what you want as it could break any container views with transparency. Good example where you would want to use this attribute is when you had `CardView` as your container.
+In order to reduce overdraw `SwipeActionView` only draws parts of the main background and background views which become visible due to swipe gesture. This is not always what you want as it could break any container views with transparency. A good example where you would want to use this attribute is when you had `CardView` as your container.
 
 #### <a id="attr-rippleTakesPadding">`app:sav_rippleTakesPadding="true|false"`</a>
 If you want ripple effect to take padding together with container view you can set this attribute to true.
@@ -210,7 +210,7 @@ Sets color for ripple displayed when users swipe left.
 Sets color for ripple displayed when users swipe right.
 
 ## <a id="attr-tools">Tools attributes</a>
-`SwipeActionView` has special attributes used only in the editor mode. They make it possible to preview ripples or contents of background views without worrying about side effects. They are entirely ignored when running in device.
+`SwipeActionView` has special attributes used only in the editor mode. They make it possible to preview ripples or contents of background views without worrying about side effects. They are entirely ignored when running on the device.
 
 #### <a id="attr-tools-previewBackground">`app:sav_tools_previewBackground="swipeLeft|swipeRight"`</a>
 Shows background view for swipe left or right gesture. 
@@ -221,7 +221,7 @@ Shows ripple for swipe left or right gesture.
 # <a id="animations">Animations</a>
 `SwipeActionView` also comes with support for custom animations. There are 2 listeners that you can set in your code. They will be called with current swipe progress while users perform swipe gesture.
 
-By default there is only one animator included which scales the background views. You can use it as an example on how to implement custom animations or use it directly if it's good enough for you.
+By default, there is only one animator included which scales the background views. You can use it as an example of how to implement custom animations or use it directly if it's good enough for you.
 
 # <a id="credits">Credits</a>
 This library wouldn't be created without help and work of [Brian Robles].
