@@ -5,8 +5,6 @@ android {
     compileSdkVersion 24
     buildToolsVersion "24.0.2"
 
-    resourcePrefix "sav_"
-
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 24
