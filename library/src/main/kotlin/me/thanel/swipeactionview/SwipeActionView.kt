@@ -26,8 +26,6 @@ import me.thanel.swipeactionview.utils.*
  * View that allows users to perform various actions by swiping it to the left or right sides.
  */
 class SwipeActionView : FrameLayout {
-    //region Private constants
-
     /**
      * Distance from edges in pixels that prevents starting of drag movement.
      *
@@ -106,10 +104,6 @@ class SwipeActionView : FrameLayout {
             addUpdateListener { performViewAnimations() }
         }
     }
-
-    //endregion
-
-    //region Private properties
 
     /**
      * Tells whether new swipe action can be executed.
@@ -194,15 +188,54 @@ class SwipeActionView : FrameLayout {
      */
     private var isLocked = false
 
+    /**
+     * Tells whether the background views and main background should be always drawn - no matter if
+     * they are behind the container or not.
+     *
+     * By default they are only drawn when not located under container view. This setting is useful
+     * when dealing with transparent or special views such as `CardView`.
+     */
     private var alwaysDrawBackground = false
 
+    /**
+     * Id of background to preview. Controlled by `sav_tools_previewBackground` attribute.
+     */
     private var previewBackground = 0
 
+    /**
+     * Id of ripple to preview. Controlled by `sav_tools_previewRipple` attribute.
+     */
     private var previewRipple = 0
 
-    //endregion
+    /**
+     * The callback to be invoked when this view is clicked.
+     */
+    private var onClickListener: OnClickListener? = null
 
-    //region Initialization
+    /**
+     * The callback to be invoked when this view is clicked and held.
+     */
+    private var onLongClickListener: OnLongClickListener? = null
+
+    /**
+     * Listener for the swipe left and right gestures.
+     */
+    var swipeGestureListener: SwipeGestureListener? = null
+
+    /**
+     * Animator for the view visible when swiping to the left.
+     */
+    var leftSwipeAnimator: SwipeActionViewAnimator? = null
+
+    /**
+     * Animator for the view visible when swiping to the right.
+     */
+    var rightSwipeAnimator: SwipeActionViewAnimator? = null
+
+    /**
+     * Used to restore canvas when drawing container.
+     */
+    private var saveCount = 0
 
     constructor(context: Context) : super(context) {
         init(context, null)
@@ -223,12 +256,10 @@ class SwipeActionView : FrameLayout {
         rippleTakesPadding = typedArray.getBoolean(R.styleable.SwipeActionView_sav_rippleTakesPadding, false)
         alwaysDrawBackground = typedArray.getBoolean(R.styleable.SwipeActionView_sav_alwaysDrawBackground, false)
 
-        //region Edit mode
         if (isInEditMode) {
             previewBackground = typedArray.getInt(R.styleable.SwipeActionView_sav_tools_previewBackground, 0)
             previewRipple = typedArray.getInt(R.styleable.SwipeActionView_sav_tools_previewRipple, 0)
         }
-        //endregion
 
         typedArray.recycle()
 
@@ -310,7 +341,6 @@ class SwipeActionView : FrameLayout {
             minRightActivationDistance = minActivationDistanceRatio * maxRightSwipeDistance
         }
 
-        //region Edit mode
         if (isInEditMode) {
             when (previewBackground) {
                 SwipeDirection.LEFT -> leftSwipeView?.let {
@@ -324,7 +354,6 @@ class SwipeActionView : FrameLayout {
             leftSwipeRipple.progress = 0.75f
             rightSwipeRipple.progress = 0.75f
         }
-        //endregion
     }
 
     private fun requireOppositeGravity(view: View?) {
@@ -334,20 +363,6 @@ class SwipeActionView : FrameLayout {
                             " One aligned to start and one to end.")
         }
     }
-
-    //endregion
-
-    //region Click and long click
-
-    /**
-     * The callback to be invoked when this view is clicked.
-     */
-    private var onClickListener: OnClickListener? = null
-
-    /**
-     * The callback to be invoked when this view is clicked and held.
-     */
-    private var onLongClickListener: OnLongClickListener? = null
 
     // The [setOnClickListener] and [setOnLongClickListener] together with their corresponding
     // performClick methods are overridden to make sure that the default view behavior won't execute
@@ -382,25 +397,6 @@ class SwipeActionView : FrameLayout {
         super.setOnLongClickListener(null)
         return result
     }
-
-    //endregion
-
-    //region Public API
-
-    /**
-     * Listener for the swipe left and right gestures.
-     */
-    var swipeGestureListener: SwipeGestureListener? = null
-
-    /**
-     * Animator for the view visible when swiping to the left.
-     */
-    var leftSwipeAnimator: SwipeActionViewAnimator? = null
-
-    /**
-     * Animator for the view visible when swiping to the right.
-     */
-    var rightSwipeAnimator: SwipeActionViewAnimator? = null
 
     /**
      * Tells whether swiping in the specified direction is enabled.
@@ -461,10 +457,6 @@ class SwipeActionView : FrameLayout {
         SwipeDirection.Left -> leftSwipeView
         else -> rightSwipeView
     }
-
-    //endregion
-
-    //region Event handling
 
     override fun onInterceptTouchEvent(e: MotionEvent): Boolean {
         when (e.action) {
@@ -529,12 +521,6 @@ class SwipeActionView : FrameLayout {
         return dragging
     }
 
-    //endregion
-
-    //region Drawing
-
-    private var saveCount = 0
-
     override fun draw(canvas: Canvas) {
         if (alwaysDrawBackground) {
             super.draw(canvas)
@@ -566,7 +552,6 @@ class SwipeActionView : FrameLayout {
 
         canvas.drawInBoundsOf(container, Region.Op.INTERSECT, rippleTakesPadding) {
             if (isInEditMode) {
-                //region Edit mode
                 when (previewRipple) {
                     SwipeDirection.LEFT -> {
                         if (leftSwipeRipple.hasColor) {
@@ -580,7 +565,6 @@ class SwipeActionView : FrameLayout {
                     }
                 }
                 return@drawInBoundsOf
-                //endregion
             }
 
             if (leftSwipeRipple.hasColor && leftSwipeRipple.isRunning) {
@@ -591,10 +575,6 @@ class SwipeActionView : FrameLayout {
             }
         }
     }
-
-    //endregion
-
-    //region Actual SwipeActionView behavior code
 
     private fun prepareDrag(e: MotionEvent) {
         checkTouchIsValid(e)
@@ -937,8 +917,6 @@ class SwipeActionView : FrameLayout {
         delta < 0 -> minLeftActivationDistance
         else -> minRightActivationDistance
     }
-
-    //endregion
 
     companion object {
         private const val LONG_PRESS = 1
