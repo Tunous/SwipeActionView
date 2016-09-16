@@ -16,15 +16,15 @@
 
 package me.thanel.swipeactionview.sample;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
 
 import me.thanel.swipeactionview.SwipeActionView;
-import me.thanel.swipeactionview.SwipeDirection;
 import me.thanel.swipeactionview.SwipeGestureListener;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,12 +33,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        SwipeActionView swipeLeft = (SwipeActionView) findViewById(R.id.swipe_left);
-        final SwipeActionView swipeRight = (SwipeActionView) findViewById(R.id.swipe_right);
-        SwipeActionView swipeBoth = (SwipeActionView) findViewById(R.id.swipe_both);
-        SwipeActionView swipeToggle = (SwipeActionView) findViewById(R.id.swipe_to_toggle);
-        final SwipeActionView swipeRipples = (SwipeActionView) findViewById(R.id.swipe_ripples);
 
         SwipeGestureListener swipeGestureListener = new SwipeGestureListener() {
             @Override
@@ -50,53 +44,57 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onSwipedRight(@NotNull SwipeActionView swipeActionView) {
                 showToast(true);
+                return true;
+            }
+        };
 
-                swipeActionView.moveToOriginalPosition(2000);
+        SwipeActionView swipeRight = (SwipeActionView) findViewById(R.id.swipe_right);
+        swipeRight.setSwipeGestureListener(swipeGestureListener);
 
+        SwipeActionView swipeLeft = (SwipeActionView) findViewById(R.id.swipe_left);
+        swipeLeft.setSwipeGestureListener(swipeGestureListener);
+
+        SwipeActionView swipeBoth = (SwipeActionView) findViewById(R.id.swipe_both);
+        swipeBoth.setSwipeGestureListener(swipeGestureListener);
+
+        SwipeActionView swipeWithRipples = (SwipeActionView) findViewById(R.id.swipe_with_ripples);
+        swipeWithRipples.setSwipeGestureListener(swipeGestureListener);
+
+        SwipeActionView swipeCardView = (SwipeActionView) findViewById(R.id.swipe_card_view);
+        swipeCardView.setSwipeGestureListener(swipeGestureListener);
+
+        SwipeGestureListener delayedSwipeGestureListener = new SwipeGestureListener() {
+            @Override
+            public boolean onSwipedLeft(@NotNull SwipeActionView swipeActionView) {
+                swipeActionView.moveToOriginalPosition(1000);
+                return false;
+            }
+
+            @Override
+            public boolean onSwipedRight(@NotNull SwipeActionView swipeActionView) {
+                swipeActionView.moveToOriginalPosition(500);
                 return false;
             }
         };
 
-        swipeLeft.setSwipeGestureListener(swipeGestureListener);
-        swipeRight.setSwipeGestureListener(swipeGestureListener);
-        swipeBoth.setSwipeGestureListener(swipeGestureListener);
+        SwipeActionView swipeDelayed = (SwipeActionView) findViewById(R.id.swipe_delayed);
+        swipeDelayed.setSwipeGestureListener(delayedSwipeGestureListener);
 
-        swipeToggle.setSwipeGestureListener(new SwipeGestureListener() {
-            @Override
-            public boolean onSwipedLeft(@NotNull SwipeActionView swipeActionView) {
-                showToast(false);
-                return true;
-            }
+        SwipeActionView swipeCustomLayout = (SwipeActionView) findViewById(R.id.swipe_layout);
+        swipeCustomLayout.setSwipeGestureListener(swipeGestureListener);
 
+        Button button = (Button) findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onSwipedRight(@NotNull SwipeActionView swipeActionView) {
-                boolean enabled = !swipeActionView.hasEnabledDirection(SwipeDirection.Left);
-                swipeActionView.setDirectionEnabled(SwipeDirection.Left, enabled);
-                return true;
-            }
-        });
-
-        swipeRipples.setSwipeGestureListener(new SwipeGestureListener() {
-            @Override
-            public boolean onSwipedLeft(@NotNull SwipeActionView swipeActionView) {
-                swipeRipples.setRippleColor(SwipeDirection.Left, -1);
-                swipeRipples.setRippleColor(SwipeDirection.Right, -1);
-                return true;
-            }
-
-            @Override
-            public boolean onSwipedRight(@NotNull SwipeActionView swipeActionView) {
-                swipeRipples.setRippleColor(SwipeDirection.Left, Color.GREEN);
-                swipeRipples.setRippleColor(SwipeDirection.Right, Color.GREEN);
-                return true;
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, R.string.clicked, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void showToast(Boolean swipedRight) {
         int resId = swipedRight ? R.string.swiped_right : R.string.swiped_left;
-        String text = getString(resId);
 
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, resId, Toast.LENGTH_SHORT).show();
     }
 }

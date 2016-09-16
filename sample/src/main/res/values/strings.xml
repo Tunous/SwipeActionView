@@ -22,4 +22,12 @@
     <string name="swiped_left">Swiped left</string>
     <string name="swiped_right">Swiped right</string>
     <string name="swipe_right_to_toggle">Swipe right to toggle left-swipe enabled</string>
+    <string name="swipe_able_card_view">Swipe-able CardView</string>
+    <string name="animated_ripple">Displays animated ripple when swiped</string>
+    <string name="returns_after_delay">Returns to original position after delay</string>
+    <string name="can_be_customized">This can also be customized</string>
+    <string name="advanced_layout">Advanced layout</string>
+    <string name="full_control">You have full control over look of SwipeActionView</string>
+    <string name="click_me">Click me!</string>
+    <string name="clicked">Clicked</string>
 </resources>
