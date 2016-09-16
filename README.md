@@ -1,7 +1,6 @@
 # Swipe Action View
 
 [![Build Status](https://travis-ci.com/Tunous/SwipeActionView.svg?token=axaKPJmKXjhfPLy7VR2f&branch=master)](https://travis-ci.com/Tunous/SwipeActionView)
-[![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Tunous/SwipeActionView/blobl/master/LICENSE)
 
 SwipeActionView is a swipe-able view, which allows users to perform actions by swiping it to the left or right side.
 
@@ -229,6 +228,23 @@ This library wouldn't be created without help and work of [Brian Robles].
 His [KarmaMachine] Reddit application was my direct inspiration when I was creating it for my own application.
 He also originally created `SwipeRippleDrawable` and allowed me to [reimplement][SwipeRippleDrawable] it for purposes of this library.
 **Huge thanks!**
+
+# <a id="license">License</a>
+```
+Copyright © 2016 Łukasz Rutkowski
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
 
 [sample]: https://github.com/Tunous/SwipeActionView/tree/master/sample
 [releases page]: https://github.com/Tunous/SwipeActionView/releases
