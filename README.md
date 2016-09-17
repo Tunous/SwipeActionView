@@ -145,9 +145,9 @@ In order to be able to perform actions when users swipe the `SwipeActionView` yo
 
 `SwipeGestureListener` consists of two methods. One for performing an action when the view is swiped to the left and one when it is swiped to the right side.
 
-Each of these methods returns. `Boolean` as a result. Most of the time you'll want to return `true` here. Returning `false` is designed for advanced usage. By doing so the view won't be automatically animated to the original position but will stay at the full translation and not allow users to swipe it back. This allows you to manipulate the content of the visible background view. One great example of this is displaying progress wheel and manually returning the view to the original position once some long action finishes execution.
+Each of these methods returns `Boolean` as a result. Most of the time you'll want to return `true` here. Returning `false` is designed for advanced usage. By doing so the view won't be automatically animated to the original position but will stay at the full translation. This allows you to manipulate content of the visible background view. One great example of this is displaying progress wheel and manually returning view to the original position once some long action finishes execution.
 
-To return the view to its original position you can call the `moveToOriginalPosition()` method at any time. Make sure that you don't forget to do it or users won't be able to swipe that view anymore.
+To return view to its original position you can call the `moveToOriginalPosition()` method at any time.
 
 ```java
 swipeView.setSwipeGestureListener(new SwipeGestureListener() {
