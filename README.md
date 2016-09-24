@@ -1,6 +1,6 @@
 # Swipe Action View
 
-[![Build Status](https://travis-ci.com/Tunous/SwipeActionView.svg?token=axaKPJmKXjhfPLy7VR2f&branch=master)](https://travis-ci.com/Tunous/SwipeActionView)
+[![Build Status](https://travis-ci.org/Tunous/SwipeActionView.svg?branch=master)](https://travis-ci.org/Tunous/SwipeActionView)
 [![Release](https://jitpack.io/v/Tunous/SwipeActionView.svg)](https://jitpack.io/#Tunous/SwipeActionView)
 
 SwipeActionView is a swipe-able view, which allows users to perform actions by swiping it to the left or right side.
