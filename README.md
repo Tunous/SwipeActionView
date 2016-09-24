@@ -7,6 +7,7 @@ SwipeActionView is a swipe-able view, which allows users to perform actions by s
 
 # Table of contents
 - [Preview](#preview)
+- [Installation](#installation)
 - [Quick Example](#quick-example)
 - [Sample](#sample)
 - [The idea](#idea)
@@ -31,6 +32,24 @@ SwipeActionView is a swipe-able view, which allows users to perform actions by s
 # <a id="preview">Preview</a>
 
 ![Preview](art/preview.gif)
+
+# <a id="installation">Installation</a>
+
+Add the JitPack repository to your root `build.gradle`:
+```
+allprojects {
+    repositories {
+        maven { url "https://jitpack.io" }
+    }
+}
+```
+
+And add the dependency in your module's `build.gradle`:
+```
+dependencies {
+    compile 'com.github.Tunous:SwipeActionView:0.1.0'
+}
+```
 
 # <a id="quick-example">Quick example</a>
 
