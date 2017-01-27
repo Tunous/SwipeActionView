@@ -58,12 +58,12 @@ class SwipeActionView : FrameLayout {
     /**
      * The duration in milliseconds we will wait to see if a touch event is a tap or a scroll.
      */
-    private val tapTimeout = ViewConfiguration.getTapTimeout()
+    private val tapTimeout = ViewConfiguration.getTapTimeout().toLong()
 
     /**
      * The duration in milliseconds we will wait to see if a touch event is a long tap.
      */
-    private val longPressTimeout = tapTimeout + ViewConfiguration.getLongPressTimeout()
+    private val longPressTimeout = tapTimeout + ViewConfiguration.getLongPressTimeout().toLong()
 
     /**
      * The duration of the pressed state.
@@ -127,14 +127,14 @@ class SwipeActionView : FrameLayout {
     private var canPerformSwipeAction = true
 
     /**
-     * The x coordinate of the initial motion event.
+     * The raw x coordinate of the initial motion event.
      */
-    private var initialX = 0f
+    private var initialRawX = 0f
 
     /**
-     * The y coordinate of the initial motion event.
+     * The raw y coordinate of the initial motion event.
      */
-    private var initialY = 0f
+    private var initialRawY = 0f
 
     /**
      * The x coordinate of the last received move motion event.
@@ -425,6 +425,7 @@ class SwipeActionView : FrameLayout {
      * @param enabled Whether swiping in the specified direction should be enabled.
      * @throws IllegalAccessException When view for the specified direction doesn't exist.
      */
+    @Suppress("unused")
     fun setDirectionEnabled(direction: SwipeDirection, enabled: Boolean) {
         val view = getViewForDirection(direction) ?:
                 throw IllegalArgumentException("View for the specified direction doesn't exist.")
@@ -456,6 +457,7 @@ class SwipeActionView : FrameLayout {
      * @param direction The direction of the swipe gesture.
      * @param color The ripple color.
      */
+    @Suppress("unused")
     fun setRippleColor(direction: SwipeDirection, @ColorInt color: Int) = when (direction) {
         SwipeDirection.Left -> leftSwipeRipple.color = color
         SwipeDirection.Right -> rightSwipeRipple.color = color
@@ -587,8 +589,8 @@ class SwipeActionView : FrameLayout {
         velocityTracker.addMovement(e)
 
         lastX = e.rawX
-        initialX = e.rawX
-        initialY = e.rawY
+        initialRawX = e.rawX
+        initialRawY = e.rawY
 
         // Stop the animator to allow "catching" of view.
         // By "catching" I mean the possibility for user to click on the view and continue swiping
@@ -623,10 +625,12 @@ class SwipeActionView : FrameLayout {
     private fun prepareMessages(e: MotionEvent) {
         if (!isClickable && !isLongClickable) return
 
-        handler.sendEmptyMessageAtTime(TAP, e.downTime + tapTimeout)
+        handler.x = e.x
+        handler.y = e.y
+        handler.sendEmptyMessageDelayed(TAP, tapTimeout)
 
         if (isLongClickable) {
-            handler.sendEmptyMessageAtTime(LONG_PRESS, e.downTime + longPressTimeout)
+            handler.sendEmptyMessageDelayed(LONG_PRESS, longPressTimeout)
         }
     }
 
@@ -667,13 +671,13 @@ class SwipeActionView : FrameLayout {
      *
      * @return Whether the user has moved their finger vertically.
      */
-    private fun hasMovedVertically(e: MotionEvent) = Math.abs(e.rawY - initialY) >= touchSlop
+    private fun hasMovedVertically(e: MotionEvent) = Math.abs(e.rawY - initialRawY) >= touchSlop
 
     /**
      * Tells whether the drag can be started by the user based on provided motion event.
      */
     private fun canStartDrag(e: MotionEvent): Boolean {
-        val movedFarEnough = Math.abs(e.rawX - initialX) > touchSlop
+        val movedFarEnough = Math.abs(e.rawX - initialRawX) > touchSlop
         return movedFarEnough && isTouchValid
     }
 
@@ -691,11 +695,11 @@ class SwipeActionView : FrameLayout {
     }
 
     private fun startPress(x: Float, y: Float) {
-        isPressed = true
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             drawableHotspotChanged(x, y)
         }
+
+        isPressed = true
     }
 
     /**
@@ -920,6 +924,9 @@ class SwipeActionView : FrameLayout {
         private const val TAP = 2
 
         private class PressTimeoutHandler(private val swipeActionView: SwipeActionView) : Handler() {
+            var x = 0f
+            var y = 0f
+
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     LONG_PRESS -> {
@@ -927,7 +934,7 @@ class SwipeActionView : FrameLayout {
                         swipeActionView.performLongClick()
                     }
                     TAP -> {
-                        swipeActionView.startPress(swipeActionView.initialX, swipeActionView.initialY)
+                        swipeActionView.startPress(x, y)
                     }
                 }
             }
