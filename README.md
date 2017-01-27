@@ -255,7 +255,7 @@ He also created `SwipeRippleDrawable` and allowed me to [reimplement][SwipeRippl
 
 # <a id="license">License</a>
 ```
-Copyright © 2016 Łukasz Rutkowski
+Copyright © 2016-2017 Łukasz Rutkowski
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
