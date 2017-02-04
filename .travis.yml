@@ -7,3 +7,4 @@ android:
     - tools # https://github.com/travis-ci/docs-travis-ci-com/issues/779
     - build-tools-25.0.2
     - android-25
+    - extra-android-support
