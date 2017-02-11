@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/Tunous/SwipeActionView.svg?branch=master)](https://travis-ci.org/Tunous/SwipeActionView)
 [![Release](https://jitpack.io/v/Tunous/SwipeActionView.svg)](https://jitpack.io/#Tunous/SwipeActionView)
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-SwipeActionView-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/5250)
 
 SwipeActionView is a swipe-able view, which allows users to perform actions by swiping it to the left or right side.
 
