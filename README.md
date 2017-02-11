@@ -48,7 +48,7 @@ allprojects {
 And add the dependency in your module's `build.gradle`:
 ```groovy
 dependencies {
-    compile 'com.github.Tunous:SwipeActionView:0.1.0'
+    compile 'com.github.Tunous:SwipeActionView:1.0.0'
 }
 ```
 
