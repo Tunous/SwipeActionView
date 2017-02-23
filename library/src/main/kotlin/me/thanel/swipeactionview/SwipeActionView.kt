@@ -549,7 +549,7 @@ class SwipeActionView : FrameLayout {
             rightSwipeView?.let { drawChild(canvas, it, drawingTime) }
         }
 
-        if (!alwaysDrawBackground) {
+        if (!alwaysDrawBackground && background != null) {
             // Restore original bounds only after drawing background views
             canvas.restoreToCount(saveCount)
         }
