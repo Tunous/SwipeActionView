@@ -56,10 +56,10 @@ internal fun radius(x: Double, y: Double) = Math.sqrt(Math.pow(x, 2.0) + Math.po
  * @param view View from which to get bounds.
  * @param op How the bounds are modified.
  * @param includePadding Whether padding should reduce size of drawing bounds.
- * @param drawAction The draw actions to perform.
+ * @param drawAction The draw action to perform.
  */
-internal fun Canvas.drawInBoundsOf(view: View, op: Region.Op, includePadding: Boolean = false,
-                                   drawAction: (Int) -> Unit) {
+internal fun <R> Canvas.drawInBoundsOf(view: View, op: Region.Op, includePadding: Boolean = false,
+                                       drawAction: (Int) -> R): R {
     val saveCount = save()
 
     val translationX = view.translationX.toInt()
@@ -80,7 +80,9 @@ internal fun Canvas.drawInBoundsOf(view: View, op: Region.Op, includePadding: Bo
     bounds.set(left, top, right, bottom)
     clipRect(bounds, op)
 
-    drawAction(saveCount)
+    val result = drawAction(saveCount)
 
     restoreToCount(saveCount)
+
+    return result
 }

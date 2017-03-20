@@ -242,11 +242,6 @@ class SwipeActionView : FrameLayout {
      */
     var rightSwipeAnimator: SwipeActionViewAnimator? = null
 
-    /**
-     * Used to restore canvas when drawing container.
-     */
-    private var saveCount = 0
-
     constructor(context: Context) : super(context) {
         init(context, null)
     }
@@ -534,31 +529,15 @@ class SwipeActionView : FrameLayout {
             super.draw(canvas)
         } else {
             canvas.drawInBoundsOf(container, Region.Op.DIFFERENCE) {
-                saveCount = it
                 super.draw(canvas)
             }
         }
     }
 
     override fun dispatchDraw(canvas: Canvas) {
-        val translation = container.translationX
-        val drawingTime = drawingTime
+        super.dispatchDraw(canvas)
 
-        if (alwaysDrawBackground || translation < 0) {
-            leftSwipeView?.let { drawChild(canvas, it, drawingTime) }
-        }
-        if (alwaysDrawBackground || translation > 0) {
-            rightSwipeView?.let { drawChild(canvas, it, drawingTime) }
-        }
-
-        if (!alwaysDrawBackground && background != null) {
-            // Restore original bounds only after drawing background views
-            canvas.restoreToCount(saveCount)
-        }
-
-        drawChild(canvas, container, drawingTime)
-
-        canvas.drawInBoundsOf(container, Region.Op.INTERSECT, rippleTakesPadding) {
+        canvas.drawInBoundsOf(container, Region.Op.REPLACE, rippleTakesPadding) {
             if (isInEditMode) {
                 when (previewRipple) {
                     SwipeDirection.LEFT -> {
@@ -580,6 +559,16 @@ class SwipeActionView : FrameLayout {
             }
             if (rightSwipeRipple.hasColor && rightSwipeRipple.isRunning) {
                 rightSwipeRipple.draw(canvas)
+            }
+        }
+    }
+
+    override fun drawChild(canvas: Canvas, child: View, drawingTime: Long): Boolean {
+        return if (alwaysDrawBackground || child != container) {
+            super.drawChild(canvas, child, drawingTime)
+        } else {
+            canvas.drawInBoundsOf(container, Region.Op.REPLACE) {
+                super.drawChild(canvas, child, drawingTime)
             }
         }
     }
