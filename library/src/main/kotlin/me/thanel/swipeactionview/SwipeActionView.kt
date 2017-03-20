@@ -19,6 +19,7 @@ package me.thanel.swipeactionview
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Rect
@@ -78,6 +79,7 @@ class SwipeActionView : FrameLayout {
     /**
      * The velocity tracker.
      */
+    @SuppressLint("Recycle")
     private val velocityTracker = VelocityTracker.obtain()
 
     /**
