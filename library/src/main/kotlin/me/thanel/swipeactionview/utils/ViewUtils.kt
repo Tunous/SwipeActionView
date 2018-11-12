@@ -17,13 +17,13 @@
 package me.thanel.swipeactionview.utils
 
 import android.annotation.SuppressLint
-import androidx.core.view.GravityCompat
-import androidx.core.view.MarginLayoutParamsCompat
-import androidx.core.view.ViewCompat
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.core.view.GravityCompat
+import androidx.core.view.MarginLayoutParamsCompat
+import androidx.core.view.ViewCompat
 
 /**
  * Set both vertical and horizontal scale of the view to the specified value.

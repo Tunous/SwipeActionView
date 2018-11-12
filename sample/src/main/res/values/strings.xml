@@ -21,7 +21,6 @@
     <string name="can_swipe_in_both_directions">Can swipe in both directions</string>
     <string name="swiped_left">Swiped left</string>
     <string name="swiped_right">Swiped right</string>
-    <string name="swipe_right_to_toggle">Swipe right to toggle left-swipe enabled</string>
     <string name="swipe_able_card_view">Swipe-able CardView</string>
     <string name="animated_ripple">Displays animated ripple when swiped</string>
     <string name="returns_after_delay">Returns to original position after delay</string>

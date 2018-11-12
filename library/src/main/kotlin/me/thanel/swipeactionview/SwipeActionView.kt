@@ -27,7 +27,6 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
 import android.os.Message
-import androidx.annotation.ColorInt
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.VelocityTracker
@@ -35,8 +34,16 @@ import android.view.View
 import android.view.ViewConfiguration
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
+import androidx.annotation.ColorInt
 import me.thanel.swipeactionview.animation.SwipeActionViewAnimator
-import me.thanel.swipeactionview.utils.*
+import me.thanel.swipeactionview.utils.clamp
+import me.thanel.swipeactionview.utils.drawInBoundsOf
+import me.thanel.swipeactionview.utils.isRightAligned
+import me.thanel.swipeactionview.utils.marginEnd
+import me.thanel.swipeactionview.utils.marginStart
+import me.thanel.swipeactionview.utils.radius
+import me.thanel.swipeactionview.utils.setBoundsFrom
+import me.thanel.swipeactionview.utils.totalWidth
 
 /**
  * View that allows users to perform various actions by swiping it to the left or right sides.
@@ -240,19 +247,28 @@ class SwipeActionView : FrameLayout {
         init(context, attrs)
     }
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
         init(context, attrs)
     }
 
     private fun init(context: Context, attrs: AttributeSet?) {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.SwipeActionView)
-        val swipeLeftRippleColor = typedArray.getColorStateList(R.styleable.SwipeActionView_sav_swipeLeftRippleColor)
-        val swipeRightRippleColor = typedArray.getColorStateList(R.styleable.SwipeActionView_sav_swipeRightRippleColor)
-        rippleTakesPadding = typedArray.getBoolean(R.styleable.SwipeActionView_sav_rippleTakesPadding, false)
+        val swipeLeftRippleColor =
+            typedArray.getColorStateList(R.styleable.SwipeActionView_sav_swipeLeftRippleColor)
+        val swipeRightRippleColor =
+            typedArray.getColorStateList(R.styleable.SwipeActionView_sav_swipeRightRippleColor)
+        rippleTakesPadding =
+                typedArray.getBoolean(R.styleable.SwipeActionView_sav_rippleTakesPadding, false)
 
         if (isInEditMode) {
-            previewBackground = typedArray.getInt(R.styleable.SwipeActionView_sav_tools_previewBackground, 0)
-            previewRipple = typedArray.getInt(R.styleable.SwipeActionView_sav_tools_previewRipple, 0)
+            previewBackground =
+                    typedArray.getInt(R.styleable.SwipeActionView_sav_tools_previewBackground, 0)
+            previewRipple =
+                    typedArray.getInt(R.styleable.SwipeActionView_sav_tools_previewRipple, 0)
         }
 
         typedArray.recycle()
@@ -266,7 +282,7 @@ class SwipeActionView : FrameLayout {
     }
 
     override fun verifyDrawable(who: Drawable) =
-            who == leftSwipeRipple || who == rightSwipeRipple || super.verifyDrawable(who)
+        who == leftSwipeRipple || who == rightSwipeRipple || super.verifyDrawable(who)
 
     override fun onFinishInflate() {
         super.onFinishInflate()
@@ -353,8 +369,9 @@ class SwipeActionView : FrameLayout {
     private fun requireOppositeGravity(view: View?) {
         if (view != null) {
             throw IllegalStateException(
-                    "Background views must have opposite horizontal gravity." +
-                            " One aligned to start and one to end.")
+                "Background views must have opposite horizontal gravity." +
+                        " One aligned to start and one to end."
+            )
         }
     }
 
@@ -413,8 +430,8 @@ class SwipeActionView : FrameLayout {
      */
     @Suppress("unused")
     fun setDirectionEnabled(direction: SwipeDirection, enabled: Boolean) {
-        val view = getViewForDirection(direction) ?:
-                throw IllegalArgumentException("View for the specified direction doesn't exist.")
+        val view = getViewForDirection(direction)
+            ?: throw IllegalArgumentException("View for the specified direction doesn't exist.")
         view.visibility = if (enabled) View.VISIBLE else View.GONE
     }
 
@@ -807,10 +824,12 @@ class SwipeActionView : FrameLayout {
      * @param startDelay The amount of delay, in milliseconds, to wait before starting animation,
      * @param onEnd The callback to be executed once animation finishes.
      */
-    private fun animateContainer(targetTranslationX: Float,
-                                 duration: Long,
-                                 startDelay: Long = 0,
-                                 onEnd: () -> Unit) {
+    private fun animateContainer(
+        targetTranslationX: Float,
+        duration: Long,
+        startDelay: Long = 0,
+        onEnd: () -> Unit
+    ) {
         with(animator) {
             setStartDelay(startDelay)
             setDuration(duration)
@@ -885,7 +904,8 @@ class SwipeActionView : FrameLayout {
         private const val LONG_PRESS = 1
         private const val TAP = 2
 
-        private class PressTimeoutHandler(private val swipeActionView: SwipeActionView) : Handler() {
+        private class PressTimeoutHandler(private val swipeActionView: SwipeActionView) :
+            Handler() {
             var x = 0f
             var y = 0f
 

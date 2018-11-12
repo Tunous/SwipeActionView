@@ -20,22 +20,24 @@ import android.animation.ObjectAnimator
 import android.graphics.Canvas
 import android.graphics.ColorFilter
 import android.graphics.Paint
+import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
-import androidx.annotation.ColorInt
 import android.util.Property
+import androidx.annotation.ColorInt
 
 internal class SwipeRippleDrawable : Drawable(), Animatable {
     companion object {
-        private val PROGRESS = object : Property<SwipeRippleDrawable, Float>(Float::class.java, "progress") {
-            override fun get(drawable: SwipeRippleDrawable) = drawable.progress
+        private val PROGRESS =
+            object : Property<SwipeRippleDrawable, Float>(Float::class.java, "progress") {
+                override fun get(drawable: SwipeRippleDrawable) = drawable.progress
 
-            override fun set(drawable: SwipeRippleDrawable, value: Float) {
-                drawable.progress = value
-                drawable.invalidateSelf()
+                override fun set(drawable: SwipeRippleDrawable, value: Float) {
+                    drawable.progress = value
+                    drawable.invalidateSelf()
+                }
             }
-        }
     }
 
     private val animator = ObjectAnimator.ofFloat(this, PROGRESS, 0f, 1f)
@@ -68,7 +70,7 @@ internal class SwipeRippleDrawable : Drawable(), Animatable {
 
     var color: Int
         @ColorInt get() = paint.color
-        @ColorInt set(value) {
+        set(@ColorInt value) {
             paint.color = value
             invalidateSelf()
         }
@@ -98,7 +100,7 @@ internal class SwipeRippleDrawable : Drawable(), Animatable {
         drawBounds.set(bounds)
     }
 
-    override fun getOpacity() = -1
+    override fun getOpacity() = PixelFormat.OPAQUE
 
     override fun setColorFilter(colorFilter: ColorFilter) {
     }

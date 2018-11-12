@@ -21,7 +21,7 @@ enum class SwipeDirection {
     Right;
 
     companion object {
-        internal val LEFT = 1
-        internal val RIGHT = 2
+        internal const val LEFT = 1
+        internal const val RIGHT = 2
     }
 }
