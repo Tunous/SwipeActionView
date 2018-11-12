@@ -31,6 +31,7 @@
         <item name="android:paddingTop">@dimen/activity_vertical_margin</item>
         <item name="android:minHeight">?listPreferredItemHeight</item>
         <item name="android:gravity">center_vertical</item>
+        <item name="android:background">@android:color/background_light</item>
     </style>
 
     <style name="Icon">

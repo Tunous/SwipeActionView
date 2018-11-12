@@ -20,7 +20,6 @@
         <attr name="sav_swipeLeftRippleColor" format="color|reference"/>
         <attr name="sav_swipeRightRippleColor" format="color|reference"/>
         <attr name="sav_rippleTakesPadding" format="boolean"/>
-        <attr name="sav_alwaysDrawBackground" format="boolean"/>
 
         <attr name="sav_tools_previewBackground" format="integer">
             <!-- Preview background for swipe left gesture -->

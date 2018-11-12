@@ -89,8 +89,7 @@
 
         <me.thanel.swipeactionview.SwipeActionView
             android:id="@+id/swipe_card_view"
-            style="@style/SwipeItem"
-            app:sav_alwaysDrawBackground="true">
+            style="@style/SwipeItem">
 
             <ImageView style="@style/Icon"/>
 
@@ -178,8 +177,7 @@
 
         <me.thanel.swipeactionview.SwipeActionView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:sav_alwaysDrawBackground="true">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:layout_width="24dp"

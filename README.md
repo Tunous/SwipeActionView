@@ -20,7 +20,6 @@ SwipeActionView is a swipe-able view, which allows users to perform actions by s
 - [Ripple animations](#ripple-animations)
 - [Click listeners](#click-listeners)
 - [Attributes](#attr)
-  - [sav_alwaysDrawBackground](#attr-alwaysDrawBackground)
   - [sav_rippleTakesPadding](#attr-rippleTakesPadding)
   - [sav_swipeLeftRippleColor](#attr-swipeLeftRippleColor)
   - [sav_swipeRightRippleColor](#attr-swipeRightRippleColor)
@@ -222,9 +221,6 @@ swipeView.setRippleColor(SwipeDirection.Right, Color.BLUE);
 The only exception is that you shouldn't add click listeners for background views. This library wasn't designed to add support for this behavior. If it's possible then, that's only a positive side effect. You are better of with using libraries such as [AndroidSwipeLayout] instead.
 
 # <a id="attr">Attributes</a>
-
-#### <a id="attr-alwaysDrawBackground">`app:sav_alwaysDrawBackground="true|false"`</a>
-To reduce overdraw `SwipeActionView` only draws parts of the main background and background views which become visible due to swipe gesture. This is not always what you want as it could break any container views with transparency. A good example where you would want to use this attribute is when you had `CardView` as your container.
 
 #### <a id="attr-rippleTakesPadding">`app:sav_rippleTakesPadding="true|false"`</a>
 If you want ripple effect to take padding together with container view you can set this attribute to true.

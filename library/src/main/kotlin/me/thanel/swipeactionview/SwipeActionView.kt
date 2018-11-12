@@ -23,7 +23,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Rect
-import android.graphics.Region
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
@@ -199,15 +198,6 @@ class SwipeActionView : FrameLayout {
     private var rippleTakesPadding = false
 
     /**
-     * Tells whether the background views and main background should be always drawn - no matter if
-     * they are behind the container or not.
-     *
-     * By default they are only drawn when not located under container view. This setting is useful
-     * when dealing with transparent or special views such as `CardView`.
-     */
-    private var alwaysDrawBackground = false
-
-    /**
      * Id of background to preview. Controlled by `sav_tools_previewBackground` attribute.
      */
     private var previewBackground = 0
@@ -259,7 +249,6 @@ class SwipeActionView : FrameLayout {
         val swipeLeftRippleColor = typedArray.getColorStateList(R.styleable.SwipeActionView_sav_swipeLeftRippleColor)
         val swipeRightRippleColor = typedArray.getColorStateList(R.styleable.SwipeActionView_sav_swipeRightRippleColor)
         rippleTakesPadding = typedArray.getBoolean(R.styleable.SwipeActionView_sav_rippleTakesPadding, false)
-        alwaysDrawBackground = typedArray.getBoolean(R.styleable.SwipeActionView_sav_alwaysDrawBackground, false)
 
         if (isInEditMode) {
             previewBackground = typedArray.getInt(R.styleable.SwipeActionView_sav_tools_previewBackground, 0)
@@ -276,8 +265,8 @@ class SwipeActionView : FrameLayout {
         rightSwipeRipple.callback = this
     }
 
-    override fun verifyDrawable(drawable: Drawable?) =
-            drawable == leftSwipeRipple || drawable == rightSwipeRipple
+    override fun verifyDrawable(who: Drawable) =
+            who == leftSwipeRipple || who == rightSwipeRipple || super.verifyDrawable(who)
 
     override fun onFinishInflate() {
         super.onFinishInflate()
@@ -524,20 +513,10 @@ class SwipeActionView : FrameLayout {
         return dragging
     }
 
-    override fun draw(canvas: Canvas) {
-        if (alwaysDrawBackground) {
-            super.draw(canvas)
-        } else {
-            canvas.drawInBoundsOf(container, Region.Op.DIFFERENCE) {
-                super.draw(canvas)
-            }
-        }
-    }
-
     override fun dispatchDraw(canvas: Canvas) {
         super.dispatchDraw(canvas)
 
-        canvas.drawInBoundsOf(container, Region.Op.REPLACE, rippleTakesPadding) {
+        canvas.drawInBoundsOf(container, includePadding = rippleTakesPadding) {
             if (isInEditMode) {
                 when (previewRipple) {
                     SwipeDirection.LEFT -> {
@@ -559,16 +538,6 @@ class SwipeActionView : FrameLayout {
             }
             if (rightSwipeRipple.hasColor && rightSwipeRipple.isRunning) {
                 rightSwipeRipple.draw(canvas)
-            }
-        }
-    }
-
-    override fun drawChild(canvas: Canvas, child: View, drawingTime: Long): Boolean {
-        return if (alwaysDrawBackground || child != container) {
-            super.drawChild(canvas, child, drawingTime)
-        } else {
-            canvas.drawInBoundsOf(container, Region.Op.REPLACE) {
-                super.drawChild(canvas, child, drawingTime)
             }
         }
     }
@@ -806,7 +775,7 @@ class SwipeActionView : FrameLayout {
                 swipeGestureListener?.onSwipedLeft(this)
             }
 
-            if (shouldFinish ?: true) {
+            if (shouldFinish != false) {
                 moveToOriginalPosition(200)
             }
         }
@@ -863,14 +832,16 @@ class SwipeActionView : FrameLayout {
         val animator: SwipeActionViewAnimator?
         val swipeDistance = container.translationX
 
-        if (swipeDistance < 0) {
-            swipeView = leftSwipeView
-            animator = leftSwipeAnimator
-        } else if (swipeDistance > 0) {
-            swipeView = rightSwipeView
-            animator = rightSwipeAnimator
-        } else {
-            return
+        when {
+            swipeDistance < 0 -> {
+                swipeView = leftSwipeView
+                animator = leftSwipeAnimator
+            }
+            swipeDistance > 0 -> {
+                swipeView = rightSwipeView
+                animator = rightSwipeAnimator
+            }
+            else -> return
         }
 
         if (swipeView == null || animator == null) return
