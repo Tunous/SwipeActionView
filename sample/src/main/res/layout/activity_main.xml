@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright © 2016-2018 Łukasz Rutkowski
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +14,7 @@
   ~ limitations under the License.
   -->
 
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -33,11 +31,11 @@
             android:id="@+id/swipe_right"
             style="@style/SwipeItem">
 
-            <ImageView style="@style/Icon"/>
+            <ImageView style="@style/Icon" />
 
             <TextView
                 style="@style/Container"
-                android:text="@string/can_swipe_right"/>
+                android:text="@string/can_swipe_right" />
         </me.thanel.swipeactionview.SwipeActionView>
 
         <me.thanel.swipeactionview.SwipeActionView
@@ -46,11 +44,11 @@
 
             <ImageView
                 style="@style/Icon"
-                android:layout_gravity="end|center_vertical"/>
+                android:layout_gravity="end|center_vertical" />
 
             <TextView
                 style="@style/Container"
-                android:text="@string/can_swipe_left"/>
+                android:text="@string/can_swipe_left" />
         </me.thanel.swipeactionview.SwipeActionView>
 
         <me.thanel.swipeactionview.SwipeActionView
@@ -58,15 +56,15 @@
             style="@style/SwipeItem"
             app:sav_tools_previewBackground="swipeLeft">
 
-            <ImageView style="@style/Icon"/>
+            <ImageView style="@style/Icon" />
 
             <ImageView
                 style="@style/Icon"
-                android:layout_gravity="end|center_vertical"/>
+                android:layout_gravity="end|center_vertical" />
 
             <TextView
                 style="@style/Container"
-                android:text="@string/can_swipe_in_both_directions"/>
+                android:text="@string/can_swipe_in_both_directions" />
         </me.thanel.swipeactionview.SwipeActionView>
 
         <me.thanel.swipeactionview.SwipeActionView
@@ -76,16 +74,16 @@
             app:sav_swipeRightRippleColor="@color/colorAccent"
             app:sav_tools_previewRipple="swipeRight">
 
-            <ImageView style="@style/Icon"/>
+            <ImageView style="@style/Icon" />
 
             <ImageView
                 style="@style/Icon"
-                android:layout_gravity="end|center_vertical"/>
+                android:layout_gravity="end|center_vertical" />
 
             <TextView
                 style="@style/Container"
                 android:elevation="8dp"
-                android:text="@string/animated_ripple"/>
+                android:text="@string/animated_ripple" />
         </me.thanel.swipeactionview.SwipeActionView>
 
         <me.thanel.swipeactionview.SwipeActionView
@@ -94,11 +92,11 @@
             app:sav_swipeLeftRippleColor="@color/colorPrimary"
             app:sav_tools_previewRipple="swipeLeft">
 
-            <ImageView style="@style/Icon"/>
+            <ImageView style="@style/Icon" />
 
             <ImageView
                 style="@style/Icon"
-                android:layout_gravity="end|center_vertical"/>
+                android:layout_gravity="end|center_vertical" />
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -108,7 +106,7 @@
 
                 <TextView
                     style="@style/Container"
-                    android:text="@string/swipe_able_card_view"/>
+                    android:text="@string/swipe_able_card_view" />
             </androidx.cardview.widget.CardView>
         </me.thanel.swipeactionview.SwipeActionView>
 
@@ -116,22 +114,22 @@
             android:id="@+id/swipe_delayed"
             style="@style/SwipeItem">
 
-            <ImageView style="@style/Icon"/>
+            <ImageView style="@style/Icon" />
 
             <ImageView
                 style="@style/Icon"
-                android:layout_gravity="end|center_vertical"/>
+                android:layout_gravity="end|center_vertical" />
 
             <TextView
                 style="@style/Container"
-                android:text="@string/returns_after_delay"/>
+                android:text="@string/returns_after_delay" />
         </me.thanel.swipeactionview.SwipeActionView>
 
         <me.thanel.swipeactionview.SwipeActionView
             android:id="@+id/swipe_layout"
             style="@style/SwipeItem">
 
-            <ImageView style="@style/Icon"/>
+            <ImageView style="@style/Icon" />
 
             <TextView
                 android:layout_width="90dp"
@@ -140,7 +138,7 @@
                 android:gravity="center"
                 android:padding="8dp"
                 android:text="@string/can_be_customized"
-                android:textColor="@android:color/white"/>
+                android:textColor="@android:color/white" />
 
             <LinearLayout style="@style/Container">
 
@@ -148,13 +146,13 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_gravity="center_vertical"
-                    android:src="@mipmap/ic_launcher"/>
+                    android:src="@mipmap/ic_launcher" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
                     android:layout_marginStart="@dimen/activity_horizontal_margin"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
                     android:orientation="vertical">
 
                     <TextView
@@ -162,19 +160,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
-                        android:text="@string/advanced_layout"/>
+                        android:text="@string/advanced_layout" />
 
                     <TextView
                         style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/full_control"/>
+                        android:text="@string/full_control" />
 
                     <Button
                         android:id="@+id/button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/click_me"/>
+                        android:text="@string/click_me" />
                 </LinearLayout>
             </LinearLayout>
         </me.thanel.swipeactionview.SwipeActionView>
