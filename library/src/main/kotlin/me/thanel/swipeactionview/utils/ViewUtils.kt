@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2017 Łukasz Rutkowski
+ * Copyright © 2016-2018 Łukasz Rutkowski
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 package me.thanel.swipeactionview.utils
 
 import android.annotation.SuppressLint
-import android.support.v4.view.GravityCompat
-import android.support.v4.view.MarginLayoutParamsCompat
-import android.support.v4.view.ViewCompat
+import androidx.core.view.GravityCompat
+import androidx.core.view.MarginLayoutParamsCompat
+import androidx.core.view.ViewCompat
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2017 Łukasz Rutkowski
+ * Copyright © 2016-2018 Łukasz Rutkowski
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
-import android.support.annotation.ColorInt
+import androidx.annotation.ColorInt
 import android.util.Property
 
 internal class SwipeRippleDrawable : Drawable(), Animatable {

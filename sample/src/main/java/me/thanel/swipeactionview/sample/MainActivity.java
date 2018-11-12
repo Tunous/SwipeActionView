@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2017 Łukasz Rutkowski
+ * Copyright © 2016-2018 Łukasz Rutkowski
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,11 @@
 package me.thanel.swipeactionview.sample;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
-import org.jetbrains.annotations.NotNull;
 
 import me.thanel.swipeactionview.SwipeActionView;
 import me.thanel.swipeactionview.SwipeGestureListener;
@@ -36,54 +35,54 @@ public class MainActivity extends AppCompatActivity {
 
         SwipeGestureListener swipeGestureListener = new SwipeGestureListener() {
             @Override
-            public boolean onSwipedLeft(@NotNull SwipeActionView swipeActionView) {
+            public boolean onSwipedLeft(@NonNull SwipeActionView swipeActionView) {
                 showToast(false);
                 return true;
             }
 
             @Override
-            public boolean onSwipedRight(@NotNull SwipeActionView swipeActionView) {
+            public boolean onSwipedRight(@NonNull SwipeActionView swipeActionView) {
                 showToast(true);
                 return true;
             }
         };
 
-        SwipeActionView swipeRight = (SwipeActionView) findViewById(R.id.swipe_right);
+        SwipeActionView swipeRight = findViewById(R.id.swipe_right);
         swipeRight.setSwipeGestureListener(swipeGestureListener);
 
-        SwipeActionView swipeLeft = (SwipeActionView) findViewById(R.id.swipe_left);
+        SwipeActionView swipeLeft = findViewById(R.id.swipe_left);
         swipeLeft.setSwipeGestureListener(swipeGestureListener);
 
-        SwipeActionView swipeBoth = (SwipeActionView) findViewById(R.id.swipe_both);
+        SwipeActionView swipeBoth = findViewById(R.id.swipe_both);
         swipeBoth.setSwipeGestureListener(swipeGestureListener);
 
-        SwipeActionView swipeWithRipples = (SwipeActionView) findViewById(R.id.swipe_with_ripples);
+        SwipeActionView swipeWithRipples = findViewById(R.id.swipe_with_ripples);
         swipeWithRipples.setSwipeGestureListener(swipeGestureListener);
 
-        SwipeActionView swipeCardView = (SwipeActionView) findViewById(R.id.swipe_card_view);
+        SwipeActionView swipeCardView = findViewById(R.id.swipe_card_view);
         swipeCardView.setSwipeGestureListener(swipeGestureListener);
 
         SwipeGestureListener delayedSwipeGestureListener = new SwipeGestureListener() {
             @Override
-            public boolean onSwipedLeft(@NotNull SwipeActionView swipeActionView) {
+            public boolean onSwipedLeft(@NonNull SwipeActionView swipeActionView) {
                 swipeActionView.moveToOriginalPosition(1000);
                 return false;
             }
 
             @Override
-            public boolean onSwipedRight(@NotNull SwipeActionView swipeActionView) {
+            public boolean onSwipedRight(@NonNull SwipeActionView swipeActionView) {
                 swipeActionView.moveToOriginalPosition(500);
                 return false;
             }
         };
 
-        SwipeActionView swipeDelayed = (SwipeActionView) findViewById(R.id.swipe_delayed);
+        SwipeActionView swipeDelayed = findViewById(R.id.swipe_delayed);
         swipeDelayed.setSwipeGestureListener(delayedSwipeGestureListener);
 
-        SwipeActionView swipeCustomLayout = (SwipeActionView) findViewById(R.id.swipe_layout);
+        SwipeActionView swipeCustomLayout = findViewById(R.id.swipe_layout);
         swipeCustomLayout.setSwipeGestureListener(swipeGestureListener);
 
-        Button button = (Button) findViewById(R.id.button);
+        Button button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

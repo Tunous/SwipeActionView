@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright © 2016-2017 Łukasz Rutkowski
+  ~ Copyright © 2016-2018 Łukasz Rutkowski
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -98,7 +98,7 @@
                 style="@style/Icon"
                 android:layout_gravity="end|center_vertical"/>
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="16dp">
@@ -106,7 +106,7 @@
                 <TextView
                     style="@style/Container"
                     android:text="@string/swipe_able_card_view"/>
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
         </me.thanel.swipeactionview.SwipeActionView>
 
         <me.thanel.swipeactionview.SwipeActionView
@@ -187,7 +187,7 @@
                 android:layout_gravity="end|center_vertical"
                 android:src="@mipmap/ic_launcher" />
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 app:cardCornerRadius="4dp"
