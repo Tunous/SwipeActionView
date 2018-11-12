@@ -79,23 +79,24 @@ Below example will create `TextView` that can be swiped both to the left or righ
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/background_light"
         android:padding="16dp"
         android:text="Swipe me"/>
 </me.thanel.swipeactionview.SwipeActionView>
 ```
 
 ```java
-SwipeActionView swipeView = (SwipeActionView) findViewById(R.id.swipe_view);
+SwipeActionView swipeView = findViewById(R.id.swipe_view);
 
 swipeView.setSwipeGestureListener(new SwipeGestureListener() {
     @Override
-    public boolean onSwipedLeft(@NotNull SwipeActionView swipeActionView) {
+    public boolean onSwipedLeft(@NonNull SwipeActionView swipeActionView) {
         showToast("Swiped left");
         return true;
     }
 
     @Override
-    public boolean onSwipedRight(@NotNull SwipeActionView swipeActionView) {
+    public boolean onSwipedRight(@NonNull SwipeActionView swipeActionView) {
         showToast("Swiped right");
         return true;
     }
@@ -116,7 +117,7 @@ In the [quick example](#quick-example) section you can see that the `SwipeAction
 The container is a view which is drawn above other views. In the default state, this is the only visible view, and it is what gets moved when users perform swipe gestures. It can be either a simple `TextView`, custom view or even some sort of view group like `LinearLayout`. There is no limit for that, which allows you to gain complete control over the look of your views. 
 
 ### <a id="bg-views">Background views</a>
-Background views are the mostly invisible part of `SwipeActionView`. They get revealed only when users start performing swipe gestures. 
+Background views are the mostly invisible part of `SwipeActionView`. They get revealed only when users start performing swipe gestures. (Unless your container view has transparent background)
 
 You can specify for which swipe direction each of them corresponds by setting their `layout_gravity` attribute. 
 Default value or setting it to either `left` and/or `start` means that it will start appearing when users perform right swipe gesture. On the other hand setting it to `end` and/or `right` will result in the view to start appearing when users swipe to the left. This doesn't mean that you aren't allowed to use other `layout_gravity` options like `center`. They will still control the view as usual and will be ignored by `SwipeActionView`. 
@@ -156,6 +157,7 @@ This behavior allows you to add single background and by specifying its `layout_
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/background_light"
         android:padding="16dp"
         android:text="Swipe me"/>
 </me.thanel.swipeactionview.SwipeActionView>
@@ -173,7 +175,7 @@ To return the view to its original position you can call the `moveToOriginalPosi
 ```java
 swipeView.setSwipeGestureListener(new SwipeGestureListener() {
     @Override
-    public boolean onSwipedLeft(@NotNull SwipeActionView swipeActionView) {
+    public boolean onSwipedLeft(@NonNull SwipeActionView swipeActionView) {
         showToast("Swiped left");
 
         // Returning true automatically moves view to original position
@@ -181,7 +183,7 @@ swipeView.setSwipeGestureListener(new SwipeGestureListener() {
     }
 
     @Override
-    public boolean onSwipedRight(@NotNull SwipeActionView swipeActionView) {
+    public boolean onSwipedRight(@NonNull SwipeActionView swipeActionView) {
         showToast("Swiped right");
         
         // Returning false requires calling moveToOriginalPosition() manually to
@@ -254,7 +256,7 @@ He also created `SwipeRippleDrawable` and allowed me to [reimplement][SwipeRippl
 
 # <a id="license">License</a>
 ```
-Copyright © 2016-2017 Łukasz Rutkowski
+Copyright © 2016-2018 Łukasz Rutkowski
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
