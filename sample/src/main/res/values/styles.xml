@@ -47,6 +47,6 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minHeight">?listPreferredItemHeight</item>
-        <item name="android:background">@color/colorPrimaryDark</item>
+        <item name="android:background">@android:color/darker_gray</item>
     </style>
 </resources>

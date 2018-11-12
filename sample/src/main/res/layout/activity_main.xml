@@ -84,12 +84,15 @@
 
             <TextView
                 style="@style/Container"
+                android:elevation="8dp"
                 android:text="@string/animated_ripple"/>
         </me.thanel.swipeactionview.SwipeActionView>
 
         <me.thanel.swipeactionview.SwipeActionView
             android:id="@+id/swipe_card_view"
-            style="@style/SwipeItem">
+            style="@style/SwipeItem"
+            app:sav_swipeLeftRippleColor="@color/colorPrimary"
+            app:sav_tools_previewRipple="swipeLeft">
 
             <ImageView style="@style/Icon"/>
 
@@ -100,7 +103,8 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="16dp">
+                android:layout_margin="16dp"
+                app:cardElevation="12dp">
 
                 <TextView
                     style="@style/Container"
