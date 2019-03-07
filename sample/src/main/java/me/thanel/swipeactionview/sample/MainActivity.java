@@ -24,9 +24,12 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import me.thanel.swipeactionview.SwipeActionView;
+import me.thanel.swipeactionview.SwipeDirection;
 import me.thanel.swipeactionview.SwipeGestureListener;
 
 public class MainActivity extends AppCompatActivity {
+
+    private SwipeActionView swipeCustomLayout;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -79,21 +82,21 @@ public class MainActivity extends AppCompatActivity {
         SwipeActionView swipeDelayed = findViewById(R.id.swipe_delayed);
         swipeDelayed.setSwipeGestureListener(delayedSwipeGestureListener);
 
-        SwipeActionView swipeCustomLayout = findViewById(R.id.swipe_layout);
+        swipeCustomLayout = findViewById(R.id.swipe_layout);
         swipeCustomLayout.setSwipeGestureListener(swipeGestureListener);
-
-        Button button = findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, R.string.clicked, Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void showToast(Boolean swipedRight) {
         int resId = swipedRight ? R.string.swiped_right : R.string.swiped_left;
 
         Toast.makeText(this, resId, Toast.LENGTH_SHORT).show();
+    }
+
+    public void swipeLeft(View view) {
+        swipeCustomLayout.animateInDirection(SwipeDirection.Left, true);
+    }
+
+    public void swipeRight(View view) {
+        swipeCustomLayout.animateInDirection(SwipeDirection.Right, true);
     }
 }

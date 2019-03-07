@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
   ~ Copyright © 2016-2018 Łukasz Rutkowski
   ~
@@ -12,21 +13,28 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  -->
+  --><resources>
+    <string name="advanced_layout">Advanced layout</string>
 
-<resources>
+    <string name="animated_ripple">Displays animated ripple when swiped</string>
+
     <string name="app_name">SwipeActionView</string>
-    <string name="can_swipe_right">Can swipe right</string>
-    <string name="can_swipe_left">Can swipe left</string>
+
+    <string name="can_be_customized">This can also be customized</string>
     <string name="can_swipe_in_both_directions">Can swipe in both directions</string>
+    <string name="can_swipe_left">Can swipe left</string>
+    <string name="can_swipe_right">Can swipe right</string>
+
+    <string name="clicked">Clicked</string>
+
+    <string name="full_control">You have full control over look of SwipeActionView</string>
+
+    <string name="returns_after_delay">Returns to original position after delay</string>
+
+    <string name="swipe_able_card_view">Swipe-able CardView</string>
+    <string name="swipe_left">Swipe left</string>
+    <string name="swipe_right">Swipe right</string>
+
     <string name="swiped_left">Swiped left</string>
     <string name="swiped_right">Swiped right</string>
-    <string name="swipe_able_card_view">Swipe-able CardView</string>
-    <string name="animated_ripple">Displays animated ripple when swiped</string>
-    <string name="returns_after_delay">Returns to original position after delay</string>
-    <string name="can_be_customized">This can also be customized</string>
-    <string name="advanced_layout">Advanced layout</string>
-    <string name="full_control">You have full control over look of SwipeActionView</string>
-    <string name="click_me">Click me!</string>
-    <string name="clicked">Clicked</string>
 </resources>
