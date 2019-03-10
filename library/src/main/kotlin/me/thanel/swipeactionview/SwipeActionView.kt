@@ -441,7 +441,38 @@ class SwipeActionView : FrameLayout {
     fun moveToOriginalPosition() {
         moveToOriginalPosition(0)
     }
+    
+    /**
+    * Move the view to its left child position.
+     */
+    fun moveToLeftPosition() {
+        moveToLeftPosition(0)
+    }
 
+    /**
+     * Move the view to its right child position.
+     *
+     * @param startDelay
+    * The amount of delay, in milliseconds, to wait before starting the movement animation.
+    */
+    fun moveToRightPosition(startDelay: Long) {
+      animateContainer(maxRightSwipeDistance, 350, startDelay) {
+         canPerformSwipeAction = true
+      }
+    }
+
+    /**
+    * Move the view to its left child position.
+    *
+    * @param startDelay
+     * The amount of delay, in milliseconds, to wait before starting the movement animation.
+    */
+    fun moveToLeftPosition(startDelay: Long) {
+      animateContainer(maxLeftSwipeDistance, 350, startDelay) {
+          canPerformSwipeAction = true
+       }
+    }
+    
     /**
      * Move the view to its original position.
      *
