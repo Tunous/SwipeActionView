@@ -98,7 +98,7 @@ class SwipeActionView : FrameLayout {
      * The percentage of the [maxLeftSwipeDistance] or [maxRightSwipeDistance] after which swipe
      * callbacks can can be executed.
      */
-    private val minActivationDistanceRatio = 0.8f
+    private var minActivationDistanceRatio = 0.8f
 
     /**
      * Ripple displayed after performing swipe left gesture.
@@ -439,6 +439,14 @@ class SwipeActionView : FrameLayout {
         val view = getViewForDirection(direction)
             ?: throw IllegalArgumentException("View for the specified direction doesn't exist.")
         view.visibility = if (enabled) View.VISIBLE else View.GONE
+    }
+    
+     /**
+     * Set the minimum ratio for swiping (default 0.8f)
+     * @param ratio
+     * **/
+    fun setSwipeRatio(ratio: Float) {
+        minActivationDistanceRatio = ratio
     }
 
     @JvmOverloads
