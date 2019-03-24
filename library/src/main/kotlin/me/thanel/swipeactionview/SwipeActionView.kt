@@ -48,6 +48,7 @@ import me.thanel.swipeactionview.utils.totalWidth
 /**
  * View that allows users to perform various actions by swiping it to the left or right sides.
  */
+@Suppress("MemberVisibilityCanBePrivate")
 class SwipeActionView : FrameLayout {
     /**
      * Distance from edges in pixels that prevents starting of drag movement.
@@ -113,6 +114,11 @@ class SwipeActionView : FrameLayout {
      * The duration of ripple animation.
      */
     private val rippleAnimationDuration = 400L
+
+    /**
+     * The duration of swipe animation.
+     */
+    private val swipeAnimationDuration = 250L
 
     /**
      * Bounds for the ripple animations.
@@ -262,13 +268,13 @@ class SwipeActionView : FrameLayout {
         val swipeRightRippleColor =
             typedArray.getColorStateList(R.styleable.SwipeActionView_sav_swipeRightRippleColor)
         rippleTakesPadding =
-                typedArray.getBoolean(R.styleable.SwipeActionView_sav_rippleTakesPadding, false)
+            typedArray.getBoolean(R.styleable.SwipeActionView_sav_rippleTakesPadding, false)
 
         if (isInEditMode) {
             previewBackground =
-                    typedArray.getInt(R.styleable.SwipeActionView_sav_tools_previewBackground, 0)
+                typedArray.getInt(R.styleable.SwipeActionView_sav_tools_previewBackground, 0)
             previewRipple =
-                    typedArray.getInt(R.styleable.SwipeActionView_sav_tools_previewRipple, 0)
+                typedArray.getInt(R.styleable.SwipeActionView_sav_tools_previewRipple, 0)
         }
 
         typedArray.recycle()
@@ -435,22 +441,51 @@ class SwipeActionView : FrameLayout {
         view.visibility = if (enabled) View.VISIBLE else View.GONE
     }
 
-    /**
-     * Move the view to its original position.
-     */
-    fun moveToOriginalPosition() {
-        moveToOriginalPosition(0)
+    @JvmOverloads
+    @Deprecated(
+        message = "use animateToOriginalPosition instead",
+        replaceWith = ReplaceWith("animateToOriginalPosition(startDelay)")
+    )
+    fun moveToOriginalPosition(startDelay: Long = 0) {
+        animateToOriginalPosition(startDelay)
     }
 
     /**
-     * Move the view to its original position.
+     * Animate the view to its original position.
      *
-     * @param startDelay
-     * The amount of delay, in milliseconds, to wait before starting the movement animation.
+     * @param startDelay The amount of delay, in milliseconds, to wait before starting the
+     * movement animation. (Defaults to 0)
      */
-    fun moveToOriginalPosition(startDelay: Long) {
-        animateContainer(0f, 350, startDelay) {
+    @JvmOverloads
+    fun animateToOriginalPosition(startDelay: Long = 0) {
+        animateContainer(0f, swipeAnimationDuration, startDelay) {
             canPerformSwipeAction = true
+        }
+    }
+
+    /**
+     * Animate the view in the specified [swipeDirection].
+     *
+     * @param animateBack Tells whether the view should be automatically swiped back to original
+     * position after initial animation finishes.
+     * @param delayBeforeAnimatingBack Delay in milliseconds before the view animates back to its
+     * original position. Has no effect if [animateBack] is set to `false`. (Defaults to 200ms)
+     */
+    @JvmOverloads
+    fun animateInDirection(
+        swipeDirection: SwipeDirection,
+        animateBack: Boolean,
+        delayBeforeAnimatingBack: Long = 200
+    ) {
+        val distance = if (swipeDirection == SwipeDirection.Right) {
+            maxRightSwipeDistance
+        } else {
+            -maxLeftSwipeDistance
+        }
+        animateContainer(distance, swipeAnimationDuration, 0) {
+            if (animateBack) {
+                animateToOriginalPosition(delayBeforeAnimatingBack)
+            }
         }
     }
 
@@ -484,7 +519,7 @@ class SwipeActionView : FrameLayout {
             MotionEvent.ACTION_UP,
             MotionEvent.ACTION_CANCEL -> {
                 cancelDrag()
-                moveToOriginalPosition()
+                animateToOriginalPosition()
             }
         }
 
@@ -523,7 +558,7 @@ class SwipeActionView : FrameLayout {
 
             MotionEvent.ACTION_CANCEL -> {
                 cancelDrag()
-                moveToOriginalPosition()
+                animateToOriginalPosition()
             }
         }
 
@@ -738,14 +773,14 @@ class SwipeActionView : FrameLayout {
         val swipedFastEnough = Math.abs(velocityTracker.xVelocity) > minActivationSpeed
 
         if (swipedFastEnough && !isValidDelta(velocityTracker.xVelocity)) {
-            moveToOriginalPosition()
+            animateToOriginalPosition()
             return
         }
 
         if (hasSwipedFarEnough(container.translationX) || swipedFastEnough) {
             activate(container.translationX > 0)
         } else {
-            moveToOriginalPosition()
+            animateToOriginalPosition()
         }
     }
 
@@ -774,7 +809,7 @@ class SwipeActionView : FrameLayout {
         // If activation animation didn't finish, move the view to original position without
         // executing activate callback.
         if (!canPerformSwipeAction) {
-            moveToOriginalPosition()
+            animateToOriginalPosition()
             return
         }
         canPerformSwipeAction = false
@@ -785,7 +820,8 @@ class SwipeActionView : FrameLayout {
             leftSwipeRipple.restart()
         }
 
-        animateContainer(if (swipedRight) maxRightSwipeDistance else -maxLeftSwipeDistance, 250) {
+        val targetTranslationX = if (swipedRight) maxRightSwipeDistance else -maxLeftSwipeDistance
+        animateContainer(targetTranslationX, swipeAnimationDuration) {
             val shouldFinish = if (swipedRight) {
                 swipeGestureListener?.onSwipedRight(this)
             } else {
@@ -793,7 +829,7 @@ class SwipeActionView : FrameLayout {
             }
 
             if (shouldFinish != false) {
-                moveToOriginalPosition(200)
+                animateToOriginalPosition(200)
             }
         }
     }
