@@ -19,6 +19,7 @@ SwipeActionView is a swipe-able view, which allows users to perform actions by s
 - [Disabling gestures](#disabling-gestures)
 - [Ripple animations](#ripple-animations)
 - [Click listeners](#click-listeners)
+- [Animate from code](#code-animation)
 - [Attributes](#attr)
   - [sav_rippleTakesPadding](#attr-rippleTakesPadding)
   - [sav_swipeLeftRippleColor](#attr-swipeLeftRippleColor)
@@ -170,7 +171,7 @@ In order to be able to perform actions when users swipe the `SwipeActionView` yo
 
 Each of these methods returns `Boolean` as a result. Most of the time you'll want to return `true` here. Returning `false` is designed for advanced usage. By doing so, the view won't be automatically animated to the original position but will stay at the full translation. This allows you to manipulate the content of the visible background view. One great example of this is displaying progress wheel and manually returning the view to the original position once some long action finishes execution.
 
-To return the view to its original position you can call the `moveToOriginalPosition()` method at any time.
+To return the view to its original position you can call the `animateToOriginalPosition()` method at any time.
 
 ```java
 swipeView.setSwipeGestureListener(new SwipeGestureListener() {
@@ -186,12 +187,12 @@ swipeView.setSwipeGestureListener(new SwipeGestureListener() {
     public boolean onSwipedRight(@NonNull SwipeActionView swipeActionView) {
         showToast("Swiped right");
         
-        // Returning false requires calling moveToOriginalPosition() manually to
+        // Returning false requires calling animateToOriginalPosition() manually to
         // reset view to original position
 
         // Here we are using optional parameter which will move our view to
         // original position after delay in ms. In this case it's 2s.
-        swipeActionView.moveToOriginalPosition(2000);
+        swipeActionView.animateToOriginalPosition(2000);
 
         return false;
     }
@@ -202,7 +203,6 @@ swipeView.setSwipeGestureListener(new SwipeGestureListener() {
 If you want to dynamically enable or disable gesture in a specific direction you can use the `setDirectionEnabled(SwipeDirection, Boolean)` method.
  
 **Note:** The gesture enabling part is controlled by presence and visibility of background views. This method is only provided for convenience since it can also be changed by switching visibility of background views. It was coded like this so the specific swipe directions can be disabled by default from XML using `visibility` attribute on views corresponding to these directions.
-
 
 ```java
 swipeView.setDirectionEnabled(SwipeDirection.Left, false);
@@ -221,6 +221,29 @@ swipeView.setRippleColor(SwipeDirection.Right, Color.BLUE);
 `SwipeActionView` makes sure that any click listeners will work correctly. You can use `setClickListener(View.OnClickListener)` as usual and they should work, including views located in the container.
 
 The only exception is that you shouldn't add click listeners for background views. This library wasn't designed to add support for this behavior. If it's possible then, that's only a positive side effect. You are better of with using libraries such as [AndroidSwipeLayout] instead.
+
+# <a id="code-animation">Animate from code</a>
+When needed you can manually animate the view to desired position from code by using one of the dedicated methods.
+
+Method `animateInDirection(swipeDirection: SwipeDirection, animateBack: Boolean, delayBeforeAnimatingBack: Long)` animates the view in the specified direction and optionally animates it back after a delay.
+
+```java
+// Animate the view to the right and then animate it back after 1s
+swipeView.animateInDirection(SwipeDirection.Right, true, 1000);
+
+// Animate the view to the left and do not animate it back
+swipeView.animateInDirection(SwipeDirection.Left, false);
+```
+
+Method `animateToOriginalPosition(startDelay: Long)` animates the view to its original position with optional start delay.
+
+```java
+// Wait 500ms and then animate the view to its original position
+swipeView.animateToOriginalPosition(500)
+
+// Instantly animate the view to its original position
+swipeView.animateToOriginalPosition()
+```
 
 # <a id="attr">Attributes</a>
 
@@ -256,7 +279,7 @@ He also created `SwipeRippleDrawable` and allowed me to [reimplement][SwipeRippl
 
 # <a id="license">License</a>
 ```
-Copyright © 2016-2018 Łukasz Rutkowski
+Copyright © 2016-2019 Łukasz Rutkowski
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
