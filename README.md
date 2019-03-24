@@ -20,6 +20,7 @@ SwipeActionView is a swipe-able view, which allows users to perform actions by s
 - [Ripple animations](#ripple-animations)
 - [Click listeners](#click-listeners)
 - [Animate from code](#code-animation)
+- [Activation distance](#activation-distance)
 - [Attributes](#attr)
   - [sav_rippleTakesPadding](#attr-rippleTakesPadding)
   - [sav_swipeLeftRippleColor](#attr-swipeLeftRippleColor)
@@ -246,6 +247,9 @@ swipeView.animateToOriginalPosition(500)
 // Instantly animate the view to its original position
 swipeView.animateToOriginalPosition()
 ```
+
+# <a id="activation-distance">Activation distance</a>
+You can customize the siwpe distance required for callbacks to be executed by using the `activationDistanceRatio` property. It receives a value in range from `0.0f` to `1.0f`, which means the percentage of background view that has to be revealed. For example if set to `0.5f` the user has to reveal at least half of the background view before releasing their finger in order for the gesture callbacks to be executed.
 
 # <a id="attr">Attributes</a>
 
