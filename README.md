@@ -49,7 +49,7 @@ allprojects {
 And add the dependency in your module's `build.gradle`:
 ```groovy
 dependencies {
-    compile 'com.github.Tunous:SwipeActionView:VERSION_HERE'
+    implementation 'com.github.Tunous:SwipeActionView:VERSION_HERE'
 }
 ```
 Replace `VERISION_HERE` with the version you want to use. *See the tags on the top of this file to see the latest available version.*
@@ -83,6 +83,7 @@ Below example will create `TextView` that can be swiped both to the left or righ
         android:background="@android:color/background_light"
         android:padding="16dp"
         android:text="Swipe me"/>
+
 </me.thanel.swipeactionview.SwipeActionView>
 ```
 
@@ -161,6 +162,7 @@ This behavior allows you to add single background and by specifying its `layout_
         android:background="@android:color/background_light"
         android:padding="16dp"
         android:text="Swipe me"/>
+
 </me.thanel.swipeactionview.SwipeActionView>
 ```
 
@@ -262,7 +264,7 @@ Sets color for ripple displayed when users swipe right.
 #### <a id="attr-tools-previewBackground">`app:sav_tools_previewBackground="swipeLeft|swipeRight"`</a>
 Shows background view for swipe left or right gesture. 
 
-#### <a id="attr-tools-previewRipple">`app:sav_tools_previewRipple="swipeLeft"`</a>
+#### <a id="attr-tools-previewRipple">`app:sav_tools_previewRipple="swipeLeft|swipeRight"`</a>
 Shows ripple for swipe left or right gesture. 
 
 # <a id="animations">Animations</a>
