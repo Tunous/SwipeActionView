@@ -17,12 +17,11 @@
 package me.thanel.swipeactionview.sample;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import me.thanel.swipeactionview.SwipeActionView;
 import me.thanel.swipeactionview.SwipeDirection;
 import me.thanel.swipeactionview.SwipeGestureListener;
@@ -68,13 +67,13 @@ public class MainActivity extends AppCompatActivity {
         SwipeGestureListener delayedSwipeGestureListener = new SwipeGestureListener() {
             @Override
             public boolean onSwipedLeft(@NonNull SwipeActionView swipeActionView) {
-                swipeActionView.moveToOriginalPosition(1000);
+                swipeActionView.animateToOriginalPosition(1000);
                 return false;
             }
 
             @Override
             public boolean onSwipedRight(@NonNull SwipeActionView swipeActionView) {
-                swipeActionView.moveToOriginalPosition(500);
+                swipeActionView.animateToOriginalPosition(500);
                 return false;
             }
         };

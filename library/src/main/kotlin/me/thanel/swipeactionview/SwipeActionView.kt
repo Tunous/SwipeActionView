@@ -441,14 +441,23 @@ class SwipeActionView : FrameLayout {
         view.visibility = if (enabled) View.VISIBLE else View.GONE
     }
 
+    @JvmOverloads
+    @Deprecated(
+        message = "use animateToOriginalPosition instead",
+        replaceWith = ReplaceWith("animateToOriginalPosition(startDelay)")
+    )
+    fun moveToOriginalPosition(startDelay: Long = 0) {
+        animateToOriginalPosition(startDelay)
+    }
+
     /**
-     * Move the view to its original position.
+     * Animate the view to its original position.
      *
      * @param startDelay The amount of delay, in milliseconds, to wait before starting the
      * movement animation. (Defaults to 0)
      */
     @JvmOverloads
-    fun moveToOriginalPosition(startDelay: Long = 0) {
+    fun animateToOriginalPosition(startDelay: Long = 0) {
         animateContainer(0f, swipeAnimationDuration, startDelay) {
             canPerformSwipeAction = true
         }
@@ -475,7 +484,7 @@ class SwipeActionView : FrameLayout {
         }
         animateContainer(distance, swipeAnimationDuration, 0) {
             if (animateBack) {
-                moveToOriginalPosition(delayBeforeAnimatingBack)
+                animateToOriginalPosition(delayBeforeAnimatingBack)
             }
         }
     }
@@ -510,7 +519,7 @@ class SwipeActionView : FrameLayout {
             MotionEvent.ACTION_UP,
             MotionEvent.ACTION_CANCEL -> {
                 cancelDrag()
-                moveToOriginalPosition()
+                animateToOriginalPosition()
             }
         }
 
@@ -549,7 +558,7 @@ class SwipeActionView : FrameLayout {
 
             MotionEvent.ACTION_CANCEL -> {
                 cancelDrag()
-                moveToOriginalPosition()
+                animateToOriginalPosition()
             }
         }
 
@@ -764,14 +773,14 @@ class SwipeActionView : FrameLayout {
         val swipedFastEnough = Math.abs(velocityTracker.xVelocity) > minActivationSpeed
 
         if (swipedFastEnough && !isValidDelta(velocityTracker.xVelocity)) {
-            moveToOriginalPosition()
+            animateToOriginalPosition()
             return
         }
 
         if (hasSwipedFarEnough(container.translationX) || swipedFastEnough) {
             activate(container.translationX > 0)
         } else {
-            moveToOriginalPosition()
+            animateToOriginalPosition()
         }
     }
 
@@ -800,7 +809,7 @@ class SwipeActionView : FrameLayout {
         // If activation animation didn't finish, move the view to original position without
         // executing activate callback.
         if (!canPerformSwipeAction) {
-            moveToOriginalPosition()
+            animateToOriginalPosition()
             return
         }
         canPerformSwipeAction = false
@@ -820,7 +829,7 @@ class SwipeActionView : FrameLayout {
             }
 
             if (shouldFinish != false) {
-                moveToOriginalPosition(200)
+                animateToOriginalPosition(200)
             }
         }
     }
