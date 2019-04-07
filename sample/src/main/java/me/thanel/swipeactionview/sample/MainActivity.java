@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         swipeLeft.setSwipeGestureListener(swipeGestureListener);
 
         SwipeActionView swipeBoth = findViewById(R.id.swipe_both);
+        swipeBoth.setActivationDistanceRatio(0.5f);
         swipeBoth.setSwipeGestureListener(swipeGestureListener);
 
         SwipeActionView swipeWithRipples = findViewById(R.id.swipe_with_ripples);
@@ -93,9 +94,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void swipeLeft(View view) {
         swipeCustomLayout.animateInDirection(SwipeDirection.Left, true);
+        swipeCustomLayout.setActivationDistanceRatio(0.2f);
     }
 
     public void swipeRight(View view) {
         swipeCustomLayout.animateInDirection(SwipeDirection.Right, true);
+        swipeCustomLayout.setActivationDistanceRatio(0.8f);
     }
 }

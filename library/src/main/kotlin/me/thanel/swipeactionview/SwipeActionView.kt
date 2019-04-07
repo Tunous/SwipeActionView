@@ -95,12 +95,6 @@ class SwipeActionView : FrameLayout {
     private val handler = PressTimeoutHandler(this)
 
     /**
-     * The percentage of the [maxLeftSwipeDistance] or [maxRightSwipeDistance] after which swipe
-     * callbacks can can be executed.
-     */
-    private val minActivationDistanceRatio = 0.8f
-
-    /**
      * Ripple displayed after performing swipe left gesture.
      */
     private val leftSwipeRipple = SwipeRippleDrawable()
@@ -198,12 +192,14 @@ class SwipeActionView : FrameLayout {
     /**
      * The minimum distance required to execute swipe callbacks when swiping to the left side.
      */
-    private var minLeftActivationDistance = 0f
+    private val minLeftActivationDistance: Float
+        get() = activationDistanceRatio * maxLeftSwipeDistance
 
     /**
      * The minimum distance required to execute swipe callbacks when swiping to the right side.
      */
-    private var minRightActivationDistance = 0f
+    private val minRightActivationDistance: Float
+        get() = activationDistanceRatio * maxRightSwipeDistance
 
     /**
      * Determines whether ripple drawables should have padding.
@@ -229,6 +225,18 @@ class SwipeActionView : FrameLayout {
      * The callback to be invoked when this view is clicked and held.
      */
     private var onLongClickListener: OnLongClickListener? = null
+
+    /**
+     * The percentage of the swipe distance (width of the revealed view) after which swipe
+     * callbacks should be executed. (Defaults to 80%)
+     */
+    var activationDistanceRatio = 0.8f
+        set(newRatio) {
+            if (newRatio < 0f || newRatio > 1f) {
+                throw IllegalArgumentException("Activation distance ratio must be a value in range <0.0f, 1.0f>. Provided: $newRatio")
+            }
+            field = newRatio
+        }
 
     /**
      * Listener for the swipe left and right gestures.
@@ -347,15 +355,13 @@ class SwipeActionView : FrameLayout {
         leftSwipeRipple.maxRadius = maxRadius
         rightSwipeRipple.maxRadius = maxRadius
 
-        leftSwipeView?.let {
-            maxLeftSwipeDistance = it.totalWidth.toFloat() - container.marginEnd
-            minLeftActivationDistance = minActivationDistanceRatio * maxLeftSwipeDistance
-        }
+        maxLeftSwipeDistance = leftSwipeView?.let {
+            it.totalWidth.toFloat() - container.marginEnd
+        } ?: 0f
 
-        rightSwipeView?.let {
-            maxRightSwipeDistance = it.totalWidth.toFloat() - container.marginStart
-            minRightActivationDistance = minActivationDistanceRatio * maxRightSwipeDistance
-        }
+        maxRightSwipeDistance = rightSwipeView?.let {
+            it.totalWidth.toFloat() - container.marginStart
+        } ?: 0f
 
         if (isInEditMode) {
             when (previewBackground) {
@@ -541,7 +547,9 @@ class SwipeActionView : FrameLayout {
             }
 
             MotionEvent.ACTION_UP -> {
-                if (isClickable && isTouchValid && !dragging && !inLongPress && !hasMovedVertically(e)) {
+                if (isClickable && isTouchValid && !dragging && !inLongPress
+                    && !hasMovedVertically(e)
+                ) {
                     startPress(e.x, e.y)
                     performClick()
                 }
