@@ -239,6 +239,21 @@ class SwipeActionView : FrameLayout {
         }
 
     /**
+     * A factor by which the container view resists a swipe away from the closed position.
+     * Set this to 1 to get no resistance when swiping.
+     * Note: Swipe from open to close is always done with no resistance
+     *
+     * (Defaults to 3)
+     */
+    var dragResistance = 3
+        set(newResistance) {
+            if (newResistance < 1) {
+                throw IllegalArgumentException("Drag resistance must be a value greater than or equal to 1. Provided: $newResistance")
+            }
+            field = newResistance
+        }
+
+    /**
      * Listener for the swipe left and right gestures.
      */
     var swipeGestureListener: SwipeGestureListener? = null
@@ -746,7 +761,7 @@ class SwipeActionView : FrameLayout {
         // If we are swiping view away from view's default position make the swiping feel much
         // harder to drag.
         if (delta > 0 == container.translationX > 0 || container.translationX == 0f) {
-            delta /= 3
+            delta /= dragResistance
         }
 
         container.translationX += delta
