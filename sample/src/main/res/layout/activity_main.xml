@@ -212,5 +212,7 @@
                 app:cardElevation="10dp" />
 
         </me.thanel.swipeactionview.SwipeActionView>
+
+        <include layout="@layout/item_with_horizontal_scroll_view" />
     </LinearLayout>
 </ScrollView>
