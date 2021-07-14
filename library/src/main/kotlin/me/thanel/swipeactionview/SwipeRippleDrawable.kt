@@ -102,7 +102,7 @@ internal class SwipeRippleDrawable : Drawable(), Animatable {
 
     override fun getOpacity() = PixelFormat.OPAQUE
 
-    override fun setColorFilter(colorFilter: ColorFilter) {
+    override fun setColorFilter(colorFilter: ColorFilter?) {
     }
 
     override fun setAlpha(value: Int) {

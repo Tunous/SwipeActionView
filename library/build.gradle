@@ -1,8 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'maven-publish'
 
-group = 'com.github.Tunous'
 
 android {
     compileSdkVersion 28
@@ -17,6 +16,21 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 }
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            artifact(bundleReleaseAar)
+            artifact sourcesJar
+            artifact javadocJar
+
+            groupId = 'com.github.Tunous'
+            artifactId = 'SwipeActionView'
+            version = '1.4.0-SNAPSHOT'
+        }
+    }
+}
+
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.2'
@@ -40,7 +54,4 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
+

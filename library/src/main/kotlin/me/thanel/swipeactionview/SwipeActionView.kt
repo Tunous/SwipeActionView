@@ -28,10 +28,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Message
 import android.util.AttributeSet
-import android.view.MotionEvent
-import android.view.VelocityTracker
-import android.view.View
-import android.view.ViewConfiguration
+import android.view.*
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import androidx.annotation.ColorInt
@@ -252,6 +249,10 @@ class SwipeActionView : FrameLayout {
             }
             field = newResistance
         }
+
+    var resetDelay = 0L
+
+    var enableHapticFeedback = true
 
     /**
      * Listener for the swipe left and right gestures.
@@ -478,9 +479,16 @@ class SwipeActionView : FrameLayout {
      * movement animation. (Defaults to 0)
      */
     @JvmOverloads
-    fun animateToOriginalPosition(startDelay: Long = 0) {
+    fun animateToOriginalPosition(startDelay: Long = 0, swipeDirection: SwipeDirection? = null) {
         animateContainer(0f, swipeAnimationDuration, startDelay) {
             canPerformSwipeAction = true
+            swipeDirection?.let {
+                if (swipeDirection == SwipeDirection.Left) {
+                    swipeGestureListener?.onSwipeLeftComplete(this)
+                } else {
+                    swipeGestureListener?.onSwipeRightComplete(this)
+                }
+            }
         }
     }
 
@@ -843,6 +851,11 @@ class SwipeActionView : FrameLayout {
             leftSwipeRipple.restart()
         }
 
+
+        if (enableHapticFeedback) {
+            performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING)
+        }
+
         val targetTranslationX = if (swipedRight) maxRightSwipeDistance else -maxLeftSwipeDistance
         animateContainer(targetTranslationX, swipeAnimationDuration) {
             val shouldFinish = if (swipedRight) {
@@ -852,7 +865,7 @@ class SwipeActionView : FrameLayout {
             }
 
             if (shouldFinish != false) {
-                animateToOriginalPosition(200)
+                animateToOriginalPosition(resetDelay, if (swipedRight) SwipeDirection.Right else SwipeDirection.Left)
             }
         }
     }
