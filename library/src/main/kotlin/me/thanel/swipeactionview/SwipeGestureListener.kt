@@ -49,14 +49,14 @@ interface SwipeGestureListener {
 
     /**
      * Callback method to be invoked when the left swipe is complete.
-     * So the view is reset to its original position.
+     * A swipe is considered complete once the view returns back to its original position.
      *
      * @param swipeActionView The [SwipeActionView] from which this method was invoked.
      */
     fun onSwipeLeftComplete(swipeActionView: SwipeActionView) {}
     /**
      * Callback method to be invoked when the right swipe is complete.
-     * So the view is reset to its original position.
+     * A swipe is considered complete once the view returns back to its original position.
      *
      * @param swipeActionView The [SwipeActionView] from which this method was invoked.
      */

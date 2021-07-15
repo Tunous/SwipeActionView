@@ -484,13 +484,13 @@ class SwipeActionView : FrameLayout {
      * @param startDelay The amount of delay, in milliseconds, to wait before starting the
      * movement animation. (Defaults to 0)
      *
-     * @param completeCallback Will be run at the end of the animation. (Defaults to null)
+     * @param completeCallback Will be run at the end of the animation. (By default does nothing)
      */
     @JvmOverloads
-    fun animateToOriginalPosition(startDelay: Long = 0, completeCallback: Runnable? = null) {
+    fun animateToOriginalPosition(startDelay: Long = 0, completeCallback: () -> Unit = {}) {
         animateContainer(0f, swipeAnimationDuration, startDelay) {
             canPerformSwipeAction = true
-            completeCallback?.run()
+            completeCallback()
         }
     }
 
@@ -862,13 +862,13 @@ class SwipeActionView : FrameLayout {
             }
 
             if (shouldFinish != false) {
-                animateToOriginalPosition(resetDelay, Runnable {
-                        if (swipedRight) {
-                            swipeGestureListener?.onSwipeRightComplete(this)
-                        } else {
-                            swipeGestureListener?.onSwipeLeftComplete(this)
-                        }
-                })
+                animateToOriginalPosition(resetDelay) {
+                    if (swipedRight) {
+                        swipeGestureListener?.onSwipeRightComplete(this)
+                    } else {
+                        swipeGestureListener?.onSwipeLeftComplete(this)
+                    }
+                }
             }
         }
     }
