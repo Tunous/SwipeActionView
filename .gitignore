@@ -9,3 +9,9 @@
 /build
 /captures
 .idea/caches
+/.idea
+*~
+*.apk
+*.swp
+captures
+

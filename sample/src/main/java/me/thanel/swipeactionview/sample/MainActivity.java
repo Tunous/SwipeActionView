@@ -37,6 +37,16 @@ public class MainActivity extends AppCompatActivity {
 
         SwipeGestureListener swipeGestureListener = new SwipeGestureListener() {
             @Override
+            public void onSwipeRightComplete(SwipeActionView swipeActionView) {
+                // do nothing
+            }
+
+            @Override
+            public void onSwipeLeftComplete(SwipeActionView swipeActionView) {
+                // do nothing
+            }
+
+            @Override
             public boolean onSwipedLeft(@NonNull SwipeActionView swipeActionView) {
                 showToast(false);
                 return true;
@@ -67,6 +77,16 @@ public class MainActivity extends AppCompatActivity {
 
         SwipeGestureListener delayedSwipeGestureListener = new SwipeGestureListener() {
             @Override
+            public void onSwipeRightComplete(SwipeActionView swipeActionView) {
+                //this won't be called since onSwipedRight returns false
+            }
+
+            @Override
+            public void onSwipeLeftComplete(SwipeActionView swipeActionView) {
+                //this won't be called since onSwipedLeft returns false
+            }
+
+            @Override
             public boolean onSwipedLeft(@NonNull SwipeActionView swipeActionView) {
                 swipeActionView.animateToOriginalPosition(1000);
                 return false;
@@ -84,6 +104,35 @@ public class MainActivity extends AppCompatActivity {
 
         swipeCustomLayout = findViewById(R.id.swipe_layout);
         swipeCustomLayout.setSwipeGestureListener(swipeGestureListener);
+
+
+
+        SwipeGestureListener completeGestureListener = new SwipeGestureListener() {
+            @Override
+            public void onSwipeRightComplete(SwipeActionView swipeActionView) {
+                Toast.makeText(MainActivity.this, R.string.swipe_right_complete, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSwipeLeftComplete(SwipeActionView swipeActionView) {
+                Toast.makeText(MainActivity.this, R.string.swipe_left_complete, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public boolean onSwipedLeft(@NonNull SwipeActionView swipeActionView) {
+                //do nothing
+                return true;
+            }
+
+            @Override
+            public boolean onSwipedRight(@NonNull SwipeActionView swipeActionView) {
+                //do nothing
+                return true;
+            }
+        };
+
+        SwipeActionView swipeComplete = findViewById(R.id.swipe_complete);
+        swipeComplete.setSwipeGestureListener(completeGestureListener);
     }
 
     private void showToast(Boolean swipedRight) {

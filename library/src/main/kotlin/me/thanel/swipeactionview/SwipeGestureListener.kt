@@ -33,7 +33,7 @@ interface SwipeGestureListener {
      * should manually call `reset` method to return to default position.
      * @see SwipeActionView
      */
-    fun onSwipedLeft(swipeActionView: SwipeActionView): Boolean
+    fun onSwipedLeft(swipeActionView: SwipeActionView): Boolean {return true}
 
     /**
      * Callback method to be invoked when user swipes the [SwipeActionView] to the
@@ -45,5 +45,20 @@ interface SwipeGestureListener {
      * should manually call `reset` method to return to default position.
      * @see SwipeActionView
      */
-    fun onSwipedRight(swipeActionView: SwipeActionView): Boolean
+    fun onSwipedRight(swipeActionView: SwipeActionView): Boolean {return true}
+
+    /**
+     * Callback method to be invoked when the left swipe is complete.
+     * A swipe is considered complete once the view returns back to its original position.
+     *
+     * @param swipeActionView The [SwipeActionView] from which this method was invoked.
+     */
+    fun onSwipeLeftComplete(swipeActionView: SwipeActionView) {}
+    /**
+     * Callback method to be invoked when the right swipe is complete.
+     * A swipe is considered complete once the view returns back to its original position.
+     *
+     * @param swipeActionView The [SwipeActionView] from which this method was invoked.
+     */
+    fun onSwipeRightComplete(swipeActionView: SwipeActionView) {}
 }

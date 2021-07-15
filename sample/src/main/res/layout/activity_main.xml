@@ -68,6 +68,21 @@
         </me.thanel.swipeactionview.SwipeActionView>
 
         <me.thanel.swipeactionview.SwipeActionView
+            android:id="@+id/swipe_complete"
+            style="@style/SwipeItem">
+
+            <ImageView style="@style/Icon" />
+
+            <ImageView
+                style="@style/Icon"
+                android:layout_gravity="end|center_vertical" />
+
+            <TextView
+                style="@style/Container"
+                android:text="@string/complete_callback" />
+        </me.thanel.swipeactionview.SwipeActionView>
+
+        <me.thanel.swipeactionview.SwipeActionView
             android:id="@+id/swipe_with_ripples"
             style="@style/SwipeItem"
             app:sav_swipeLeftRippleColor="@color/colorPrimary"
