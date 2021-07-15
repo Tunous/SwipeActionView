@@ -250,9 +250,14 @@ class SwipeActionView : FrameLayout {
             field = newResistance
         }
 
-    var resetDelay = 0L
 
-    var enableHapticFeedback = true
+    /**
+     * The delay for the view to start the reset animation after swiping left or right.
+     * The value is in milliseconds.
+     *
+     * (Defaults to 200 ms)
+     */
+    var resetDelay = 200L
 
     /**
      * Listener for the swipe left and right gestures.
@@ -472,23 +477,20 @@ class SwipeActionView : FrameLayout {
         animateToOriginalPosition(startDelay)
     }
 
+
     /**
      * Animate the view to its original position.
      *
      * @param startDelay The amount of delay, in milliseconds, to wait before starting the
      * movement animation. (Defaults to 0)
+     *
+     * @param completeCallback Will be run at the end of the animation. (Defaults to null)
      */
     @JvmOverloads
-    fun animateToOriginalPosition(startDelay: Long = 0, swipeDirection: SwipeDirection? = null) {
+    fun animateToOriginalPosition(startDelay: Long = 0, completeCallback: Runnable? = null) {
         animateContainer(0f, swipeAnimationDuration, startDelay) {
             canPerformSwipeAction = true
-            swipeDirection?.let {
-                if (swipeDirection == SwipeDirection.Left) {
-                    swipeGestureListener?.onSwipeLeftComplete(this)
-                } else {
-                    swipeGestureListener?.onSwipeRightComplete(this)
-                }
-            }
+            completeCallback?.run()
         }
     }
 
@@ -851,11 +853,6 @@ class SwipeActionView : FrameLayout {
             leftSwipeRipple.restart()
         }
 
-
-        if (enableHapticFeedback) {
-            performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING)
-        }
-
         val targetTranslationX = if (swipedRight) maxRightSwipeDistance else -maxLeftSwipeDistance
         animateContainer(targetTranslationX, swipeAnimationDuration) {
             val shouldFinish = if (swipedRight) {
@@ -865,7 +862,13 @@ class SwipeActionView : FrameLayout {
             }
 
             if (shouldFinish != false) {
-                animateToOriginalPosition(resetDelay, if (swipedRight) SwipeDirection.Right else SwipeDirection.Left)
+                animateToOriginalPosition(resetDelay, Runnable {
+                        if (swipedRight) {
+                            swipeGestureListener?.onSwipeRightComplete(this)
+                        } else {
+                            swipeGestureListener?.onSwipeLeftComplete(this)
+                        }
+                })
             }
         }
     }
