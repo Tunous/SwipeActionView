@@ -195,7 +195,7 @@ class SwipeActionView : FrameLayout {
      * Only used for MultiSwipeActionView
      * Should be coordinated with resistance-multiplier
      */
-    private val distanceFromCenterpoint = 14
+    private val distanceFromCenterpoint = 8
 
     /**
      * The minimum distance required to execute swipe callbacks when swiping to the left side.
@@ -814,7 +814,7 @@ class SwipeActionView : FrameLayout {
 
         var resistance = dragResistance
         val normalizedTranslation = container.translationX.absoluteValue
-        val resistanceMulitplier = 8
+        val resistanceMulitplier = 4
 
         //swiping right
         if(container.translationX>0){
