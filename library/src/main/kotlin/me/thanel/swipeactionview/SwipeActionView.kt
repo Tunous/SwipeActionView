@@ -28,6 +28,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Message
 import android.util.AttributeSet
+import android.util.Log
 import android.view.*
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
@@ -41,6 +42,8 @@ import me.thanel.swipeactionview.utils.marginStart
 import me.thanel.swipeactionview.utils.radius
 import me.thanel.swipeactionview.utils.setBoundsFrom
 import me.thanel.swipeactionview.utils.totalWidth
+import kotlin.math.absoluteValue
+
 
 /**
  * View that allows users to perform various actions by swiping it to the left or right sides.
@@ -185,6 +188,14 @@ class SwipeActionView : FrameLayout {
      * The maximum distance allowed for dragging of the view to the right side.
      */
     private var maxRightSwipeDistance = 0f
+
+
+    /**
+     * The radius in which dragging should be increased because the first element is gone.
+     * Only used for MultiSwipeActionView
+     * Should be coordinated with resistance-multiplier
+     */
+    private val distanceFromCenterpoint = 14
 
     /**
      * The minimum distance required to execute swipe callbacks when swiping to the left side.
@@ -761,6 +772,39 @@ class SwipeActionView : FrameLayout {
     }
 
     /**
+     * Tell whether the user has swiped the view far enough to perform a swipe callback
+     * for the first element in a MultiSwipeActionView
+     *
+     * @param swipeDistance The performed swipe distance.
+     *
+     * @return Whether the user has swiped far enough
+     */
+    private fun hasSwipedFarEnoughMultiContainerFirstElement(swipeDistance: Float): Boolean {
+
+        val normalizedTranslation = swipeDistance.absoluteValue
+        //swiping right
+        if(swipeDistance>0){
+            if (rightSwipeView is MultiSwipeActionView) {
+                val maxSwipe = (rightSwipeView as MultiSwipeActionView).width*0.75
+                val halfway = (rightSwipeView as MultiSwipeActionView).getChildAt(0)?.width ?: 0
+                if(halfway-distanceFromCenterpoint < normalizedTranslation && maxSwipe > normalizedTranslation) {
+                    return true
+                }
+            }
+        } else {
+            if (leftSwipeView is MultiSwipeActionView) {
+                val maxSwipe = (leftSwipeView as MultiSwipeActionView).width*0.75
+                val vg = (leftSwipeView as MultiSwipeActionView)
+                val halfway = vg.getChildAt(vg.childCount-1)?.width ?: 0
+                if(halfway-distanceFromCenterpoint < normalizedTranslation && maxSwipe > normalizedTranslation) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    /**
      * Perform the drag by horizontally moving the view by movement delta.
      *
      * @param e The move motion even that triggered the current movement.
@@ -768,10 +812,34 @@ class SwipeActionView : FrameLayout {
     private fun performDrag(e: MotionEvent) {
         var delta = e.rawX - lastX
 
+        var resistance = dragResistance
+        val normalizedTranslation = container.translationX.absoluteValue
+        val resistanceMulitplier = 8
+
+        //swiping right
+        if(container.translationX>0){
+            if (rightSwipeView is MultiSwipeActionView) {
+                val halfway = (rightSwipeView as MultiSwipeActionView).getChildAt(0)?.width ?: 0
+                if(halfway+distanceFromCenterpoint > normalizedTranslation &&
+                    normalizedTranslation > halfway-distanceFromCenterpoint) {
+                    resistance *=resistanceMulitplier
+                }
+            }
+        } else {
+            if (leftSwipeView is MultiSwipeActionView) {
+                val vg = (leftSwipeView as MultiSwipeActionView)
+                val halfway = vg.getChildAt(vg.childCount-1)?.width ?: 0
+                if(halfway+distanceFromCenterpoint > normalizedTranslation &&
+                    normalizedTranslation > halfway-distanceFromCenterpoint) {
+                    resistance *=resistanceMulitplier
+                }
+            }
+        }
+
         // If we are swiping view away from view's default position make the swiping feel much
         // harder to drag.
         if (delta > 0 == container.translationX > 0 || container.translationX == 0f) {
-            delta /= dragResistance
+            delta /= resistance
         }
 
         container.translationX += delta
@@ -810,6 +878,10 @@ class SwipeActionView : FrameLayout {
             return
         }
 
+        if(hasSwipedFarEnoughMultiContainerFirstElement(container.translationX)){
+            activate(container.translationX > 0, true)
+        }
+
         if (hasSwipedFarEnough(container.translationX) || swipedFastEnough) {
             activate(container.translationX > 0)
         } else {
@@ -838,7 +910,7 @@ class SwipeActionView : FrameLayout {
      *
      * @param swipedRight Tells whether the view was swiped to the right instead of left side.
      */
-    private fun activate(swipedRight: Boolean) {
+    private fun activate(swipedRight: Boolean, isHalfwaySwipe: Boolean = false) {
         // If activation animation didn't finish, move the view to original position without
         // executing activate callback.
         if (!canPerformSwipeAction) {
@@ -852,8 +924,15 @@ class SwipeActionView : FrameLayout {
         } else {
             leftSwipeRipple.restart()
         }
+        if(isHalfwaySwipe) {
+            if (swipedRight) {
+                swipeGestureListener?.onSwipedHalfwayRight(this)
+            } else {
+                swipeGestureListener?.onSwipedHalfwayLeft(this)
+            }
+        }
 
-        val targetTranslationX = if (swipedRight) maxRightSwipeDistance else -maxLeftSwipeDistance
+        var targetTranslationX = if (swipedRight) maxRightSwipeDistance else -maxLeftSwipeDistance
         animateContainer(targetTranslationX, swipeAnimationDuration) {
             val shouldFinish = if (swipedRight) {
                 swipeGestureListener?.onSwipedRight(this)
@@ -868,6 +947,7 @@ class SwipeActionView : FrameLayout {
                     } else {
                         swipeGestureListener?.onSwipeLeftComplete(this)
                     }
+                    swipeGestureListener?.onSwipeLeftComplete(this)
                 }
             }
         }

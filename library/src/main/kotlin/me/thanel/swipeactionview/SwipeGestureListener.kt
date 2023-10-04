@@ -48,6 +48,30 @@ interface SwipeGestureListener {
     fun onSwipedRight(swipeActionView: SwipeActionView): Boolean {return true}
 
     /**
+     * Callback method to be invoked when user swipes the [SwipeActionView] to the
+     * left, but only the first element. Requires MultiSwipeActionView as a Container.
+     *
+     * @param swipeActionView The [SwipeActionView] from which this method was invoked.
+     *
+     * @return Whether the container should return to default position. When `false`, then you
+     * should manually call `reset` method to return to default position.
+     * @see SwipeActionView
+     */
+    fun onSwipedHalfwayLeft(swipeActionView: SwipeActionView): Boolean {return true}
+
+    /**
+     * Callback method to be invoked when user swipes the [SwipeActionView] to the
+     * right, but only the first element. Requires MultiSwipeActionView as a Container.
+     *
+     * @param swipeActionView The [SwipeActionView] from which this method was invoked.
+     *
+     * @return Whether the container should return to default position. When `false`, then you
+     * should manually call `reset` method to return to default position.
+     * @see SwipeActionView
+     */
+    fun onSwipedHalfwayRight(swipeActionView: SwipeActionView): Boolean {return true}
+
+    /**
      * Callback method to be invoked when the left swipe is complete.
      * A swipe is considered complete once the view returns back to its original position.
      *

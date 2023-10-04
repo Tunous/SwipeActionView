@@ -38,6 +38,18 @@ public class MainActivity extends AppCompatActivity {
 
         SwipeGestureListener swipeGestureListener = new SwipeGestureListener() {
             @Override
+            public boolean onSwipedHalfwayRight(@NonNull SwipeActionView swipeActionView) {
+                showToast(true, true);
+                return false;
+            }
+
+            @Override
+            public boolean onSwipedHalfwayLeft(@NonNull SwipeActionView swipeActionView) {
+                showToast(false, true);
+                return false;
+            }
+
+            @Override
             public void onSwipeRightComplete(SwipeActionView swipeActionView) {
                 // do nothing
             }
@@ -49,13 +61,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onSwipedLeft(@NonNull SwipeActionView swipeActionView) {
-                showToast(false);
+                showToast(false, false);
                 return true;
             }
 
             @Override
             public boolean onSwipedRight(@NonNull SwipeActionView swipeActionView) {
-                showToast(true);
+                showToast(true, false);
                 return true;
             }
         };
@@ -77,6 +89,16 @@ public class MainActivity extends AppCompatActivity {
         swipeCardView.setSwipeGestureListener(swipeGestureListener);
 
         SwipeGestureListener delayedSwipeGestureListener = new SwipeGestureListener() {
+            @Override
+            public boolean onSwipedHalfwayRight(@NonNull SwipeActionView swipeActionView) {
+                return true;
+            }
+
+            @Override
+            public boolean onSwipedHalfwayLeft(@NonNull SwipeActionView swipeActionView) {
+                return true;
+            }
+
             @Override
             public void onSwipeRightComplete(SwipeActionView swipeActionView) {
                 //this won't be called since onSwipedRight returns false
@@ -110,6 +132,16 @@ public class MainActivity extends AppCompatActivity {
 
         SwipeGestureListener completeGestureListener = new SwipeGestureListener() {
             @Override
+            public boolean onSwipedHalfwayLeft(@NonNull SwipeActionView swipeActionView) {
+                return true;
+            }
+
+            @Override
+            public boolean onSwipedHalfwayRight(@NonNull SwipeActionView swipeActionView) {
+                return true;
+            }
+
+            @Override
             public void onSwipeRightComplete(SwipeActionView swipeActionView) {
                 Toast.makeText(MainActivity.this, R.string.swipe_right_complete, Toast.LENGTH_SHORT).show();
             }
@@ -136,10 +168,14 @@ public class MainActivity extends AppCompatActivity {
         swipeComplete.setSwipeGestureListener(completeGestureListener);
     }
 
-    private void showToast(Boolean swipedRight) {
+    private void showToast(Boolean swipedRight, Boolean wasHalfway) {
         int resId = swipedRight ? R.string.swiped_right : R.string.swiped_left;
+        String text = getString(resId);
+        if(wasHalfway) {
+            text+= getString(R.string.swiped_halfway);
+        }
 
-        Toast.makeText(this, resId, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
     public void swipeLeft(View view) {
