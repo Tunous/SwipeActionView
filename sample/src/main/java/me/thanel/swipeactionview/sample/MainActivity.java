@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 import me.thanel.swipeactionview.SwipeActionView;
 import me.thanel.swipeactionview.SwipeDirection;
 import me.thanel.swipeactionview.SwipeGestureListener;

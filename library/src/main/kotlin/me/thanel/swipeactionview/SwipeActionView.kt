@@ -911,7 +911,7 @@ class SwipeActionView : FrameLayout {
             setFloatValues(targetTranslationX)
             removeAllListeners()
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator?) {
+                override fun onAnimationEnd(animation: Animator) {
                     onEnd()
                 }
             })
