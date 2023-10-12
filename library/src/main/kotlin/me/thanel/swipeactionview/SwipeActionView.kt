@@ -785,18 +785,16 @@ class SwipeActionView : FrameLayout {
         //swiping right
         if(swipeDistance>0){
             if (rightSwipeView is MultiSwipeActionView) {
-                val maxSwipe = (rightSwipeView as MultiSwipeActionView).width*0.75
                 val halfway = (rightSwipeView as MultiSwipeActionView).getChildAt(0)?.width ?: 0
-                if(halfway-distanceFromCenterpoint < normalizedTranslation && maxSwipe > normalizedTranslation) {
+                if(halfway-distanceFromCenterpoint < normalizedTranslation) {
                     return true
                 }
             }
         } else {
             if (leftSwipeView is MultiSwipeActionView) {
-                val maxSwipe = (leftSwipeView as MultiSwipeActionView).width*0.75
                 val vg = (leftSwipeView as MultiSwipeActionView)
                 val halfway = vg.getChildAt(vg.childCount-1)?.width ?: 0
-                if(halfway-distanceFromCenterpoint < normalizedTranslation && maxSwipe > normalizedTranslation) {
+                if(halfway-distanceFromCenterpoint < normalizedTranslation) {
                     return true
                 }
             }
