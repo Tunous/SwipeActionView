@@ -945,7 +945,6 @@ class SwipeActionView : FrameLayout {
                     } else {
                         swipeGestureListener?.onSwipeLeftComplete(this)
                     }
-                    swipeGestureListener?.onSwipeLeftComplete(this)
                 }
             }
         }
