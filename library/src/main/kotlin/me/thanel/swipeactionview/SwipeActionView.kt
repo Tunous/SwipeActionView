@@ -878,12 +878,10 @@ class SwipeActionView : FrameLayout {
             return
         }
 
-        if(hasSwipedFarEnoughMultiContainerFirstElement(container.translationX)){
-            activate(container.translationX > 0, true)
-        }
-
         if (hasSwipedFarEnough(container.translationX) || swipedFastEnough) {
             activate(container.translationX > 0)
+        } else if (hasSwipedFarEnoughMultiContainerFirstElement(container.translationX)) {
+            activate(container.translationX > 0, true)
         } else {
             animateToOriginalPosition()
         }
