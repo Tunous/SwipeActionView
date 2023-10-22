@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onSwipedHalfwayRight(@NonNull SwipeActionView swipeActionView) {
                 showToast(true, true);
-                return false;
+                return true;
             }
 
             @Override

@@ -921,8 +921,7 @@ class SwipeActionView : FrameLayout {
             leftSwipeRipple.restart()
         }
 
-        var targetTranslationX = if (swipedRight) maxRightSwipeDistance else -maxLeftSwipeDistance
-        animateContainer(targetTranslationX, swipeAnimationDuration) {
+        animateContainer(getTargetTranslationX(swipedRight, isHalfwaySwipe), swipeAnimationDuration) {
             val shouldFinish = if (swipedRight) {
                 if(isHalfwaySwipe) {
                     swipeGestureListener?.onSwipedHalfwayRight(this)
@@ -1036,6 +1035,26 @@ class SwipeActionView : FrameLayout {
     private fun getMaxSwipeDistance(delta: Float) = when {
         delta < 0 -> maxLeftSwipeDistance
         else -> maxRightSwipeDistance
+    }
+
+    /**
+     * Get the translation distance for the animate container
+     *
+     * @param swipedRight whether the user swiped right or left (true for right, false for left)
+     * @param isHalfwaySwipe whether the user swiped ony the first item
+     *
+     * @return Translation Value
+     */
+    private fun getTargetTranslationX(swipedRight: Boolean, isHalfwaySwipe: Boolean): Float {
+        return if(isHalfwaySwipe) {
+            return if (swipedRight) {
+                ((rightSwipeView as MultiSwipeActionView).getChildAt(0)?.width ?: maxRightSwipeDistance).toFloat()
+            } else {
+                ((leftSwipeView as MultiSwipeActionView).getChildAt(0)?.width ?: -maxLeftSwipeDistance).toFloat()
+            }
+        } else {
+            if (swipedRight) maxRightSwipeDistance else -maxLeftSwipeDistance
+        }
     }
 
     /**
