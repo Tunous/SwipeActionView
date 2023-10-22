@@ -920,20 +920,21 @@ class SwipeActionView : FrameLayout {
         } else {
             leftSwipeRipple.restart()
         }
-        if(isHalfwaySwipe) {
-            if (swipedRight) {
-                swipeGestureListener?.onSwipedHalfwayRight(this)
-            } else {
-                swipeGestureListener?.onSwipedHalfwayLeft(this)
-            }
-        }
 
         var targetTranslationX = if (swipedRight) maxRightSwipeDistance else -maxLeftSwipeDistance
         animateContainer(targetTranslationX, swipeAnimationDuration) {
             val shouldFinish = if (swipedRight) {
-                swipeGestureListener?.onSwipedRight(this)
+                if(isHalfwaySwipe) {
+                    swipeGestureListener?.onSwipedHalfwayRight(this)
+                } else {
+                    swipeGestureListener?.onSwipedRight(this)
+                }
             } else {
-                swipeGestureListener?.onSwipedLeft(this)
+                if(isHalfwaySwipe) {
+                    swipeGestureListener?.onSwipedHalfwayLeft(this)
+                } else {
+                    swipeGestureListener?.onSwipedLeft(this)
+                }
             }
 
             if (shouldFinish != false) {
