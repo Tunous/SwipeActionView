@@ -1,57 +1,66 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'maven-publish'
-
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'maven-publish'
+}
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion "28.0.3"
-
     defaultConfig {
+        namespace = "me.thanel.swipeactionview"
         minSdkVersion 14
-        targetSdkVersion 28
+        targetSdkVersion 33
+        compileSdk 33
     }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
-}
 
-publishing {
-    publications {
-        release(MavenPublication) {
-            artifact(bundleReleaseAar)
-            artifact sourcesJar
-            artifact javadocJar
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
 
-            groupId = 'com.github.Tunous'
-            artifactId = 'SwipeActionView'
-            version = '1.4.0-SNAPSHOT'
-        }
+    kotlinOptions {
+        jvmTarget = "17"
     }
 }
 
+/*
+project.afterEvaluate {
+    publishing {
+        publications {
+            aar(MavenPublication) {
+                groupId = 'com.github.Tunous'
+                artifactId = 'SwipeActionView'
+                version = '1.4.0-SNAPSHOT'
+
+                artifact bundleReleaseAar
+                artifact sourcesJar
+                artifact javadocJar
+            }
+        }
+    }
+}*/
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 
+
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
+    archiveClassifier = 'sources'
 }
 
 task javadoc(type: Javadoc) {
     failOnError false
     source = android.sourceSets.main.java.sourceFiles
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    classpath += configurations.compile
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
-
-

@@ -31,7 +31,25 @@
             android:id="@+id/swipe_right"
             style="@style/SwipeItem">
 
-            <ImageView style="@style/Icon" />
+            <me.thanel.swipeactionview.MultiSwipeActionView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <ImageView
+                    style="@style/Icon"
+                    android:contentDescription="i1" />
+
+                <View
+                    android:id="@+id/view"
+                    android:layout_width="1dp"
+                    android:layout_height="wrap_content"
+                    android:background="#C81111" />
+
+                <ImageView
+                    style="@style/Icon"
+                    android:contentDescription="i2" />
+            </me.thanel.swipeactionview.MultiSwipeActionView>
 
             <TextView
                 style="@style/Container"
@@ -42,9 +60,26 @@
             android:id="@+id/swipe_left"
             style="@style/SwipeItem">
 
-            <ImageView
-                style="@style/Icon"
-                android:layout_gravity="end|center_vertical" />
+            <me.thanel.swipeactionview.MultiSwipeActionView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="end|center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    style="@style/Icon"
+                    android:contentDescription="i3" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="wrap_content"
+                    android:background="#C81111" />
+
+                <ImageView
+                    style="@style/Icon"
+                    android:contentDescription="i4" />
+
+            </me.thanel.swipeactionview.MultiSwipeActionView>
 
             <TextView
                 style="@style/Container"

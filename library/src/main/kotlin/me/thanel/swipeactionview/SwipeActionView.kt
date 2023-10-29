@@ -28,6 +28,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Message
 import android.util.AttributeSet
+import android.util.Log
 import android.view.*
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
@@ -41,6 +42,8 @@ import me.thanel.swipeactionview.utils.marginStart
 import me.thanel.swipeactionview.utils.radius
 import me.thanel.swipeactionview.utils.setBoundsFrom
 import me.thanel.swipeactionview.utils.totalWidth
+import kotlin.math.absoluteValue
+
 
 /**
  * View that allows users to perform various actions by swiping it to the left or right sides.
@@ -185,6 +188,14 @@ class SwipeActionView : FrameLayout {
      * The maximum distance allowed for dragging of the view to the right side.
      */
     private var maxRightSwipeDistance = 0f
+
+
+    /**
+     * The radius in which dragging should be increased because the first element is gone.
+     * Only used for MultiSwipeActionView
+     * Should be coordinated with resistance-multiplier
+     */
+    private val distanceFromCenterpoint = 8
 
     /**
      * The minimum distance required to execute swipe callbacks when swiping to the left side.
@@ -761,6 +772,37 @@ class SwipeActionView : FrameLayout {
     }
 
     /**
+     * Tell whether the user has swiped the view far enough to perform a swipe callback
+     * for the first element in a MultiSwipeActionView
+     *
+     * @param swipeDistance The performed swipe distance.
+     *
+     * @return Whether the user has swiped far enough
+     */
+    private fun hasSwipedFarEnoughMultiContainerFirstElement(swipeDistance: Float): Boolean {
+
+        val normalizedTranslation = swipeDistance.absoluteValue
+        //swiping right
+        if(swipeDistance>0){
+            if (rightSwipeView is MultiSwipeActionView) {
+                val halfway = (rightSwipeView as MultiSwipeActionView).getChildAt(0)?.width ?: 0
+                if(halfway-distanceFromCenterpoint < normalizedTranslation) {
+                    return true
+                }
+            }
+        } else {
+            if (leftSwipeView is MultiSwipeActionView) {
+                val vg = (leftSwipeView as MultiSwipeActionView)
+                val halfway = vg.getChildAt(vg.childCount-1)?.width ?: 0
+                if(halfway-distanceFromCenterpoint < normalizedTranslation) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    /**
      * Perform the drag by horizontally moving the view by movement delta.
      *
      * @param e The move motion even that triggered the current movement.
@@ -768,10 +810,34 @@ class SwipeActionView : FrameLayout {
     private fun performDrag(e: MotionEvent) {
         var delta = e.rawX - lastX
 
+        var resistance = dragResistance
+        val normalizedTranslation = container.translationX.absoluteValue
+        val resistanceMulitplier = 4
+
+        //swiping right
+        if(container.translationX>0){
+            if (rightSwipeView is MultiSwipeActionView) {
+                val halfway = (rightSwipeView as MultiSwipeActionView).getChildAt(0)?.width ?: 0
+                if(halfway+distanceFromCenterpoint > normalizedTranslation &&
+                    normalizedTranslation > halfway-distanceFromCenterpoint) {
+                    resistance *=resistanceMulitplier
+                }
+            }
+        } else {
+            if (leftSwipeView is MultiSwipeActionView) {
+                val vg = (leftSwipeView as MultiSwipeActionView)
+                val halfway = vg.getChildAt(vg.childCount-1)?.width ?: 0
+                if(halfway+distanceFromCenterpoint > normalizedTranslation &&
+                    normalizedTranslation > halfway-distanceFromCenterpoint) {
+                    resistance *=resistanceMulitplier
+                }
+            }
+        }
+
         // If we are swiping view away from view's default position make the swiping feel much
         // harder to drag.
         if (delta > 0 == container.translationX > 0 || container.translationX == 0f) {
-            delta /= dragResistance
+            delta /= resistance
         }
 
         container.translationX += delta
@@ -812,6 +878,8 @@ class SwipeActionView : FrameLayout {
 
         if (hasSwipedFarEnough(container.translationX) || swipedFastEnough) {
             activate(container.translationX > 0)
+        } else if (hasSwipedFarEnoughMultiContainerFirstElement(container.translationX)) {
+            activate(container.translationX > 0, true)
         } else {
             animateToOriginalPosition()
         }
@@ -838,7 +906,7 @@ class SwipeActionView : FrameLayout {
      *
      * @param swipedRight Tells whether the view was swiped to the right instead of left side.
      */
-    private fun activate(swipedRight: Boolean) {
+    private fun activate(swipedRight: Boolean, isHalfwaySwipe: Boolean = false) {
         // If activation animation didn't finish, move the view to original position without
         // executing activate callback.
         if (!canPerformSwipeAction) {
@@ -853,12 +921,19 @@ class SwipeActionView : FrameLayout {
             leftSwipeRipple.restart()
         }
 
-        val targetTranslationX = if (swipedRight) maxRightSwipeDistance else -maxLeftSwipeDistance
-        animateContainer(targetTranslationX, swipeAnimationDuration) {
+        animateContainer(getTargetTranslationX(swipedRight, isHalfwaySwipe), swipeAnimationDuration) {
             val shouldFinish = if (swipedRight) {
-                swipeGestureListener?.onSwipedRight(this)
+                if(isHalfwaySwipe) {
+                    swipeGestureListener?.onSwipedHalfwayRight(this)
+                } else {
+                    swipeGestureListener?.onSwipedRight(this)
+                }
             } else {
-                swipeGestureListener?.onSwipedLeft(this)
+                if(isHalfwaySwipe) {
+                    swipeGestureListener?.onSwipedHalfwayLeft(this)
+                } else {
+                    swipeGestureListener?.onSwipedLeft(this)
+                }
             }
 
             if (shouldFinish != false) {
@@ -911,7 +986,7 @@ class SwipeActionView : FrameLayout {
             setFloatValues(targetTranslationX)
             removeAllListeners()
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator?) {
+                override fun onAnimationEnd(animation: Animator) {
                     onEnd()
                 }
             })
@@ -960,6 +1035,26 @@ class SwipeActionView : FrameLayout {
     private fun getMaxSwipeDistance(delta: Float) = when {
         delta < 0 -> maxLeftSwipeDistance
         else -> maxRightSwipeDistance
+    }
+
+    /**
+     * Get the translation distance for the animate container
+     *
+     * @param swipedRight whether the user swiped right or left (true for right, false for left)
+     * @param isHalfwaySwipe whether the user swiped ony the first item
+     *
+     * @return Translation Value
+     */
+    private fun getTargetTranslationX(swipedRight: Boolean, isHalfwaySwipe: Boolean): Float {
+        return if(isHalfwaySwipe) {
+            return if (swipedRight) {
+                ((rightSwipeView as MultiSwipeActionView).getChildAt(0)?.width ?: maxRightSwipeDistance).toFloat()
+            } else {
+                -((leftSwipeView as MultiSwipeActionView).getChildAt(0)?.width ?: maxLeftSwipeDistance).toFloat()
+            }
+        } else {
+            if (swipedRight) maxRightSwipeDistance else -maxLeftSwipeDistance
+        }
     }
 
     /**

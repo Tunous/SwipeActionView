@@ -41,4 +41,5 @@
 
     <string name="swipe_left_complete">Swipe left complete</string>
     <string name="swipe_right_complete">Swipe right complete</string>
+    <string name="swiped_halfway">and only first icon</string>
 </resources>
