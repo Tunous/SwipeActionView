@@ -100,6 +100,9 @@ internal class SwipeRippleDrawable : Drawable(), Animatable {
         drawBounds.set(bounds)
     }
 
+    @Deprecated("Deprecated in Java",
+        ReplaceWith("PixelFormat.OPAQUE", "android.graphics.PixelFormat")
+    )
     override fun getOpacity() = PixelFormat.OPAQUE
 
     override fun setColorFilter(colorFilter: ColorFilter?) {

@@ -18,6 +18,7 @@ package me.thanel.swipeactionview.animation
 
 import android.view.View
 import me.thanel.swipeactionview.utils.setScale
+import kotlin.math.min
 
 class ScalableIconAnimator : SwipeActionViewAnimator {
     override fun onUpdateSwipeProgress(view: View, progress: Float, minActivationProgress: Float) {
@@ -25,7 +26,7 @@ class ScalableIconAnimator : SwipeActionViewAnimator {
 
         if (progress > minActivationProgress) {
             val xOverActivation = progress - minActivationProgress
-            scale += Math.min(xOverActivation / 0.4f, 1f - scale)
+            scale += min(xOverActivation / 0.4f, 1f - scale)
         }
 
         view.setScale(scale)

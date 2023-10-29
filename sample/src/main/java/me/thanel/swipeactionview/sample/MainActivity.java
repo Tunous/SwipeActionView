@@ -129,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
         swipeCustomLayout.setSwipeGestureListener(swipeGestureListener);
 
 
-
         SwipeGestureListener completeGestureListener = new SwipeGestureListener() {
             @Override
             public boolean onSwipedHalfwayLeft(@NonNull SwipeActionView swipeActionView) {
@@ -171,8 +170,8 @@ public class MainActivity extends AppCompatActivity {
     private void showToast(Boolean swipedRight, Boolean wasHalfway) {
         int resId = swipedRight ? R.string.swiped_right : R.string.swiped_left;
         String text = getString(resId);
-        if(wasHalfway) {
-            text+= getString(R.string.swiped_halfway);
+        if (wasHalfway) {
+            text += getString(R.string.swiped_halfway);
         }
 
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();

@@ -28,7 +28,6 @@ import android.os.Build
 import android.os.Handler
 import android.os.Message
 import android.util.AttributeSet
-import android.util.Log
 import android.view.*
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
@@ -42,6 +41,7 @@ import me.thanel.swipeactionview.utils.marginStart
 import me.thanel.swipeactionview.utils.radius
 import me.thanel.swipeactionview.utils.setBoundsFrom
 import me.thanel.swipeactionview.utils.totalWidth
+import kotlin.math.abs
 import kotlin.math.absoluteValue
 
 
@@ -400,6 +400,7 @@ class SwipeActionView : FrameLayout {
                 SwipeDirection.LEFT -> leftSwipeView?.let {
                     container.translationX = -maxLeftSwipeDistance
                 }
+
                 SwipeDirection.RIGHT -> rightSwipeView?.let {
                     container.translationX = maxRightSwipeDistance
                 }
@@ -620,6 +621,7 @@ class SwipeActionView : FrameLayout {
                             leftSwipeRipple.draw(canvas)
                         }
                     }
+
                     SwipeDirection.RIGHT -> {
                         if (rightSwipeRipple.hasColor) {
                             rightSwipeRipple.draw(canvas)
@@ -727,13 +729,13 @@ class SwipeActionView : FrameLayout {
      *
      * @return Whether the user has moved their finger vertically.
      */
-    private fun hasMovedVertically(e: MotionEvent) = Math.abs(e.rawY - initialRawY) >= touchSlop
+    private fun hasMovedVertically(e: MotionEvent) = abs(e.rawY - initialRawY) >= touchSlop
 
     /**
      * Tells whether the drag can be started by the user based on provided motion event.
      */
     private fun canStartDrag(e: MotionEvent): Boolean {
-        val movedFarEnough = Math.abs(e.rawX - initialRawX) > touchSlop
+        val movedFarEnough = abs(e.rawX - initialRawX) > touchSlop
         return movedFarEnough && isTouchValid
     }
 
@@ -783,18 +785,18 @@ class SwipeActionView : FrameLayout {
 
         val normalizedTranslation = swipeDistance.absoluteValue
         //swiping right
-        if(swipeDistance>0){
+        if (swipeDistance > 0) {
             if (rightSwipeView is MultiSwipeActionView) {
                 val halfway = (rightSwipeView as MultiSwipeActionView).getChildAt(0)?.width ?: 0
-                if(halfway-distanceFromCenterpoint < normalizedTranslation) {
+                if (halfway - distanceFromCenterpoint < normalizedTranslation) {
                     return true
                 }
             }
         } else {
             if (leftSwipeView is MultiSwipeActionView) {
                 val vg = (leftSwipeView as MultiSwipeActionView)
-                val halfway = vg.getChildAt(vg.childCount-1)?.width ?: 0
-                if(halfway-distanceFromCenterpoint < normalizedTranslation) {
+                val halfway = vg.getChildAt(vg.childCount - 1)?.width ?: 0
+                if (halfway - distanceFromCenterpoint < normalizedTranslation) {
                     return true
                 }
             }
@@ -815,21 +817,23 @@ class SwipeActionView : FrameLayout {
         val resistanceMulitplier = 4
 
         //swiping right
-        if(container.translationX>0){
+        if (container.translationX > 0) {
             if (rightSwipeView is MultiSwipeActionView) {
                 val halfway = (rightSwipeView as MultiSwipeActionView).getChildAt(0)?.width ?: 0
-                if(halfway+distanceFromCenterpoint > normalizedTranslation &&
-                    normalizedTranslation > halfway-distanceFromCenterpoint) {
-                    resistance *=resistanceMulitplier
+                if (halfway + distanceFromCenterpoint > normalizedTranslation &&
+                    normalizedTranslation > halfway - distanceFromCenterpoint
+                ) {
+                    resistance *= resistanceMulitplier
                 }
             }
         } else {
             if (leftSwipeView is MultiSwipeActionView) {
                 val vg = (leftSwipeView as MultiSwipeActionView)
-                val halfway = vg.getChildAt(vg.childCount-1)?.width ?: 0
-                if(halfway+distanceFromCenterpoint > normalizedTranslation &&
-                    normalizedTranslation > halfway-distanceFromCenterpoint) {
-                    resistance *=resistanceMulitplier
+                val halfway = vg.getChildAt(vg.childCount - 1)?.width ?: 0
+                if (halfway + distanceFromCenterpoint > normalizedTranslation &&
+                    normalizedTranslation > halfway - distanceFromCenterpoint
+                ) {
+                    resistance *= resistanceMulitplier
                 }
             }
         }
@@ -869,7 +873,7 @@ class SwipeActionView : FrameLayout {
         cancelDrag(false)
         velocityTracker.computeCurrentVelocity(100)
 
-        val swipedFastEnough = Math.abs(velocityTracker.xVelocity) > minActivationSpeed
+        val swipedFastEnough = abs(velocityTracker.xVelocity) > minActivationSpeed
 
         if (swipedFastEnough && !isValidDelta(velocityTracker.xVelocity)) {
             animateToOriginalPosition()
@@ -921,15 +925,18 @@ class SwipeActionView : FrameLayout {
             leftSwipeRipple.restart()
         }
 
-        animateContainer(getTargetTranslationX(swipedRight, isHalfwaySwipe), swipeAnimationDuration) {
+        animateContainer(
+            getTargetTranslationX(swipedRight, isHalfwaySwipe),
+            swipeAnimationDuration
+        ) {
             val shouldFinish = if (swipedRight) {
-                if(isHalfwaySwipe) {
+                if (isHalfwaySwipe) {
                     swipeGestureListener?.onSwipedHalfwayRight(this)
                 } else {
                     swipeGestureListener?.onSwipedRight(this)
                 }
             } else {
-                if(isHalfwaySwipe) {
+                if (isHalfwaySwipe) {
                     swipeGestureListener?.onSwipedHalfwayLeft(this)
                 } else {
                     swipeGestureListener?.onSwipedLeft(this)
@@ -1006,16 +1013,18 @@ class SwipeActionView : FrameLayout {
                 swipeView = leftSwipeView
                 animator = leftSwipeAnimator
             }
+
             swipeDistance > 0 -> {
                 swipeView = rightSwipeView
                 animator = rightSwipeAnimator
             }
+
             else -> return
         }
 
         if (swipeView == null || animator == null) return
 
-        val absTranslationX = Math.abs(swipeDistance)
+        val absTranslationX = abs(swipeDistance)
         val maxSwipeDistance = getMaxSwipeDistance(swipeDistance)
 
         val progress = absTranslationX / maxSwipeDistance
@@ -1046,11 +1055,13 @@ class SwipeActionView : FrameLayout {
      * @return Translation Value
      */
     private fun getTargetTranslationX(swipedRight: Boolean, isHalfwaySwipe: Boolean): Float {
-        return if(isHalfwaySwipe) {
+        return if (isHalfwaySwipe) {
             return if (swipedRight) {
-                ((rightSwipeView as MultiSwipeActionView).getChildAt(0)?.width ?: maxRightSwipeDistance).toFloat()
+                ((rightSwipeView as MultiSwipeActionView).getChildAt(0)?.width
+                    ?: maxRightSwipeDistance).toFloat()
             } else {
-                -((leftSwipeView as MultiSwipeActionView).getChildAt(0)?.width ?: maxLeftSwipeDistance).toFloat()
+                -((leftSwipeView as MultiSwipeActionView).getChildAt(0)?.width
+                    ?: maxLeftSwipeDistance).toFloat()
             }
         } else {
             if (swipedRight) maxRightSwipeDistance else -maxLeftSwipeDistance
@@ -1085,6 +1096,7 @@ class SwipeActionView : FrameLayout {
                         swipeActionView.inLongPress = true
                         swipeActionView.performLongClick()
                     }
+
                     TAP -> {
                         swipeActionView.startPress(x, y)
                     }
