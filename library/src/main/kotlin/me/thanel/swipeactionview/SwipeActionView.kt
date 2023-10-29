@@ -1050,7 +1050,7 @@ class SwipeActionView : FrameLayout {
             return if (swipedRight) {
                 ((rightSwipeView as MultiSwipeActionView).getChildAt(0)?.width ?: maxRightSwipeDistance).toFloat()
             } else {
-                ((leftSwipeView as MultiSwipeActionView).getChildAt(0)?.width ?: -maxLeftSwipeDistance).toFloat()
+                -((leftSwipeView as MultiSwipeActionView).getChildAt(0)?.width ?: maxLeftSwipeDistance).toFloat()
             }
         } else {
             if (swipedRight) maxRightSwipeDistance else -maxLeftSwipeDistance

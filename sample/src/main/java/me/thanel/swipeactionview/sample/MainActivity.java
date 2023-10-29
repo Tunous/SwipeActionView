@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onSwipedHalfwayLeft(@NonNull SwipeActionView swipeActionView) {
                 showToast(false, true);
-                return false;
+                return true;
             }
 
             @Override
