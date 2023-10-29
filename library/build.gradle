@@ -26,14 +26,13 @@ android {
     }
 }
 
-/*
 project.afterEvaluate {
     publishing {
         publications {
             aar(MavenPublication) {
                 groupId = 'com.github.Tunous'
                 artifactId = 'SwipeActionView'
-                version = '1.4.0-SNAPSHOT'
+                version = '1.5.0-SNAPSHOT'
 
                 artifact bundleReleaseAar
                 artifact sourcesJar
@@ -41,26 +40,26 @@ project.afterEvaluate {
             }
         }
     }
-}*/
+}
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 
-
-task sourcesJar(type: Jar) {
+tasks.register('sourcesJar', Jar) {
     from android.sourceSets.main.java.srcDirs
     archiveClassifier = 'sources'
 }
 
-task javadoc(type: Javadoc) {
+tasks.register('javadoc', Javadoc) {
     failOnError false
     source = android.sourceSets.main.java.sourceFiles
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
+tasks.register('javadocJar', Jar) {
+    dependsOn javadoc
     archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
