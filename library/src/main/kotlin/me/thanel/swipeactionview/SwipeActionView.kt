@@ -561,7 +561,7 @@ class SwipeActionView : FrameLayout {
 
             MotionEvent.ACTION_UP,
             MotionEvent.ACTION_CANCEL -> {
-                cancelDrag()
+                cancelDrag(false)
                 animateToOriginalPosition()
             }
         }
