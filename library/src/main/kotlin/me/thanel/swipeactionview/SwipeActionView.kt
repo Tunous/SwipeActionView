@@ -555,10 +555,6 @@ class SwipeActionView : FrameLayout {
                 prepareDrag(e)
             }
 
-            MotionEvent.ACTION_MOVE -> {
-                return handleMoveEvent(e)
-            }
-
             MotionEvent.ACTION_UP,
             MotionEvent.ACTION_CANCEL -> {
                 cancelDrag(false)
@@ -566,8 +562,7 @@ class SwipeActionView : FrameLayout {
             }
         }
 
-        // In most cases we don't want to handle touch events alone. We give child views a chance to
-        // intercept them.
+        // Give child views a chance to intercept touch events before this view.
         return false
     }
 
@@ -576,6 +571,12 @@ class SwipeActionView : FrameLayout {
             MotionEvent.ACTION_DOWN -> {
                 prepareDrag(e)
                 prepareMessages(e)
+
+                // Stop the animator to allow "catching" of view.
+                // By "catching" I mean the possibility for user to click on the view and continue swiping
+                // from the position at which it was when starting new swipe.
+                animator.cancel()
+
                 return true
             }
 
@@ -649,11 +650,6 @@ class SwipeActionView : FrameLayout {
         lastX = e.rawX
         initialRawX = e.rawX
         initialRawY = e.rawY
-
-        // Stop the animator to allow "catching" of view.
-        // By "catching" I mean the possibility for user to click on the view and continue swiping
-        // from the position at which it was when starting new swipe.
-        animator.cancel()
 
         handler.removeOurMessages()
     }
